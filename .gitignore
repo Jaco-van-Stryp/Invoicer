@@ -572,3 +572,4 @@ appsettings.Development.json
 
 
 # End of https://www.toptal.com/developers/gitignore/api/angular,aspnetcore,visualstudio,visualstudiocode
+.claude/settings.local.json
