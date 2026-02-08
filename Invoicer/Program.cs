@@ -88,6 +88,8 @@ builder.Services.AddMediatR(cfg =>
 });
 
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
+builder.Services.AddScoped<IJwtTokenService, JtwTokenService>();
 
 var app = builder.Build();
 
@@ -100,7 +102,5 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
-
-app.MapControllers();
 
 app.Run();

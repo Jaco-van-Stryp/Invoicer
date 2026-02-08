@@ -1,8 +1,8 @@
-﻿namespace Invoicer.Infrastructure.Entities
+﻿namespace Invoicer.Domain.Entities
 {
     public class Client
     {
-        public required Guid Id { get; init; }
+        public Guid Id { get; init; }
         public required string Name { get; init; }
         public required string Email { get; init; }
         public string? Address { get; init; }
