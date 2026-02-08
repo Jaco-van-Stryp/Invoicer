@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using Invoicer.Domain.Data;
+using Invoicer.Infrastructure.EmailService;
 using Invoicer.Infrastructure.JWTTokenService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -10,8 +11,6 @@ using Microsoft.OpenApi;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddControllers();
-
 builder.Services.AddSwaggerGen(opt =>
 {
     opt.SwaggerDoc("v1", new OpenApiInfo { Title = "Megabin API", Version = "v1" });
@@ -39,7 +38,7 @@ builder.Services.AddSwaggerGen(opt =>
 
     opt.AddSecurityRequirement(document => new OpenApiSecurityRequirement
     {
-        [new OpenApiSecuritySchemeReference("Bearer", document)] = new List<string>()
+        [new OpenApiSecuritySchemeReference("Bearer", document)] = new List<string>(),
     });
 });
 
@@ -87,6 +86,8 @@ builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
 });
+
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
 
