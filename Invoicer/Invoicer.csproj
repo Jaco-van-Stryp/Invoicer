@@ -9,6 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Infrastructure\Entities\**" />
+    <Content Remove="Infrastructure\Entities\**" />
+    <EmbeddedResource Remove="Infrastructure\Entities\**" />
+    <None Remove="Infrastructure\Entities\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.SimpleEmailV2" Version="4.0.11.5" />
     <PackageReference Include="MediatR" Version="14.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.2" />
@@ -28,8 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\" />
-    <Folder Include="Infrastructure\Entities\" />
+    <Folder Include="Domain\Exceptions\" />
   </ItemGroup>
 
 </Project>

@@ -1,8 +1,8 @@
-﻿namespace Invoicer.Infrastructure.Entities
+﻿namespace Invoicer.Domain.Entities
 {
     public class Invoice
     {
-        public required Guid Id { get; init; }
+        public Guid Id { get; init; }
         public required string InvoiceNumber { get; init; }
         public required DateTime InvoiceDate { get; init; } = DateTime.UtcNow;
         public required DateTime InvoiceDue { get; init; } = DateTime.UtcNow.AddDays(30);

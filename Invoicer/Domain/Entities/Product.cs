@@ -1,8 +1,8 @@
-﻿namespace Invoicer.Infrastructure.Entities
+﻿namespace Invoicer.Domain.Entities
 {
     public class Product
     {
-        public required Guid Id { get; init; }
+        public Guid Id { get; init; }
         public required string Name { get; init; }
         public required decimal Price { get; init; }
         public required string Description { get; init; }

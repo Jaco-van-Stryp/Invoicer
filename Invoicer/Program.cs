@@ -1,7 +1,12 @@
 using System;
 using System.Text;
 using Invoicer.Domain.Data;
+using Invoicer.Features.Auth;
+using Invoicer.Infrastructure.EmailService;
+using Invoicer.Infrastructure.ExceptionHandling;
 using Invoicer.Infrastructure.JWTTokenService;
+using Invoicer.Infrastructure.Validation;
+using Amazon.SimpleEmailV2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -10,18 +15,16 @@ using Microsoft.OpenApi;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddControllers();
-
 builder.Services.AddSwaggerGen(opt =>
 {
-    opt.SwaggerDoc("v1", new OpenApiInfo { Title = "Megabin API", Version = "v1" });
+    opt.SwaggerDoc("v1", new OpenApiInfo { Title = "Invoicer API", Version = "v1" });
 
     // Add server URLs for API client generation
     opt.AddServer(
-        new OpenApiServer { Url = "https://localhost:7012", Description = "Development HTTPS" }
+        new OpenApiServer { Url = "https://localhost:7261", Description = "Development HTTPS" }
     );
     opt.AddServer(
-        new OpenApiServer { Url = "http://localhost:5250", Description = "Development HTTP" }
+        new OpenApiServer { Url = "http://localhost:5244", Description = "Development HTTP" }
     );
 
     opt.AddSecurityDefinition(
@@ -39,7 +42,7 @@ builder.Services.AddSwaggerGen(opt =>
 
     opt.AddSecurityRequirement(document => new OpenApiSecurityRequirement
     {
-        [new OpenApiSecuritySchemeReference("Bearer", document)] = new List<string>()
+        [new OpenApiSecuritySchemeReference("Bearer", document)] = new List<string>(),
     });
 });
 
@@ -86,7 +89,22 @@ builder.Services.AddCors(options =>
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
+    cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
 });
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
+var sesOptions = builder.Configuration.GetSection("SES").Get<SesOptions>() ?? new SesOptions();
+builder.Services.AddSingleton<IAmazonSimpleEmailServiceV2>(_ =>
+{
+    var region = Amazon.RegionEndpoint.GetBySystemName(sesOptions.Region);
+    return new Amazon.SimpleEmailV2.AmazonSimpleEmailServiceV2Client(region);
+});
+builder.Services.Configure<SesOptions>(builder.Configuration.GetSection("SES"));
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
+builder.Services.AddScoped<IJwtTokenService, JtwTokenService>();
 
 var app = builder.Build();
 
@@ -96,10 +114,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseExceptionHandler();
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+// Map API Endpoints
+app.MapAuthEndpoints();
 
 app.Run();
