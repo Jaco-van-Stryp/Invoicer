@@ -1,7 +1,9 @@
 using System;
 using System.Text;
 using Invoicer.Domain.Data;
+using Invoicer.Features.Auth;
 using Invoicer.Infrastructure.EmailService;
+using Invoicer.Infrastructure.ExceptionHandling;
 using Invoicer.Infrastructure.JWTTokenService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -13,14 +15,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(opt =>
 {
-    opt.SwaggerDoc("v1", new OpenApiInfo { Title = "Megabin API", Version = "v1" });
+    opt.SwaggerDoc("v1", new OpenApiInfo { Title = "Invoicer API", Version = "v1" });
 
     // Add server URLs for API client generation
     opt.AddServer(
-        new OpenApiServer { Url = "https://localhost:7012", Description = "Development HTTPS" }
+        new OpenApiServer { Url = "https://localhost:7261", Description = "Development HTTPS" }
     );
     opt.AddServer(
-        new OpenApiServer { Url = "http://localhost:5250", Description = "Development HTTP" }
+        new OpenApiServer { Url = "http://localhost:5244", Description = "Development HTTP" }
     );
 
     opt.AddSecurityDefinition(
@@ -87,6 +89,9 @@ builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
 });
 
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddScoped<IJwtTokenService, JtwTokenService>();
@@ -99,7 +104,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseExceptionHandler();
 app.UseHttpsRedirection();
+
+// Map API Endpoints
+app.MapAuthEndpoints();
 
 app.UseAuthorization();
 

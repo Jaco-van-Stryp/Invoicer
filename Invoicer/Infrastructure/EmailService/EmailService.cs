@@ -2,6 +2,7 @@
 using Amazon.SimpleEmailV2;
 using Amazon.SimpleEmailV2.Model;
 using Microsoft.Extensions.Options;
+using Serilog;
 
 namespace Invoicer.Infrastructure.EmailService
 {
@@ -59,6 +60,7 @@ namespace Invoicer.Infrastructure.EmailService
             }
             catch (Exception ex)
             {
+                Log.Warning("Failed to send email to " + toEmail + " " + ex);
                 return false;
             }
         }

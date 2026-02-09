@@ -9,6 +9,6 @@
 
         public required int LoginAttempts { get; set; } = 0;
         public required bool IsLocked { get; set; } = false;
-        public required DateTime? LockoutEnd { get; set; } = DateTime.UtcNow.AddHours(1);
+        public required DateTime? LockoutEnd { get; set; } = null;
     }
 }

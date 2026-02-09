@@ -8,15 +8,13 @@ namespace Invoicer.Features.Auth.GetAccessToken
             this IEndpointRouteBuilder app
         )
         {
-            app.MapGet(
-                    "GetAccessToken",
-                    async (GetAccessTokenCommand command, ISender sender) =>
-                    {
-                        await sender.Send(command);
-                        return TypedResults.Ok();
-                    }
-                )
-                .WithTags("GetAccessToken");
+            app.MapPost(
+                "GetAccessToken",
+                async (GetAccessTokenQuery query, ISender sender) =>
+                {
+                    return TypedResults.Ok(await sender.Send(query));
+                }
+            );
             return app;
         }
     }

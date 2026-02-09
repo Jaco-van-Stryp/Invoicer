@@ -2,5 +2,6 @@
 
 namespace Invoicer.Features.Auth.Login
 {
-    public record LoginCommand(string Email, string AccessToken) : IRequest<LoginResponse>;
+    public record LoginCommand(string Email, string AccessToken, Guid AccessTokenKey)
+        : IRequest<LoginResponse>;
 }

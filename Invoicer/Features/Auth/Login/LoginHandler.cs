@@ -26,24 +26,14 @@ namespace Invoicer.Features.Auth.Login
                 {
                     throw new UnauthorizedException();
                 }
-                else
-                {
-                    user.IsLocked = false;
-                    user.LockoutEnd = null;
-                    await _dbContext.SaveChangesAsync(cancellationToken);
-                }
-            }
-            if (user.LoginAttempts > 5)
-            {
-                user.IsLocked = true;
-                user.LockoutEnd = DateTime.UtcNow.AddMinutes(15);
+
+                user.IsLocked = false;
+                user.LockoutEnd = null;
+                user.LoginAttempts = 0;
                 await _dbContext.SaveChangesAsync(cancellationToken);
-                throw new UnauthorizedException();
             }
-            user.LoginAttempts++;
-            var latestToken = user
-                .AuthTokens.OrderByDescending(x => x.AccessTokenCreated)
-                .FirstOrDefault();
+
+            var latestToken = user.AuthTokens.FirstOrDefault(x => x.Id == request.AccessTokenKey);
             if (
                 latestToken != null
                 && latestToken.AccessToken == request.AccessToken
@@ -52,15 +42,20 @@ namespace Invoicer.Features.Auth.Login
             )
             {
                 user.LoginAttempts = 0;
+                latestToken.Used = true;
                 await _dbContext.SaveChangesAsync(cancellationToken);
                 var token = _tokenService.GenerateToken(user.Id, user.Email);
                 return new LoginResponse(token);
             }
-            else
+
+            user.LoginAttempts++;
+            if (user.LoginAttempts >= 5)
             {
-                await _dbContext.SaveChangesAsync(cancellationToken);
-                throw new UnauthorizedException();
+                user.IsLocked = true;
+                user.LockoutEnd = DateTime.UtcNow.AddMinutes(15);
             }
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            throw new UnauthorizedException();
         }
     }
 }

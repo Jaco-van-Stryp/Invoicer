@@ -1,8 +1,7 @@
-﻿namespace Invoicer.Features.Auth.Login
+﻿using Invoicer.Infrastructure.ExceptionHandling;
+
+namespace Invoicer.Features.Auth.Login
 {
-    public class UnauthorizedException : Exception
-    {
-        public UnauthorizedException()
-            : base("Invalid email or password.") { }
-    }
+    public class UnauthorizedException()
+        : ApiException("Invalid email or password.", StatusCodes.Status401Unauthorized);
 }
