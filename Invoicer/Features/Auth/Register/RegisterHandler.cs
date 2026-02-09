@@ -1,0 +1,49 @@
+﻿using Invoicer.Domain.Data;
+using Invoicer.Domain.Entities;
+using Invoicer.Features.Auth.GetAccessToken;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+
+namespace Invoicer.Features.Auth.Register
+{
+    public class RegisterHandler(AppDbContext _dbContext, ISender _sender)
+        : IRequestHandler<RegisterCommand, RegisterResponse>
+    {
+        public async Task<RegisterResponse> Handle(
+            RegisterCommand request,
+            CancellationToken cancellationToken
+        )
+        {
+            var existingUser = await _dbContext.Users
+                .FirstOrDefaultAsync(x => x.Email == request.Email, cancellationToken);
+
+            if (existingUser == null)
+            {
+                var user = new User
+                {
+                    Email = request.Email,
+                    AuthTokens = new List<AuthToken>(),
+                    Companies = new List<Company>(),
+                    LoginAttempts = 0,
+                    IsLocked = false,
+                    LockoutEnd = null,
+                };
+                _dbContext.Users.Add(user);
+                await _dbContext.SaveChangesAsync(cancellationToken);
+            }
+            else if (existingUser.IsLocked
+                && existingUser.LockoutEnd.HasValue
+                && existingUser.LockoutEnd.Value > DateTime.UtcNow)
+            {
+                // User is locked — return success to avoid email enumeration, but don't send token
+                return new RegisterResponse(Guid.NewGuid());
+            }
+
+            var accessTokenKey = await _sender.Send(
+                new GetAccessTokenQuery(request.Email),
+                cancellationToken
+            );
+            return new RegisterResponse(accessTokenKey.AccessTokenKey);
+        }
+    }
+}
