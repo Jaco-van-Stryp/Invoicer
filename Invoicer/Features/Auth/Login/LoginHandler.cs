@@ -1,12 +1,18 @@
 ﻿using Invoicer.Domain.Data;
+using Invoicer.Infrastructure.EmailService;
+using Invoicer.Infrastructure.EmailTemplateService;
 using Invoicer.Infrastructure.JWTTokenService;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Invoicer.Features.Auth.Login
 {
-    public class LoginHandler(IJwtTokenService _tokenService, AppDbContext _dbContext)
-        : IRequestHandler<LoginCommand, LoginResponse>
+    public class LoginHandler(
+        IJwtTokenService _tokenService,
+        AppDbContext _dbContext,
+        IEmailService _emailService,
+        IEmailTemplateService _emailTemplateService
+    ) : IRequestHandler<LoginCommand, LoginResponse>
     {
         public async Task<LoginResponse> Handle(
             LoginCommand request,
@@ -52,7 +58,17 @@ namespace Invoicer.Features.Auth.Login
             if (user.LoginAttempts >= 5)
             {
                 user.IsLocked = true;
+                user.LoginAttempts = 0;
                 user.LockoutEnd = DateTime.UtcNow.AddMinutes(15);
+                var htmlBody = _emailTemplateService.RenderTemplate(
+                    EmailTemplateName.AccountLockedOut,
+                    new Dictionary<string, string> { ["LockoutMinutes"] = "15" }
+                );
+                await _emailService.SendEmailAsync(
+                    user.Email,
+                    "Security Alert - Account Locked.",
+                    htmlBody
+                );
             }
             await _dbContext.SaveChangesAsync(cancellationToken);
             throw new UnauthorizedException();

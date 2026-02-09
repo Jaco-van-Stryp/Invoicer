@@ -2,13 +2,17 @@ using System.Security.Cryptography;
 using Invoicer.Domain.Data;
 using Invoicer.Domain.Entities;
 using Invoicer.Infrastructure.EmailService;
+using Invoicer.Infrastructure.EmailTemplateService;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Invoicer.Features.Auth.GetAccessToken
 {
-    public class GetAccessTokenHandler(IEmailService _emailService, AppDbContext _dbContext)
-        : IRequestHandler<GetAccessTokenQuery, GetAccessTokenResponse>
+    public class GetAccessTokenHandler(
+        IEmailService _emailService,
+        IEmailTemplateService _emailTemplateService,
+        AppDbContext _dbContext
+    ) : IRequestHandler<GetAccessTokenQuery, GetAccessTokenResponse>
     {
         public async Task<GetAccessTokenResponse> Handle(
             GetAccessTokenQuery request,
@@ -72,10 +76,15 @@ namespace Invoicer.Features.Auth.GetAccessToken
 
             try
             {
+                var htmlBody = _emailTemplateService.RenderTemplate(
+                    EmailTemplateName.AccessToken,
+                    new Dictionary<string, string> { ["AccessToken"] = secureCode }
+                );
+
                 await _emailService.SendEmailAsync(
                     user.Email,
-                    "Invoicer - Your Access Token",
-                    $"Your access token is: {secureCode}. Please enter it in the application to login"
+                    "Invoicer - Your Access Code",
+                    htmlBody
                 );
             }
             catch

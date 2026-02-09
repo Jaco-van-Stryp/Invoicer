@@ -3,8 +3,10 @@ using System.Text;
 using Invoicer.Domain.Data;
 using Invoicer.Features.Auth;
 using Invoicer.Infrastructure.EmailService;
+using Invoicer.Infrastructure.EmailTemplateService;
 using Invoicer.Infrastructure.ExceptionHandling;
 using Invoicer.Infrastructure.JWTTokenService;
+using Invoicer.Infrastructure.CurrentUserService;
 using Invoicer.Infrastructure.Validation;
 using Amazon.SimpleEmailV2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -103,8 +105,11 @@ builder.Services.AddSingleton<IAmazonSimpleEmailServiceV2>(_ =>
 });
 builder.Services.Configure<SesOptions>(builder.Configuration.GetSection("SES"));
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddSingleton<IEmailTemplateService, EmailTemplateService>();
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddScoped<IJwtTokenService, JtwTokenService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 var app = builder.Build();
 
