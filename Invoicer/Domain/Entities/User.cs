@@ -1,4 +1,4 @@
-﻿namespace Invoicer.Domain.Entities
+namespace Invoicer.Domain.Entities
 {
     public class User
     {
@@ -10,5 +10,7 @@
         public required int LoginAttempts { get; set; } = 0;
         public required bool IsLocked { get; set; } = false;
         public required DateTime? LockoutEnd { get; set; } = null;
+
+        public uint RowVersion { get; set; }
     }
 }

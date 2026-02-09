@@ -5,6 +5,8 @@ using Invoicer.Features.Auth;
 using Invoicer.Infrastructure.EmailService;
 using Invoicer.Infrastructure.ExceptionHandling;
 using Invoicer.Infrastructure.JWTTokenService;
+using Invoicer.Infrastructure.Validation;
+using Amazon.SimpleEmailV2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -87,11 +89,19 @@ builder.Services.AddCors(options =>
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
+    cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
 });
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
+var sesOptions = builder.Configuration.GetSection("SES").Get<SesOptions>() ?? new SesOptions();
+builder.Services.AddSingleton<IAmazonSimpleEmailServiceV2>(_ =>
+{
+    var region = Amazon.RegionEndpoint.GetBySystemName(sesOptions.Region);
+    return new Amazon.SimpleEmailV2.AmazonSimpleEmailServiceV2Client(region);
+});
+builder.Services.Configure<SesOptions>(builder.Configuration.GetSection("SES"));
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddScoped<IJwtTokenService, JtwTokenService>();
@@ -107,9 +117,10 @@ if (app.Environment.IsDevelopment())
 app.UseExceptionHandler();
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 // Map API Endpoints
 app.MapAuthEndpoints();
-
-app.UseAuthorization();
 
 app.Run();

@@ -15,5 +15,18 @@ namespace Invoicer.Domain.Data
         public DbSet<ProductInvoice> ProductInvoices { get; set; }
         public DbSet<AuthToken> AuthTokens { get; set; }
         public DbSet<User> Users { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+
+            modelBuilder.Entity<User>()
+                .Property(u => u.RowVersion)
+                .IsRowVersion();
+        }
     }
 }

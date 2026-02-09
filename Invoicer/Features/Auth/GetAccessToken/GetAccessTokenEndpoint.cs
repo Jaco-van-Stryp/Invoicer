@@ -9,12 +9,13 @@ namespace Invoicer.Features.Auth.GetAccessToken
         )
         {
             app.MapPost(
-                "GetAccessToken",
-                async (GetAccessTokenQuery query, ISender sender) =>
-                {
-                    return TypedResults.Ok(await sender.Send(query));
-                }
-            );
+                    "GetAccessToken",
+                    async (GetAccessTokenQuery query, ISender sender) =>
+                    {
+                        return TypedResults.Ok(await sender.Send(query));
+                    }
+                )
+                .WithName("GetAccessToken");
             return app;
         }
     }

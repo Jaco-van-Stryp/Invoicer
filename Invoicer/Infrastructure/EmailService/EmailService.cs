@@ -1,5 +1,4 @@
-﻿using Amazon;
-using Amazon.SimpleEmailV2;
+﻿using Amazon.SimpleEmailV2;
 using Amazon.SimpleEmailV2.Model;
 using Microsoft.Extensions.Options;
 using Serilog;
@@ -11,12 +10,10 @@ namespace Invoicer.Infrastructure.EmailService
         private readonly IAmazonSimpleEmailServiceV2 _sesClient;
         private readonly SesOptions _options;
 
-        public EmailService(IOptions<SesOptions> options)
+        public EmailService(IAmazonSimpleEmailServiceV2 sesClient, IOptions<SesOptions> options)
         {
+            _sesClient = sesClient;
             _options = options.Value;
-
-            var region = RegionEndpoint.GetBySystemName(_options.Region);
-            _sesClient = new AmazonSimpleEmailServiceV2Client(region);
         }
 
         public async Task<bool> SendEmailAsync(
@@ -60,8 +57,8 @@ namespace Invoicer.Infrastructure.EmailService
             }
             catch (Exception ex)
             {
-                Log.Warning("Failed to send email to " + toEmail + " " + ex);
-                return false;
+                Log.Warning(ex, "Failed to send email");
+                throw new EmailException();
             }
         }
     }

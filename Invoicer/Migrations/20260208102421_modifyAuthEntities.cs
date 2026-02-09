@@ -36,7 +36,7 @@ namespace Invoicer.Migrations
                 table: "AuthTokens",
                 type: "timestamp with time zone",
                 nullable: false,
-                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
+                defaultValueSql: "CURRENT_TIMESTAMP");
 
             migrationBuilder.AddColumn<bool>(
                 name: "Used",

@@ -28,10 +28,21 @@ namespace Invoicer.Features.Auth.Register
                     IsLocked = false,
                     LockoutEnd = null,
                 };
-                _dbContext.Users.Add(user);
-                await _dbContext.SaveChangesAsync(cancellationToken);
+
+                try
+                {
+                    _dbContext.Users.Add(user);
+                    await _dbContext.SaveChangesAsync(cancellationToken);
+                }
+                catch (DbUpdateException)
+                {
+                    _dbContext.Entry(user).State = EntityState.Detached;
+                    existingUser = await _dbContext.Users
+                        .FirstOrDefaultAsync(x => x.Email == request.Email, cancellationToken);
+                }
             }
-            else if (existingUser.IsLocked
+
+            if (existingUser != null && existingUser.IsLocked
                 && existingUser.LockoutEnd.HasValue
                 && existingUser.LockoutEnd.Value > DateTime.UtcNow)
             {

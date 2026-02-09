@@ -36,7 +36,6 @@ namespace Invoicer.Features.Auth.GetAccessToken
                 user.IsLocked = false;
                 user.LockoutEnd = null;
                 user.LoginAttempts = 0;
-                await _dbContext.SaveChangesAsync(cancellationToken);
             }
 
             // Each token request counts as a login attempt
@@ -71,11 +70,21 @@ namespace Invoicer.Features.Auth.GetAccessToken
             await _dbContext.AuthTokens.AddAsync(authToken, cancellationToken);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
-            await _emailService.SendEmailAsync(
-                user.Email,
-                "Invoicer - Your Access Token",
-                $"Your access token is: {secureCode}. Please enter it in the application to login"
-            );
+            try
+            {
+                await _emailService.SendEmailAsync(
+                    user.Email,
+                    "Invoicer - Your Access Token",
+                    $"Your access token is: {secureCode}. Please enter it in the application to login"
+                );
+            }
+            catch
+            {
+                _dbContext.AuthTokens.Remove(authToken);
+                await _dbContext.SaveChangesAsync(cancellationToken);
+                throw;
+            }
+
             return new GetAccessTokenResponse(authToken.Id);
         }
 
