@@ -1,0 +1,21 @@
+variables:
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+  DOTNET_NOLOGO: "1"
+  NUGET_PACKAGES: "$CI_PROJECT_DIR/.nuget"
+
+cache:
+  key: dotnet-nuget
+  paths:
+    - .nuget/
+
+build-and-test:
+  image: mcr.microsoft.com/dotnet/sdk:10.0
+  services:
+    - docker:27-dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+    TESTCONTAINERS_HOST_OVERRIDE: docker
+  script:
+    - dotnet build --configuration Release
+    - dotnet test Invoicer.Tests --configuration Release --no-build

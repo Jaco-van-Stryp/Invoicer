@@ -15,13 +15,6 @@ using NSubstitute;
 
 namespace Invoicer.Tests.Infrastructure;
 
-/// <summary>
-/// Custom WebApplicationFactory that replaces the real PostgreSQL connection
-/// with the Testcontainers PostgreSQL database.
-///
-/// It also adds a fake authentication scheme so tests can easily set
-/// the authenticated user without needing real JWT tokens.
-/// </summary>
 public class InvoicerApiFactory : WebApplicationFactory<Program>
 {
     private readonly DatabaseFixture _db;
@@ -36,41 +29,39 @@ public class InvoicerApiFactory : WebApplicationFactory<Program>
         builder.ConfigureTestServices(services =>
         {
             // Remove the real DbContext registration
-            var dbDescriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
+            var dbDescriptor = services.SingleOrDefault(d =>
+                d.ServiceType == typeof(DbContextOptions<AppDbContext>)
+            );
             if (dbDescriptor != null)
                 services.Remove(dbDescriptor);
 
             // Register DbContext pointing at the test container
-            services.AddDbContext<AppDbContext>(options =>
-                options.UseNpgsql(_db.ConnectionString));
+            services.AddDbContext<AppDbContext>(options => options.UseNpgsql(_db.ConnectionString));
 
             // Replace AWS SES with a mock (we don't send real emails in tests)
-            var sesDescriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(IAmazonSimpleEmailServiceV2));
+            var sesDescriptor = services.SingleOrDefault(d =>
+                d.ServiceType == typeof(IAmazonSimpleEmailServiceV2)
+            );
             if (sesDescriptor != null)
                 services.Remove(sesDescriptor);
             services.AddSingleton(Substitute.For<IAmazonSimpleEmailServiceV2>());
 
-            var emailDescriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(IEmailService));
+            var emailDescriptor = services.SingleOrDefault(d =>
+                d.ServiceType == typeof(IEmailService)
+            );
             if (emailDescriptor != null)
                 services.Remove(emailDescriptor);
             services.AddScoped(_ => Substitute.For<IEmailService>());
 
             // Add fake authentication scheme for testing
-            services.AddAuthentication("TestScheme")
-                .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
-                    "TestScheme", _ => { });
+            services
+                .AddAuthentication("TestScheme")
+                .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("TestScheme", _ => { });
         });
 
         builder.UseEnvironment("Development");
     }
 
-    /// <summary>
-    /// Creates an HttpClient that sends requests as an authenticated user.
-    /// The userId and email are passed via headers and picked up by TestAuthHandler.
-    /// </summary>
     public HttpClient CreateAuthenticatedClient(Guid userId, string email = "test@test.com")
     {
         var client = CreateClient();
@@ -80,16 +71,13 @@ public class InvoicerApiFactory : WebApplicationFactory<Program>
     }
 }
 
-/// <summary>
-/// Fake authentication handler for tests. Reads user identity from custom headers.
-/// If no X-Test-UserId header is present, the request is unauthenticated (401).
-/// </summary>
 public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
     public TestAuthHandler(
         IOptionsMonitor<AuthenticationSchemeOptions> options,
         ILoggerFactory logger,
-        UrlEncoder encoder)
+        UrlEncoder encoder
+    )
         : base(options, logger, encoder) { }
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()

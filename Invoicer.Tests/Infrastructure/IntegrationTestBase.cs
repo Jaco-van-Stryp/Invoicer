@@ -19,10 +19,6 @@ public abstract class IntegrationTestBase : IAsyncLifetime
         _db = db;
     }
 
-    /// <summary>
-    /// Configures the mocked ICurrentUserService to return the given user identity.
-    /// Call this in your test's Arrange phase.
-    /// </summary>
     protected void SetCurrentUser(Guid userId, string email = "test@test.com")
     {
         CurrentUserService.UserId.Returns(userId);

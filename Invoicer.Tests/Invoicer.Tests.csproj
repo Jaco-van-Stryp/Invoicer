@@ -29,4 +29,8 @@
     <ProjectReference Include="..\Invoicer\Invoicer.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Company\GetAllCompanies\" />
+  </ItemGroup>
+
 </Project>
