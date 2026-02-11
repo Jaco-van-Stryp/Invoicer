@@ -55,6 +55,7 @@ namespace Invoicer.Features.Company.CreateCompany
             await _dbContext.Companies.AddAsync(company, cancellationToken);
             await _dbContext.SaveChangesAsync(cancellationToken);
             var response = new CreateCompanyResponse(company.Id);
+            // TODO - send emails here.
             return response;
         }
     }

@@ -14,7 +14,8 @@ namespace Invoicer.Features.Company.CreateCompany
                         return TypedResults.Ok(result);
                     }
                 )
-                .WithName("CreateCompany");
+                .WithName("CreateCompany")
+                .RequireAuthorization();
             return app;
         }
     }

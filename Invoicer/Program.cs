@@ -2,6 +2,7 @@ using System;
 using System.Text;
 using Invoicer.Domain.Data;
 using Invoicer.Features.Auth;
+using Invoicer.Features.Company;
 using Invoicer.Infrastructure.EmailService;
 using Invoicer.Infrastructure.EmailTemplateService;
 using Invoicer.Infrastructure.ExceptionHandling;
@@ -127,5 +128,6 @@ app.UseAuthorization();
 
 // Map API Endpoints
 app.MapAuthEndpoints();
+app.MapCompanyEndpoints();
 
 app.Run();

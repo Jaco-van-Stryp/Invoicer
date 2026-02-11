@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aadddbde-ff3d-44c7-8b88-dcbadbb68055</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <InternalsVisibleTo>Invoicer.Tests</InternalsVisibleTo>
   </PropertyGroup>
 
   <ItemGroup>

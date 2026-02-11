@@ -13,10 +13,11 @@ namespace Invoicer.Infrastructure.Validation
             CancellationToken cancellationToken
         )
         {
-            var context = new ValidationContext(request);
+            object instance = request;
+            var context = new ValidationContext(instance);
             var results = new List<ValidationResult>();
 
-            if (!Validator.TryValidateObject(request, context, results, validateAllProperties: true))
+            if (!Validator.TryValidateObject(instance, context, results, validateAllProperties: true))
             {
                 var errors = string.Join("; ", results.Select(r => r.ErrorMessage));
                 throw new ValidationException(errors);
