@@ -1,4 +1,5 @@
 ﻿using Invoicer.Domain.Data;
+using Invoicer.Domain.Exceptions;
 using Invoicer.Infrastructure.EmailService;
 using Invoicer.Infrastructure.EmailTemplateService;
 using Invoicer.Infrastructure.JWTTokenService;
@@ -24,13 +25,13 @@ namespace Invoicer.Features.Auth.Login
                 .FirstOrDefaultAsync(x => x.Email == request.Email, cancellationToken);
             if (user == null)
             {
-                throw new UnauthorizedException();
+                throw new UserNotFoundException();
             }
             if (user.IsLocked)
             {
                 if (user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTime.UtcNow)
                 {
-                    throw new UnauthorizedException();
+                    throw new InvalidCredentialsException();
                 }
 
                 user.IsLocked = false;
@@ -71,7 +72,7 @@ namespace Invoicer.Features.Auth.Login
                 );
             }
             await _dbContext.SaveChangesAsync(cancellationToken);
-            throw new UnauthorizedException();
+            throw new InvalidCredentialsException();
         }
     }
 }

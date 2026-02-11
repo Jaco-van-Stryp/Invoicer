@@ -36,10 +36,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Domain\Exceptions\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Include="Infrastructure\EmailTemplateService\Templates\*.html" />
   </ItemGroup>
 

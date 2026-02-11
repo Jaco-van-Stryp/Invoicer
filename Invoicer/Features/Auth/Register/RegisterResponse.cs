@@ -1,4 +1,4 @@
 ﻿namespace Invoicer.Features.Auth.Register
 {
-    public record RegisterResponse(Guid AccessTokenKey);
+    public record struct RegisterResponse(Guid AccessTokenKey);
 }
