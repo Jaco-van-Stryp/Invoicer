@@ -35,7 +35,7 @@ public class GetAllCompaniesEndpointTests(DatabaseFixture db) : FunctionalTestBa
             PaymentDetails = "Bank: List",
             LogoUrl = "https://list.com/logo.png",
         };
-        await client.PostAsJsonAsync("/company/CreateCompany", createPayload);
+        await client.PostAsJsonAsync("/company/create-company", createPayload);
 
         // Act
         var response = await client.GetAsync("/company/get-all-companies");

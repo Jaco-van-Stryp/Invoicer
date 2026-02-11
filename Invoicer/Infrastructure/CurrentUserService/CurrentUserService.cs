@@ -15,10 +15,15 @@ namespace Invoicer.Infrastructure.CurrentUserService
             _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Email)
             ?? throw new UnauthorizedAccessException("User is not authenticated.");
 
-        public Guid UserId =>
-            Guid.Parse(
-                _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier)
-                ?? throw new UnauthorizedAccessException("User is not authenticated.")
-            );
+        public Guid UserId
+        {
+            get
+            {
+                var claim = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(claim) || !Guid.TryParse(claim, out var userId))
+                    throw new UnauthorizedAccessException("User is not authenticated.");
+                return userId;
+            }
+        }
     }
 }

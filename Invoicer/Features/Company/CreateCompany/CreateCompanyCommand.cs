@@ -1,9 +1,10 @@
-﻿using MediatR;
+﻿using System.ComponentModel.DataAnnotations;
+using MediatR;
 
 namespace Invoicer.Features.Company.CreateCompany
 {
     public readonly record struct CreateCompanyCommand(
-        string Name,
+        [property: Required] string Name,
         string? Address,
         string? TaxNumber,
         string? PhoneNumber,

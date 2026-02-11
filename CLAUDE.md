@@ -9,10 +9,9 @@ dotnet build                                          # Build the project
 dotnet run --project Invoicer                         # Run the API
 dotnet ef migrations add <Name> --project Invoicer    # Add EF Core migration
 dotnet ef database update --project Invoicer          # Apply migrations
-```
-
 dotnet test Invoicer.Tests                             # Run all tests (requires Docker)
 dotnet test Invoicer.Tests --filter "ClassName"         # Run specific test class
+```
 
 ## Architecture
 
@@ -59,7 +58,7 @@ Request validation uses `System.ComponentModel.DataAnnotations` attributes on co
 ### Authentication
 
 Passwordless email-based flow:
-1. `POST /auth/GetAccessToken` — sends a 6-digit code via SES, returns an `AccessTokenKey` (Guid)
+1. `POST /auth/get-access-token` — sends a 6-digit code via SES, returns an `AccessTokenKey` (Guid)
 2. `POST /auth/login` — validates code + key, returns a JWT (8-hour expiry)
 3. Endpoints requiring auth use `.RequireAuthorization()`
 4. `CurrentUserService` resolves the authenticated user's ID/email from JWT claims

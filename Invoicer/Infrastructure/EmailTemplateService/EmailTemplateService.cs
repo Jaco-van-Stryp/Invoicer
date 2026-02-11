@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Net;
 using System.Reflection;
 
 namespace Invoicer.Infrastructure.EmailTemplateService
@@ -8,6 +9,12 @@ namespace Invoicer.Infrastructure.EmailTemplateService
         private readonly Assembly _assembly = typeof(EmailTemplateService).Assembly;
         private readonly string _resourcePrefix = "Invoicer.Infrastructure.EmailTemplateService.Templates";
         private readonly ConcurrentDictionary<string, string> _cache = new();
+
+        // Placeholders whose values contain pre-rendered HTML and must not be encoded
+        private static readonly HashSet<string> RawHtmlPlaceholders = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "InvoiceLineItems",
+        };
 
         public string RenderTemplate(EmailTemplateName templateName, Dictionary<string, string> placeholders)
         {
@@ -35,11 +42,14 @@ namespace Invoicer.Infrastructure.EmailTemplateService
             });
         }
 
+        // HTML-encodes placeholder values before substitution to prevent XSS.
+        // Placeholders listed in RawHtmlPlaceholders are inserted without encoding.
         private static string ReplacePlaceholders(string template, Dictionary<string, string> placeholders)
         {
             foreach (var (key, value) in placeholders)
             {
-                template = template.Replace($"{{{{{key}}}}}", value);
+                var encoded = RawHtmlPlaceholders.Contains(key) ? value : WebUtility.HtmlEncode(value);
+                template = template.Replace($"{{{{{key}}}}}", encoded);
             }
 
             return template;

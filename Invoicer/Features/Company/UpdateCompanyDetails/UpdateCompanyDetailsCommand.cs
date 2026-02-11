@@ -1,9 +1,10 @@
-﻿using MediatR;
+﻿using System.ComponentModel.DataAnnotations;
+using MediatR;
 
 namespace Invoicer.Features.Company.UpdateCompanyDetails
 {
     public readonly record struct UpdateCompanyDetailsCommand(
-        Guid CompanyId,
+        [property: Required] Guid CompanyId,
         string? Name,
         string? Address,
         string? TaxNumber,

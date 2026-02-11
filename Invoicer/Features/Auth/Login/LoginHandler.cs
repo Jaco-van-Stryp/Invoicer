@@ -25,7 +25,7 @@ namespace Invoicer.Features.Auth.Login
                 .FirstOrDefaultAsync(x => x.Email == request.Email, cancellationToken);
             if (user == null)
             {
-                throw new UserNotFoundException();
+                throw new InvalidCredentialsException();
             }
             if (user.IsLocked)
             {

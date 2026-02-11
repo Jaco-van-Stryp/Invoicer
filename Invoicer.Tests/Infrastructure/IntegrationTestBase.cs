@@ -19,6 +19,8 @@ public abstract class IntegrationTestBase : IAsyncLifetime
         _db = db;
     }
 
+    protected AppDbContext CreateDbContext() => _db.CreateDbContext();
+
     protected void SetCurrentUser(Guid userId, string email = "test@test.com")
     {
         CurrentUserService.UserId.Returns(userId);

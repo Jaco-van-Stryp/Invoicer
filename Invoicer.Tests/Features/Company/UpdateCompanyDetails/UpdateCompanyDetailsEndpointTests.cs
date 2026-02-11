@@ -36,7 +36,7 @@ public class UpdateCompanyDetailsEndpointTests(DatabaseFixture db) : FunctionalT
             PaymentDetails = "Bank: Old",
             LogoUrl = "https://old.com/logo.png",
         };
-        var createResponse = await client.PostAsJsonAsync("/company/CreateCompany", createPayload);
+        var createResponse = await client.PostAsJsonAsync("/company/create-company", createPayload);
         var created = await createResponse.Content.ReadFromJsonAsync<CreateCompanyResult>();
 
         // Act — patch with updated fields
@@ -86,7 +86,7 @@ public class UpdateCompanyDetailsEndpointTests(DatabaseFixture db) : FunctionalT
         // Arrange — user1 creates a company
         var (client1, user1) = await CreateAuthenticatedUserAsync("user1@test.com");
         var createPayload = new { Name = "User1 Corp" };
-        var createResponse = await client1.PostAsJsonAsync("/company/CreateCompany", createPayload);
+        var createResponse = await client1.PostAsJsonAsync("/company/create-company", createPayload);
         var created = await createResponse.Content.ReadFromJsonAsync<CreateCompanyResult>();
 
         // Arrange — user2 tries to update it

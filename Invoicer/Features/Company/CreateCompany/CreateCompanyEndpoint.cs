@@ -7,7 +7,7 @@ namespace Invoicer.Features.Company.CreateCompany
         public static IEndpointRouteBuilder MapCreateCompanyEndpoint(this IEndpointRouteBuilder app)
         {
             app.MapPost(
-                    "CreateCompany",
+                    "create-company",
                     async (CreateCompanyCommand command, ISender sender) =>
                     {
                         var result = await sender.Send(command);

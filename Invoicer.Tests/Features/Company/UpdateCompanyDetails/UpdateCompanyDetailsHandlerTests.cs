@@ -63,7 +63,8 @@ public class UpdateCompanyDetailsHandlerTests(DatabaseFixture db) : IntegrationT
         // Act
         await handler.Handle(command, CancellationToken.None);
 
-        // Assert
+        // Assert — use fresh context to verify database state
+        DbContext.ChangeTracker.Clear();
         var saved = await DbContext.Companies.FindAsync(company.Id);
         saved.Should().NotBeNull();
         saved!.Name.Should().Be("Updated Corp");
@@ -98,6 +99,7 @@ public class UpdateCompanyDetailsHandlerTests(DatabaseFixture db) : IntegrationT
         await handler.Handle(command, CancellationToken.None);
 
         // Assert — only name should change, everything else stays original
+        DbContext.ChangeTracker.Clear();
         var saved = await DbContext.Companies.FindAsync(company.Id);
         saved.Should().NotBeNull();
         saved!.Name.Should().Be("New Name Only");
@@ -132,6 +134,7 @@ public class UpdateCompanyDetailsHandlerTests(DatabaseFixture db) : IntegrationT
         await handler.Handle(command, CancellationToken.None);
 
         // Assert — everything stays original
+        DbContext.ChangeTracker.Clear();
         var saved = await DbContext.Companies.FindAsync(company.Id);
         saved.Should().NotBeNull();
         saved!.Name.Should().Be("Original Corp");
