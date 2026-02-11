@@ -23,7 +23,7 @@ namespace Invoicer.Features.Auth.Register
                 {
                     Email = request.Email,
                     AuthTokens = new List<AuthToken>(),
-                    Companies = new List<Company>(),
+                    Companies = new List<Domain.Entities.Company>(),
                     LoginAttempts = 0,
                     IsLocked = false,
                     LockoutEnd = null,

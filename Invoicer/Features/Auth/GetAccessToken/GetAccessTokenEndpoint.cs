@@ -9,7 +9,7 @@ namespace Invoicer.Features.Auth.GetAccessToken
         )
         {
             app.MapPost(
-                    "GetAccessToken",
+                    "get-access-token",
                     async (GetAccessTokenQuery query, ISender sender) =>
                     {
                         return TypedResults.Ok(await sender.Send(query));

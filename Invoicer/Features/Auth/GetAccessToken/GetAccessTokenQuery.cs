@@ -2,5 +2,6 @@
 
 namespace Invoicer.Features.Auth.GetAccessToken
 {
-    public record GetAccessTokenQuery(string Email) : IRequest<GetAccessTokenResponse>;
+    public readonly record struct GetAccessTokenQuery(string Email)
+        : IRequest<GetAccessTokenResponse>;
 }

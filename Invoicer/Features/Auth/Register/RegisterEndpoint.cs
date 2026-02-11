@@ -8,7 +8,7 @@ namespace Invoicer.Features.Auth.Register
         public static IEndpointRouteBuilder MapRegisterEndpoint(this IEndpointRouteBuilder app)
         {
             app.MapPost(
-                    "Register",
+                    "register",
                     async (RegisterCommand command, ISender sender) =>
                     {
                         var result = await sender.Send(command);

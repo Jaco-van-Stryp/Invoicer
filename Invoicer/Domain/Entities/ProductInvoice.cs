@@ -9,6 +9,6 @@
         public required Invoice Invoice { get; init; }
         public required Guid CompanyId { get; init; }
         public required Company Company { get; init; }
-        public required int Quantity { get; init; } = 0;
+        public required int Quantity { get; set; } = 0;
     }
 }

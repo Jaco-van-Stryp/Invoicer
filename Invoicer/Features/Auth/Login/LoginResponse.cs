@@ -1,4 +1,4 @@
 ﻿namespace Invoicer.Features.Auth.Login
 {
-    public record LoginResponse(string Token);
+    public record struct LoginResponse(string Token);
 }

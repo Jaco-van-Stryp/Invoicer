@@ -2,6 +2,9 @@
 
 namespace Invoicer.Features.Auth.Login
 {
-    public record LoginCommand(string Email, string AccessToken, Guid AccessTokenKey)
-        : IRequest<LoginResponse>;
+    public readonly record struct LoginCommand(
+        string Email,
+        string AccessToken,
+        Guid AccessTokenKey
+    ) : IRequest<LoginResponse>;
 }

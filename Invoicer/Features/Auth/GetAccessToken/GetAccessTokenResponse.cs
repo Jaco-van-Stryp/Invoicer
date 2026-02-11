@@ -1,4 +1,4 @@
 ﻿namespace Invoicer.Features.Auth.GetAccessToken
 {
-    public record GetAccessTokenResponse(Guid AccessTokenKey);
+    public record struct GetAccessTokenResponse(Guid AccessTokenKey);
 }
