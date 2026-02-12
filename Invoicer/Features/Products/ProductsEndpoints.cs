@@ -1,5 +1,6 @@
 ﻿using Invoicer.Features.Products.CreateProduct;
 using Invoicer.Features.Products.GetAllProducts;
+using Invoicer.Features.Products.UpdateProduct;
 
 namespace Invoicer.Features.Products
 {
@@ -11,6 +12,8 @@ namespace Invoicer.Features.Products
 
             group.MapCreateProductEndpoint();
             group.MapGetAllProductsEndpoint();
+            group.MapUpdateProductEndpoint();
+
             return app;
         }
     }

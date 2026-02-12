@@ -1,4 +1,5 @@
 ﻿using Invoicer.Features.Company.GetAllCompanies;
+using Invoicer.Features.Products.GetProducts;
 using MediatR;
 
 namespace Invoicer.Features.Products.GetAllProducts
@@ -11,9 +12,9 @@ namespace Invoicer.Features.Products.GetAllProducts
         {
             app.MapGet(
                     "get-all-products/{CompanyId}",
-                    async (ISender sender) =>
+                    async (Guid CompanyId, ISender sender) =>
                     {
-                        var query = new GetAllProductsQuery(companyId);
+                        var query = new GetAllProductsQuery(CompanyId);
                         var result = await sender.Send(query);
                         return Results.Ok(result);
                     }
