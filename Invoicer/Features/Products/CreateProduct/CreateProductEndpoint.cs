@@ -13,7 +13,8 @@ namespace Invoicer.Features.Products.CreateProduct
                         return TypedResults.Ok(await sender.Send(command));
                     }
                 )
-                .WithName("CreateProduct");
+                .WithName("CreateProduct")
+                .RequireAuthorization();
             return app;
         }
     }

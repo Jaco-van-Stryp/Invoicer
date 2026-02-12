@@ -1,4 +1,4 @@
-﻿using Invoicer.Domain.Data;
+using Invoicer.Domain.Data;
 using Invoicer.Domain.Exceptions;
 using Invoicer.Infrastructure.CurrentUserService;
 using MediatR;
@@ -17,13 +17,13 @@ namespace Invoicer.Features.Products.DeleteProduct
             var user = await _dbContext
                 .Users.Include(c => c.Companies)
                     .ThenInclude(p => p.Products)
-                .FirstOrDefaultAsync(u => u.Id == userId);
+                .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
             if (user == null)
                 throw new UserNotFoundException();
-            var comapny = user.Companies.FirstOrDefault(c => c.Id == request.CompanyId);
-            if (comapny == null)
+            var company = user.Companies.FirstOrDefault(c => c.Id == request.CompanyId);
+            if (company == null)
                 throw new CompanyNotFoundException();
-            var product = comapny.Products.FirstOrDefault(p => p.Id == request.ProductId);
+            var product = company.Products.FirstOrDefault(p => p.Id == request.ProductId);
             if (product == null)
                 throw new ProductNotFoundException();
             _dbContext.Products.Remove(product);

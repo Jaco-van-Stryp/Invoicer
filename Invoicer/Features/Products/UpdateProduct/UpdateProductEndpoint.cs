@@ -1,5 +1,4 @@
-﻿using Invoicer.Features.Company.UpdateCompanyDetails;
-using MediatR;
+﻿using MediatR;
 
 namespace Invoicer.Features.Products.UpdateProduct
 {

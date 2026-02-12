@@ -1,4 +1,4 @@
-﻿namespace Invoicer.Features.Products.GetProducts
+﻿namespace Invoicer.Features.Products.GetAllProducts
 {
     public record struct GetAllProductsResponse(
         Guid Id,

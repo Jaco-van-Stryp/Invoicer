@@ -1,5 +1,3 @@
-﻿using Invoicer.Features.Company.GetAllCompanies;
-using Invoicer.Features.Products.GetProducts;
 using MediatR;
 
 namespace Invoicer.Features.Products.GetAllProducts

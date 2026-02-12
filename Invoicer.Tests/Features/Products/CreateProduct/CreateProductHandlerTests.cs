@@ -68,7 +68,8 @@ public class CreateProductHandlerTests(DatabaseFixture db) : IntegrationTestBase
         result.ImageUrl.Should().Be("https://test.com/widget.png");
         result.CompanyId.Should().Be(company.Id);
 
-        // Assert — verify persistence
+        // Assert — verify persistence (clear tracker to force DB round-trip)
+        DbContext.ChangeTracker.Clear();
         var saved = await DbContext.Products.FindAsync(result.ProductId);
         saved.Should().NotBeNull();
         saved!.Name.Should().Be("Widget");
@@ -88,17 +89,18 @@ public class CreateProductHandlerTests(DatabaseFixture db) : IntegrationTestBase
 
         // Act
         var result1 = await handler.Handle(
-            new CreateProductCommand(company.Id, "Product A", 10m, "Desc A", ""),
+            new CreateProductCommand(company.Id, "Product A", 10m, "Desc A", null),
             CancellationToken.None
         );
         var result2 = await handler.Handle(
-            new CreateProductCommand(company.Id, "Product B", 20m, "Desc B", ""),
+            new CreateProductCommand(company.Id, "Product B", 20m, "Desc B", null),
             CancellationToken.None
         );
 
         // Assert
         result1.ProductId.Should().NotBe(result2.ProductId);
 
+        DbContext.ChangeTracker.Clear();
         var products = await DbContext.Products
             .Where(p => p.CompanyId == company.Id)
             .ToListAsync();
@@ -118,7 +120,7 @@ public class CreateProductHandlerTests(DatabaseFixture db) : IntegrationTestBase
             Name: "Ghost Product",
             Price: 10m,
             Description: "Should fail",
-            ImageUrl: ""
+            ImageUrl: null
         );
 
         // Act & Assert
@@ -151,7 +153,7 @@ public class CreateProductHandlerTests(DatabaseFixture db) : IntegrationTestBase
             Name: "Orphan Product",
             Price: 10m,
             Description: "No company",
-            ImageUrl: ""
+            ImageUrl: null
         );
 
         // Act & Assert
@@ -186,7 +188,7 @@ public class CreateProductHandlerTests(DatabaseFixture db) : IntegrationTestBase
             Name: "Hijacked Product",
             Price: 10m,
             Description: "Not my company",
-            ImageUrl: ""
+            ImageUrl: null
         );
 
         // Act & Assert

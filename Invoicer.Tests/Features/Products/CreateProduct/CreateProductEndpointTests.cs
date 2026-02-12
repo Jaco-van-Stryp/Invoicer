@@ -28,6 +28,25 @@ public class CreateProductEndpointTests(DatabaseFixture db) : FunctionalTestBase
     }
 
     [Fact]
+    public async Task CreateProduct_Unauthenticated_Returns401()
+    {
+        // Arrange
+        var payload = new
+        {
+            CompanyId = Guid.NewGuid(),
+            Name = "Should Not Work",
+            Price = 10m,
+            Description = "Nope",
+        };
+
+        // Act
+        var response = await Client.PostAsJsonAsync("/product/create-product", payload);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
     public async Task CreateProduct_Authenticated_Returns200WithProduct()
     {
         // Arrange
@@ -50,7 +69,8 @@ public class CreateProductEndpointTests(DatabaseFixture db) : FunctionalTestBase
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var result = await response.Content.ReadFromJsonAsync<CreateProductResponse>();
-        result.ProductId.Should().NotBeEmpty();
+        result.Should().NotBeNull();
+        result!.ProductId.Should().NotBeEmpty();
         result.Name.Should().Be("Widget");
         result.Price.Should().Be(29.99m);
 
@@ -74,7 +94,6 @@ public class CreateProductEndpointTests(DatabaseFixture db) : FunctionalTestBase
             Name = "Orphan Product",
             Price = 10m,
             Description = "No company",
-            ImageUrl = "",
         };
 
         // Act

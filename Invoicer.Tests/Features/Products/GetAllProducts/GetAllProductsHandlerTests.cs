@@ -2,7 +2,6 @@ using FluentAssertions;
 using Invoicer.Domain.Entities;
 using Invoicer.Domain.Exceptions;
 using global::Invoicer.Features.Products.GetAllProducts;
-using global::Invoicer.Features.Products.GetProducts;
 using Invoicer.Tests.Infrastructure;
 
 namespace Invoicer.Tests.Features.Products.GetAllProducts;

@@ -3,7 +3,6 @@ using System.Net.Http.Json;
 using FluentAssertions;
 using global::Invoicer.Features.Products.CreateProduct;
 using global::Invoicer.Features.Products.GetAllProducts;
-using global::Invoicer.Features.Products.GetProducts;
 using Invoicer.Tests.Infrastructure;
 
 namespace Invoicer.Tests.Features.Products.GetAllProducts;

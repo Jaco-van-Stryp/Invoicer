@@ -4,7 +4,7 @@ namespace Invoicer.Features.Products.DeleteProduct
 {
     public static class DeleteProductEndpoint
     {
-        public static IEndpointRouteBuilder MapDeleteProduct(this IEndpointRouteBuilder app)
+        public static IEndpointRouteBuilder MapDeleteProductEndpoint(this IEndpointRouteBuilder app)
         {
             app.MapDelete(
                     "delete-product/{CompanyId}/{ProductId}",

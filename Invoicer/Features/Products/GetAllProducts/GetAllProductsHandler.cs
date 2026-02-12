@@ -1,6 +1,5 @@
 ﻿using Invoicer.Domain.Data;
 using Invoicer.Domain.Exceptions;
-using Invoicer.Features.Products.GetProducts;
 using Invoicer.Infrastructure.CurrentUserService;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

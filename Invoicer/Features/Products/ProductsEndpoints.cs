@@ -14,7 +14,7 @@ namespace Invoicer.Features.Products
             group.MapCreateProductEndpoint();
             group.MapGetAllProductsEndpoint();
             group.MapUpdateProductEndpoint();
-            group.MapDeleteProduct();
+            group.MapDeleteProductEndpoint();
 
             return app;
         }
