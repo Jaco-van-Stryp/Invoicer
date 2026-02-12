@@ -1,4 +1,5 @@
 ﻿using Invoicer.Features.Products.CreateProduct;
+using Invoicer.Features.Products.DeleteProduct;
 using Invoicer.Features.Products.GetAllProducts;
 using Invoicer.Features.Products.UpdateProduct;
 
@@ -13,6 +14,7 @@ namespace Invoicer.Features.Products
             group.MapCreateProductEndpoint();
             group.MapGetAllProductsEndpoint();
             group.MapUpdateProductEndpoint();
+            group.MapDeleteProduct();
 
             return app;
         }
