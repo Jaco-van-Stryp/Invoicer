@@ -13,4 +13,6 @@
         public required Company Company { get; init; }
         public required Guid CompanyId { get; init; }
     }
+
+    // TODO - later, create a payments received table to track payments against invoices
 }
