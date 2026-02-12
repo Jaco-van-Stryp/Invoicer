@@ -35,6 +35,10 @@ namespace Invoicer.Features.Products.CreateProduct
                 Name = request.Name,
                 Price = request.Price,
             };
+
+            await _dbContext.Products.AddAsync(product, cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+
             var response = new CreateProductResponse
             {
                 CompanyId = product.CompanyId,
@@ -44,9 +48,6 @@ namespace Invoicer.Features.Products.CreateProduct
                 Price = product.Price,
                 ProductId = product.Id,
             };
-
-            await _dbContext.Products.AddAsync(product, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
             return response;
         }
     }
