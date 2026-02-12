@@ -1,15 +1,16 @@
 using System;
 using System.Text;
+using Amazon.SimpleEmailV2;
 using Invoicer.Domain.Data;
 using Invoicer.Features.Auth;
 using Invoicer.Features.Company;
+using Invoicer.Features.Products;
+using Invoicer.Infrastructure.CurrentUserService;
 using Invoicer.Infrastructure.EmailService;
 using Invoicer.Infrastructure.EmailTemplateService;
 using Invoicer.Infrastructure.ExceptionHandling;
 using Invoicer.Infrastructure.JWTTokenService;
-using Invoicer.Infrastructure.CurrentUserService;
 using Invoicer.Infrastructure.Validation;
-using Amazon.SimpleEmailV2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -129,5 +130,6 @@ app.UseAuthorization();
 // Map API Endpoints
 app.MapAuthEndpoints();
 app.MapCompanyEndpoints();
+app.MapProductEndpoints();
 
 app.Run();

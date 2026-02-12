@@ -12,5 +12,8 @@
         public required string LogoUrl { get; set; }
         public required Guid UserId { get; init; }
         public required User User { get; init; } // In the future we could set up many to many here
+        public ICollection<Product> Products { get; init; } = new List<Product>();
+        public ICollection<Invoice> Invoices { get; init; } = new List<Invoice>();
+        public ICollection<Client> Clients { get; init; } = new List<Client>();
     }
 }
