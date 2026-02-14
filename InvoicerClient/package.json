@@ -7,6 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "generate": "openapi-generator-cli generate -i http://localhost:5244/swagger/v1/swagger.json -g typescript-angular -o src/app/api --additional-properties=ngVersion=21.0.0,providedInRoot=true,serviceSuffix=Service",
     "serve:ssr:InvoicerClient": "node dist/InvoicerClient/server/server.mjs"
   },
   "prettier": {

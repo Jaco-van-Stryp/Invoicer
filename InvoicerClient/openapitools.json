@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/@openapitools/openapi-generator-cli/config.schema.json",
+  "spaces": 2,
+  "generator-cli": {
+    "version": "7.10.0",
+    "generators": {
+      "typescript-angular": {
+        "generatorName": "typescript-angular",
+        "output": "src/app/api",
+        "glob": "http://localhost:5244/swagger/v1/swagger.json",
+        "additionalProperties": {
+          "npmName": "api-client",
+          "npmVersion": "1.0.0",
+          "ngVersion": "21.0.0",
+          "providedInRoot": true,
+          "serviceSuffix": "Service",
+          "fileNaming": "kebab-case"
+        }
+      }
+    }
+  }
+}
