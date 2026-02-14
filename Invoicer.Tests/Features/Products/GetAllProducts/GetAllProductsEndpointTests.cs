@@ -22,7 +22,7 @@ public class GetAllProductsEndpointTests(DatabaseFixture db) : FunctionalTestBas
             PaymentDetails = "Bank: Test",
             LogoUrl = "https://test.com/logo.png",
         };
-        var response = await client.PostAsJsonAsync("/company/create-company", payload);
+        var response = await client.PostAsJsonAsync("/api/company/create-company", payload);
         var result = await response.Content.ReadFromJsonAsync<CompanyResult>();
         return result!.Id;
     }
@@ -37,7 +37,7 @@ public class GetAllProductsEndpointTests(DatabaseFixture db) : FunctionalTestBas
             Description = $"Description for {name}",
             ImageUrl = $"https://test.com/{name.ToLower()}.png",
         };
-        await client.PostAsJsonAsync("/product/create-product", payload);
+        await client.PostAsJsonAsync("/api/product/create-product", payload);
     }
 
     [Fact]

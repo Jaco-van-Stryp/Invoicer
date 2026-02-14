@@ -22,7 +22,7 @@ public class CreateProductEndpointTests(DatabaseFixture db) : FunctionalTestBase
             PaymentDetails = "Bank: Test",
             LogoUrl = "https://test.com/logo.png",
         };
-        var response = await client.PostAsJsonAsync("/company/create-company", payload);
+        var response = await client.PostAsJsonAsync("/api/company/create-company", payload);
         var result = await response.Content.ReadFromJsonAsync<CompanyResult>();
         return result!.Id;
     }
@@ -40,7 +40,7 @@ public class CreateProductEndpointTests(DatabaseFixture db) : FunctionalTestBase
         };
 
         // Act
-        var response = await Client.PostAsJsonAsync("/product/create-product", payload);
+        var response = await Client.PostAsJsonAsync("/api/product/create-product", payload);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -63,7 +63,7 @@ public class CreateProductEndpointTests(DatabaseFixture db) : FunctionalTestBase
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/product/create-product", payload);
+        var response = await client.PostAsJsonAsync("/api/product/create-product", payload);
 
         // Assert — HTTP response
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -97,7 +97,7 @@ public class CreateProductEndpointTests(DatabaseFixture db) : FunctionalTestBase
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/product/create-product", payload);
+        var response = await client.PostAsJsonAsync("/api/product/create-product", payload);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);

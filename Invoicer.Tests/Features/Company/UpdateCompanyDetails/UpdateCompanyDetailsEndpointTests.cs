@@ -14,7 +14,7 @@ public class UpdateCompanyDetailsEndpointTests(DatabaseFixture db) : FunctionalT
     {
         // Act
         var payload = new { CompanyId = Guid.NewGuid(), Name = "Nope" };
-        var response = await Client.PatchAsJsonAsync("/company/update-company-details", payload);
+        var response = await Client.PatchAsJsonAsync("/api/company/update-company-details", payload);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -36,7 +36,7 @@ public class UpdateCompanyDetailsEndpointTests(DatabaseFixture db) : FunctionalT
             PaymentDetails = "Bank: Old",
             LogoUrl = "https://old.com/logo.png",
         };
-        var createResponse = await client.PostAsJsonAsync("/company/create-company", createPayload);
+        var createResponse = await client.PostAsJsonAsync("/api/company/create-company", createPayload);
         var created = await createResponse.Content.ReadFromJsonAsync<CreateCompanyResult>();
 
         // Act — patch with updated fields
@@ -46,7 +46,7 @@ public class UpdateCompanyDetailsEndpointTests(DatabaseFixture db) : FunctionalT
             Name = "After Update",
             Address = "New Address",
         };
-        var response = await client.PatchAsJsonAsync("/company/update-company-details", updatePayload);
+        var response = await client.PatchAsJsonAsync("/api/company/update-company-details", updatePayload);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -74,7 +74,7 @@ public class UpdateCompanyDetailsEndpointTests(DatabaseFixture db) : FunctionalT
         };
 
         // Act
-        var response = await client.PatchAsJsonAsync("/company/update-company-details", payload);
+        var response = await client.PatchAsJsonAsync("/api/company/update-company-details", payload);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -86,7 +86,7 @@ public class UpdateCompanyDetailsEndpointTests(DatabaseFixture db) : FunctionalT
         // Arrange — user1 creates a company
         var (client1, user1) = await CreateAuthenticatedUserAsync("user1@test.com");
         var createPayload = new { Name = "User1 Corp" };
-        var createResponse = await client1.PostAsJsonAsync("/company/create-company", createPayload);
+        var createResponse = await client1.PostAsJsonAsync("/api/company/create-company", createPayload);
         var created = await createResponse.Content.ReadFromJsonAsync<CreateCompanyResult>();
 
         // Arrange — user2 tries to update it
@@ -99,7 +99,7 @@ public class UpdateCompanyDetailsEndpointTests(DatabaseFixture db) : FunctionalT
         };
 
         // Act
-        var response = await client2.PatchAsJsonAsync("/company/update-company-details", updatePayload);
+        var response = await client2.PatchAsJsonAsync("/api/company/update-company-details", updatePayload);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);

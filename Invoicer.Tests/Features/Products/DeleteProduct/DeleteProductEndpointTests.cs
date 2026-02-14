@@ -21,7 +21,7 @@ public class DeleteProductEndpointTests(DatabaseFixture db) : FunctionalTestBase
             PaymentDetails = "Bank: Test",
             LogoUrl = "https://test.com/logo.png",
         };
-        var response = await client.PostAsJsonAsync("/company/create-company", payload);
+        var response = await client.PostAsJsonAsync("/api/company/create-company", payload);
         var result = await response.Content.ReadFromJsonAsync<CompanyResult>();
         return result!.Id;
     }
@@ -36,7 +36,7 @@ public class DeleteProductEndpointTests(DatabaseFixture db) : FunctionalTestBase
             Description = "A widget",
             ImageUrl = "https://test.com/widget.png",
         };
-        var response = await client.PostAsJsonAsync("/product/create-product", payload);
+        var response = await client.PostAsJsonAsync("/api/product/create-product", payload);
         return (await response.Content.ReadFromJsonAsync<CreateProductResponse>())!;
     }
 

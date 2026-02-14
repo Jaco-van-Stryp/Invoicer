@@ -22,7 +22,7 @@ public class UpdateProductEndpointTests(DatabaseFixture db) : FunctionalTestBase
             PaymentDetails = "Bank: Test",
             LogoUrl = "https://test.com/logo.png",
         };
-        var response = await client.PostAsJsonAsync("/company/create-company", payload);
+        var response = await client.PostAsJsonAsync("/api/company/create-company", payload);
         var result = await response.Content.ReadFromJsonAsync<CompanyResult>();
         return result!.Id;
     }
@@ -42,7 +42,7 @@ public class UpdateProductEndpointTests(DatabaseFixture db) : FunctionalTestBase
             Description = $"Description for {name}",
             ImageUrl = $"https://test.com/{name.ToLower()}.png",
         };
-        var response = await client.PostAsJsonAsync("/product/create-product", payload);
+        var response = await client.PostAsJsonAsync("/api/product/create-product", payload);
         return (await response.Content.ReadFromJsonAsync<CreateProductResponse>())!;
     }
 
@@ -56,7 +56,7 @@ public class UpdateProductEndpointTests(DatabaseFixture db) : FunctionalTestBase
             ProductId = Guid.NewGuid(),
             Name = "Nope",
         };
-        var response = await Client.PatchAsJsonAsync("/product/update-product", payload);
+        var response = await Client.PatchAsJsonAsync("/api/product/update-product", payload);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -78,7 +78,7 @@ public class UpdateProductEndpointTests(DatabaseFixture db) : FunctionalTestBase
             Name = "Updated Widget",
             Price = 49.99m,
         };
-        var response = await client.PatchAsJsonAsync("/product/update-product", updatePayload);
+        var response = await client.PatchAsJsonAsync("/api/product/update-product", updatePayload);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -107,7 +107,7 @@ public class UpdateProductEndpointTests(DatabaseFixture db) : FunctionalTestBase
         };
 
         // Act
-        var response = await client.PatchAsJsonAsync("/product/update-product", payload);
+        var response = await client.PatchAsJsonAsync("/api/product/update-product", payload);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -132,7 +132,7 @@ public class UpdateProductEndpointTests(DatabaseFixture db) : FunctionalTestBase
         };
 
         // Act
-        var response = await client2.PatchAsJsonAsync("/product/update-product", payload);
+        var response = await client2.PatchAsJsonAsync("/api/product/update-product", payload);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);

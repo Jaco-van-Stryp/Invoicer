@@ -17,7 +17,7 @@ public class CreateCompanyEndpointTests(DatabaseFixture db) : FunctionalTestBase
         var payload = new { Name = "Should Not Work" };
 
         // Act — send the request without any auth headers
-        var response = await Client.PostAsJsonAsync("/company/create-company", payload);
+        var response = await Client.PostAsJsonAsync("/api/company/create-company", payload);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -41,7 +41,7 @@ public class CreateCompanyEndpointTests(DatabaseFixture db) : FunctionalTestBase
         };
 
         // Act
-        var response = await client.PostAsJsonAsync("/company/create-company", payload);
+        var response = await client.PostAsJsonAsync("/api/company/create-company", payload);
 
         // Assert — HTTP response
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -67,7 +67,7 @@ public class CreateCompanyEndpointTests(DatabaseFixture db) : FunctionalTestBase
         var payload = new { Name = "Ghost Company" };
 
         // Act
-        var response = await client.PostAsJsonAsync("/company/create-company", payload);
+        var response = await client.PostAsJsonAsync("/api/company/create-company", payload);
 
         // Assert — should return 401 (UserNotFoundException maps to 401)
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);

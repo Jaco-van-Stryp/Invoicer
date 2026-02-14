@@ -13,7 +13,7 @@ public class GetAllCompaniesEndpointTests(DatabaseFixture db) : FunctionalTestBa
     public async Task GetAllCompanies_Unauthenticated_Returns401()
     {
         // Act
-        var response = await Client.GetAsync("/company/get-all-companies");
+        var response = await Client.GetAsync("/api/company/get-all-companies");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -35,10 +35,10 @@ public class GetAllCompaniesEndpointTests(DatabaseFixture db) : FunctionalTestBa
             PaymentDetails = "Bank: List",
             LogoUrl = "https://list.com/logo.png",
         };
-        await client.PostAsJsonAsync("/company/create-company", createPayload);
+        await client.PostAsJsonAsync("/api/company/create-company", createPayload);
 
         // Act
-        var response = await client.GetAsync("/company/get-all-companies");
+        var response = await client.GetAsync("/api/company/get-all-companies");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -56,7 +56,7 @@ public class GetAllCompaniesEndpointTests(DatabaseFixture db) : FunctionalTestBa
         var (client, _) = await CreateAuthenticatedUserAsync("nocompanies@test.com");
 
         // Act
-        var response = await client.GetAsync("/company/get-all-companies");
+        var response = await client.GetAsync("/api/company/get-all-companies");
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
