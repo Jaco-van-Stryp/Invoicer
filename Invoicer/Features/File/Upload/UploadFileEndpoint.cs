@@ -15,7 +15,8 @@ public static class UploadFileEndpoint
                     return TypedResults.Ok(result);
                 }
             )
-            .WithName("UploadFile");
+            .WithName("UploadFile")
+            .RequireAuthorization();
         return app;
     }
 }

@@ -5,7 +5,7 @@ namespace Invoicer.Features.File.Download;
 
 public static class DownloadFileEndpoint
 {
-    public static IEndpointRouteBuilder MapDownloadFileEndpoints(this IEndpointRouteBuilder app)
+    public static IEndpointRouteBuilder MapDownloadFileEndpoint(this IEndpointRouteBuilder app)
     {
         app.MapGet(
                 "download/{filename:guid}",
@@ -16,7 +16,8 @@ public static class DownloadFileEndpoint
                     return TypedResults.File(result, "application/octet-stream");
                 }
             )
-            .WithName("DownloadFile");
+            .WithName("DownloadFile")
+            .RequireAuthorization();
         return app;
     }
 }

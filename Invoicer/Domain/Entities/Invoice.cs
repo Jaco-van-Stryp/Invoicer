@@ -8,8 +8,8 @@
         public required DateTime InvoiceDue { get; set; } = DateTime.UtcNow.AddDays(30);
         public required ICollection<ProductInvoice> Products { get; init; } =
             new List<ProductInvoice>();
-        public required Client Client { get; init; }
-        public required Guid ClientId { get; init; }
+        public required Client Client { get; set; }
+        public required Guid ClientId { get; set; }
         public required Company Company { get; init; }
         public required Guid CompanyId { get; init; }
     }

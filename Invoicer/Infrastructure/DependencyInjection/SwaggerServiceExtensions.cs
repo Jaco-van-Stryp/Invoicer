@@ -4,27 +4,43 @@ namespace Invoicer.Infrastructure.DependencyInjection;
 
 public static class SwaggerServiceExtensions
 {
-    public static IServiceCollection AddSwaggerConfiguration(this IServiceCollection services)
+    public static IServiceCollection AddSwaggerConfiguration(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        IHostEnvironment environment
+    )
     {
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(opt =>
         {
             opt.SwaggerDoc("v1", new OpenApiInfo { Title = "Invoicer API", Version = "v1" });
 
-            opt.AddServer(
-                new OpenApiServer
+            if (environment.IsDevelopment())
+            {
+                opt.AddServer(
+                    new OpenApiServer
+                    {
+                        Url = "https://localhost:7261",
+                        Description = "Development HTTPS",
+                    }
+                );
+                opt.AddServer(
+                    new OpenApiServer
+                    {
+                        Url = "http://localhost:5244",
+                        Description = "Development HTTP",
+                    }
+                );
+            }
+            else
+            {
+                var serverUrls =
+                    configuration.GetSection("Swagger:ServerUrls").Get<string[]>() ?? [];
+                foreach (var url in serverUrls)
                 {
-                    Url = "https://localhost:7261",
-                    Description = "Development HTTPS",
+                    opt.AddServer(new OpenApiServer { Url = url });
                 }
-            );
-            opt.AddServer(
-                new OpenApiServer
-                {
-                    Url = "http://localhost:5244",
-                    Description = "Development HTTP",
-                }
-            );
+            }
 
             opt.AddSecurityDefinition(
                 "Bearer",

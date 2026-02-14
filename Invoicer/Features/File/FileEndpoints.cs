@@ -7,10 +7,10 @@ public static class FileEndpoints
 {
     public static IEndpointRouteBuilder MapFileEndpoints(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/file").WithTags("File");
+        var group = app.MapGroup("/file").WithTags("File").RequireAuthorization();
 
         group.MapUploadFileEndpoint();
-        group.MapDownloadFileEndpoints();
+        group.MapDownloadFileEndpoint();
 
         return app;
     }

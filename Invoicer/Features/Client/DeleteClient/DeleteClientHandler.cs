@@ -26,6 +26,14 @@ namespace Invoicer.Features.Client.DeleteClient
             var client = company.Clients.FirstOrDefault(c => c.Id == request.ClientId);
             if (client == null)
                 throw new ClientNotFoundException();
+
+            var hasInvoices = await _dbContext.Invoices.AnyAsync(
+                i => i.ClientId == client.Id,
+                cancellationToken
+            );
+            if (hasInvoices)
+                throw new ClientHasInvoicesException();
+
             _dbContext.Clients.Remove(client);
             await _dbContext.SaveChangesAsync(cancellationToken);
         }

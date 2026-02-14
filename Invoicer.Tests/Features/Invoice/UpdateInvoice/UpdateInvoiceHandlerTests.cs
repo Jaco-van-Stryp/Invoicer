@@ -143,6 +143,58 @@ public class UpdateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
     }
 
     [Fact]
+    public async Task Handle_UpdateClientId_UpdatesClient()
+    {
+        // Arrange
+        var (user, company, client, productA, productB, invoice) = await SeedFullScenarioAsync();
+
+        var secondClient = new Domain.Entities.Client
+        {
+            Id = Guid.NewGuid(),
+            Name = "Second Client",
+            Email = "second@test.com",
+            Address = "789 Second St",
+            CompanyId = company.Id,
+            Company = company,
+        };
+        await DbContext.Clients.AddAsync(secondClient);
+        await DbContext.SaveChangesAsync();
+
+        SetCurrentUser(user.Id, user.Email);
+        var handler = new UpdateInvoiceHandler(DbContext, CurrentUserService);
+
+        var newDate = new DateTime(2026, 3, 1, 0, 0, 0, DateTimeKind.Utc);
+        var newDue = new DateTime(2026, 3, 31, 0, 0, 0, DateTimeKind.Utc);
+
+        var command = new UpdateInvoiceCommand(
+            CompanyId: company.Id,
+            InvoiceId: invoice.Id,
+            InvoiceNumber: "INV-CLIENT-UPD",
+            InvoiceDate: newDate,
+            InvoiceDue: newDue,
+            ClientId: secondClient.Id,
+            Products: [new UpdateInvoiceProductItem(productB.Id, 5)]
+        );
+
+        // Act
+        await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        DbContext.ChangeTracker.Clear();
+        var saved = await DbContext
+            .Invoices.Include(i => i.Products)
+            .FirstOrDefaultAsync(i => i.Id == invoice.Id);
+        saved.Should().NotBeNull();
+        saved!.ClientId.Should().Be(secondClient.Id);
+        saved.InvoiceNumber.Should().Be("INV-CLIENT-UPD");
+        saved.InvoiceDate.Should().Be(newDate);
+        saved.InvoiceDue.Should().Be(newDue);
+        saved.Products.Should().HaveCount(1);
+        saved.Products.First().ProductId.Should().Be(productB.Id);
+        saved.Products.First().Quantity.Should().Be(5);
+    }
+
+    [Fact]
     public async Task Handle_OnlyInvoiceNumberProvided_UpdatesOnlyInvoiceNumber()
     {
         // Arrange

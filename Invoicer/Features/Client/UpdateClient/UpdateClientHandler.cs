@@ -38,7 +38,6 @@ namespace Invoicer.Features.Client.UpdateClient
             if (request.PhoneNumber is not null)
                 client.PhoneNumber = request.PhoneNumber;
 
-            _dbContext.Clients.Update(client);
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
     }

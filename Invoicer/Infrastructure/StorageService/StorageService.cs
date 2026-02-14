@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
+using Minio.Exceptions;
 
 namespace Invoicer.Infrastructure.StorageService;
 
@@ -8,6 +9,8 @@ public class StorageService(IMinioClient minioClient, IOptions<StorageServiceOpt
     : IStorageService
 {
     private readonly string _bucketName = options.Value.BucketName;
+    private readonly SemaphoreSlim _bucketInitLock = new(1, 1);
+    private bool _bucketInitialized;
 
     public async Task<string> UploadFileAsync(Stream fileStream)
     {
@@ -15,16 +18,35 @@ public class StorageService(IMinioClient minioClient, IOptions<StorageServiceOpt
 
         var fileName = Guid.NewGuid();
 
-        var putArgs = new PutObjectArgs()
-            .WithBucket(_bucketName)
-            .WithObject(fileName.ToString())
-            .WithStreamData(fileStream)
-            .WithObjectSize(fileStream.Length)
-            .WithContentType("application/octet-stream");
+        Stream streamToUpload = fileStream;
+        MemoryStream? bufferedStream = null;
 
-        await minioClient.PutObjectAsync(putArgs);
+        try
+        {
+            if (!fileStream.CanSeek)
+            {
+                bufferedStream = new MemoryStream();
+                await fileStream.CopyToAsync(bufferedStream);
+                bufferedStream.Position = 0;
+                streamToUpload = bufferedStream;
+            }
 
-        return fileName.ToString();
+            var putArgs = new PutObjectArgs()
+                .WithBucket(_bucketName)
+                .WithObject(fileName.ToString())
+                .WithStreamData(streamToUpload)
+                .WithObjectSize(streamToUpload.Length)
+                .WithContentType("application/octet-stream");
+
+            await minioClient.PutObjectAsync(putArgs);
+
+            return fileName.ToString();
+        }
+        finally
+        {
+            if (bufferedStream != null)
+                await bufferedStream.DisposeAsync();
+        }
     }
 
     public async Task<Stream> DownloadFileAsync(Guid fileName)
@@ -49,13 +71,37 @@ public class StorageService(IMinioClient minioClient, IOptions<StorageServiceOpt
 
     private async Task EnsureBucketExistsAsync()
     {
-        var exists = await minioClient.BucketExistsAsync(
-            new BucketExistsArgs().WithBucket(_bucketName)
-        );
+        if (_bucketInitialized)
+            return;
 
-        if (!exists)
+        await _bucketInitLock.WaitAsync();
+        try
         {
-            await minioClient.MakeBucketAsync(new MakeBucketArgs().WithBucket(_bucketName));
+            if (_bucketInitialized)
+                return;
+
+            var exists = await minioClient.BucketExistsAsync(
+                new BucketExistsArgs().WithBucket(_bucketName)
+            );
+
+            if (!exists)
+            {
+                try
+                {
+                    await minioClient.MakeBucketAsync(new MakeBucketArgs().WithBucket(_bucketName));
+                }
+                catch (MinioException ex)
+                    when (ex.Message.Contains("already", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Another caller created the bucket concurrently; safe to ignore.
+                }
+            }
+
+            _bucketInitialized = true;
+        }
+        finally
+        {
+            _bucketInitLock.Release();
         }
     }
 }

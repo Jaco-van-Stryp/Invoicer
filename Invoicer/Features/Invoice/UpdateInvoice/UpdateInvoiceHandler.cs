@@ -45,6 +45,8 @@ namespace Invoicer.Features.Invoice.UpdateInvoice
                 var client = company.Clients.FirstOrDefault(c => c.Id == request.ClientId);
                 if (client == null)
                     throw new ClientNotFoundException();
+                invoice.ClientId = client.Id;
+                invoice.Client = client;
             }
 
             if (request.Products is not null)
@@ -73,7 +75,6 @@ namespace Invoicer.Features.Invoice.UpdateInvoice
                 }
             }
 
-            _dbContext.Invoices.Update(invoice);
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
     }
