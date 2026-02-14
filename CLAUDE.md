@@ -2,18 +2,48 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Context7 Library References
+
+When working on this project, use Context7 (`mcp__context7__query-docs`) to look up current documentation. Resolve library IDs first with `mcp__context7__resolve-library-id`, or use these known IDs directly:
+
+| Library           | Context7 ID                       | Use for                                    |
+| ----------------- | --------------------------------- | ------------------------------------------ |
+| Angular 21        | `/websites/angular_dev`           | Components, signals, routing, SSR, DI      |
+| PrimeNG 20+       | `/websites/v20_primeng`           | UI components (Button, InputOtp, Table etc) |
+| Tailwind CSS      | *(resolve at query time)*         | Utility classes, responsive design          |
+| .NET / EF Core    | *(resolve at query time)*         | API, DbContext, migrations                  |
+
 ## Build & Run Commands
+
+### Backend (.NET API)
 
 ```bash
 dotnet build                                          # Build the project
-dotnet run --project Invoicer                         # Run the API
+dotnet run --project Invoicer                         # Run the API (https://localhost:7261)
 dotnet ef migrations add <Name> --project Invoicer    # Add EF Core migration
 dotnet ef database update --project Invoicer          # Apply migrations
 dotnet test Invoicer.Tests                            # Run all tests (requires Docker)
 dotnet test Invoicer.Tests --filter "ClassName"       # Run specific test class
 ```
 
+### Frontend (Angular Client)
+
+```bash
+cd InvoicerClient
+npm install                                           # Install dependencies
+npm start                                             # ng serve (dev server on http://localhost:4200)
+npm run build                                         # Production build with SSR
+npm test                                              # Run unit tests (Vitest)
+npm run generate                                      # Regenerate API client from Swagger spec
+                                                      # (requires .NET API running on localhost:5244)
+npm run serve:ssr:InvoicerClient                      # Serve SSR production build
+```
+
 ## Architecture
+
+Full-stack application: **.NET 10 Web API** backend + **Angular 21** frontend (SSR-enabled).
+
+### Backend
 
 .NET 10 Web API using **Minimal APIs** with a feature-based folder structure and **CQRS via MediatR**.
 
@@ -110,6 +140,76 @@ Passwordless email-based flow:
 - `SES:Region`, `SES:FromEmail`, `SES:FromName`
 - `MinIO:Endpoint`, `MinIO:AccessKey`, `MinIO:SecretKey`, `MinIO:BucketName`
 
+### Frontend
+
+**Angular 21** standalone-component app with SSR, PrimeNG UI, and Tailwind CSS.
+
+#### Frontend Project Layout
+
+```
+InvoicerClient/
+├── src/
+│   ├── main.ts                     # Browser bootstrap
+│   ├── main.server.ts              # SSR bootstrap
+│   ├── server.ts                   # Express SSR server
+│   ├── styles.css                  # Global styles (@import "tailwindcss")
+│   └── app/
+│       ├── app.ts                  # Root component (standalone, RouterOutlet)
+│       ├── app.routes.ts           # Route definitions
+│       ├── app.config.ts           # Providers (Router, PrimeNG Aura theme, hydration)
+│       ├── Components/             # Feature components
+│       │   └── Auth/
+│       │       ├── login/          # Login page (embeds OTP)
+│       │       ├── otp/            # 6-digit OTP input (PrimeNG InputOtp)
+│       │       └── register/       # Stub
+│       └── api/                    # AUTO-GENERATED — do not edit manually
+│           ├── api/                # Service classes (Auth, Client, Company, Invoice, Product, File)
+│           └── model/              # TypeScript interfaces for API request/response types
+├── angular.json                    # CLI config (SSR enabled, @angular/build builder)
+├── openapitools.json               # OpenAPI Generator config
+├── tsconfig.json                   # Strict TypeScript
+└── .postcssrc.json                 # Tailwind via @tailwindcss/postcss
+```
+
+#### Key Frontend Stack
+
+- **Angular 21** — standalone components, signals, new control flow (`@if`, `@for`)
+- **PrimeNG 21** — UI components (Aura theme via `@primeuix/themes`)
+- **Tailwind CSS 4** — utility-first styling via PostCSS
+- **Vitest** — unit testing (not Jasmine/Karma)
+- **SSR** — Angular SSR with Express, hydration with event replay
+- **TypeScript 5.9** — strict mode enabled
+
+#### API Client Code Generation
+
+The `InvoicerClient/src/app/api/` directory is **auto-generated** by OpenAPI Generator from the .NET backend's Swagger spec. **Do not edit files in this directory manually** — they will be overwritten.
+
+To regenerate after backend API changes:
+1. Run the .NET API (`dotnet run --project Invoicer`)
+2. Run `npm run generate` from `InvoicerClient/`
+3. Generated services are `@Injectable({ providedIn: 'root' })` and use `HttpClient`
+
+Available generated services: `AuthService`, `ClientService`, `CompanyService`, `InvoiceService`, `ProductService`, `FileService`
+
+#### Frontend Conventions
+
+- **Standalone components only** — no NgModules (except the legacy auto-generated `api.module.ts`)
+- **No OnPush** — never use `changeDetection: ChangeDetectionStrategy.OnPush`; use Angular's default change detection
+- **File naming**: `component-name.ts`, `component-name.html`, `component-name.css` (no `.component` suffix)
+- **Component structure**: `Components/{Feature}/{component-name}/` — each with `.ts`, `.html`, `.css`, `.spec.ts`
+- **Styling**: Tailwind utility classes + PrimeNG component styles; plain CSS (no SCSS)
+- **Routing**: Lazy-loaded routes preferred; SSR prerenders all routes
+- **State**: Angular signals for component state
+- **API base path**: `https://localhost:7261` (configured in generated `api/` code)
+
+#### Adding a New Frontend Component
+
+1. Generate: `ng generate component Components/{Feature}/{component-name}` (from `InvoicerClient/`)
+2. The component is standalone by default in Angular 21
+3. Import PrimeNG modules as needed (e.g., `ButtonModule`, `TableModule`)
+4. Add route in `app.routes.ts`
+5. Use generated API services for backend calls (inject directly)
+
 ## Testing
 
 Tests live in `Invoicer.Tests/` using **xUnit** + **FluentAssertions** + **NSubstitute** + **Testcontainers** (PostgreSQL) + **Respawn**.
@@ -146,3 +246,6 @@ Tests live in `Invoicer.Tests/` using **xUnit** + **FluentAssertions** + **NSubs
 - **Namespace collision**: `Invoicer.Domain.Entities.Company` collides with `Invoicer.Features.Company` namespace — use `Domain.Entities.Company` to disambiguate in feature files
 - **ValidationBehavior boxing**: `readonly record struct` causes validation mismatch — box once with `object instance = request;` then pass the same boxed instance to both `ValidationContext` and `TryValidateObject`
 - **OpenApi v2.x** (`Microsoft.OpenApi` v2.4.1): removed the `Models` sub-namespace — all types live in `Microsoft.OpenApi` directly. Use `OpenApiSecuritySchemeReference` instead of `OpenApiReference`. Do not mix `Microsoft.AspNetCore.OpenApi` with Swashbuckle (assembly conflicts)
+- **Do not edit `InvoicerClient/src/app/api/`** — this directory is auto-generated by OpenAPI Generator; changes will be lost on next `npm run generate`
+- **Angular 21 SSR**: all routes prerender by default (`RenderMode.Prerender` in `app.routes.server.ts`) — browser-only APIs (`window`, `document`) must be guarded with `isPlatformBrowser` or `afterNextRender`
+- **PrimeNG 21 imports**: import component modules individually (e.g., `ButtonModule`, `InputOtpModule`), not the full PrimeNG package
