@@ -9,7 +9,11 @@ namespace Invoicer.Tests.Features.Products.UpdateProduct;
 [Collection("Database")]
 public class UpdateProductHandlerTests(DatabaseFixture db) : IntegrationTestBase(db)
 {
-    private async Task<(User User, Domain.Entities.Company Company, Product Product)> SeedUserWithCompanyAndProductAsync()
+    private async Task<(
+        User User,
+        Domain.Entities.Company Company,
+        Product Product
+    )> SeedUserWithCompanyAndProductAsync()
     {
         var user = new User
         {

@@ -19,7 +19,9 @@ namespace Invoicer.Infrastructure.CurrentUserService
         {
             get
             {
-                var claim = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var claim = _httpContextAccessor.HttpContext?.User.FindFirstValue(
+                    ClaimTypes.NameIdentifier
+                );
                 if (string.IsNullOrEmpty(claim) || !Guid.TryParse(claim, out var userId))
                     throw new UnauthorizedAccessException("User is not authenticated.");
                 return userId;

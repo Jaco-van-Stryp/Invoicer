@@ -101,9 +101,7 @@ public class CreateProductHandlerTests(DatabaseFixture db) : IntegrationTestBase
         result1.ProductId.Should().NotBe(result2.ProductId);
 
         DbContext.ChangeTracker.Clear();
-        var products = await DbContext.Products
-            .Where(p => p.CompanyId == company.Id)
-            .ToListAsync();
+        var products = await DbContext.Products.Where(p => p.CompanyId == company.Id).ToListAsync();
         products.Should().HaveCount(2);
         products.Select(p => p.Name).Should().Contain(["Product A", "Product B"]);
     }

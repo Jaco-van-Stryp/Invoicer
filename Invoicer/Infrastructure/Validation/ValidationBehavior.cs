@@ -3,8 +3,7 @@ using MediatR;
 
 namespace Invoicer.Infrastructure.Validation
 {
-    public class ValidationBehavior<TRequest, TResponse>
-        : IPipelineBehavior<TRequest, TResponse>
+    public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : notnull
     {
         public async Task<TResponse> Handle(
@@ -17,7 +16,14 @@ namespace Invoicer.Infrastructure.Validation
             var context = new ValidationContext(instance);
             var results = new List<ValidationResult>();
 
-            if (!Validator.TryValidateObject(instance, context, results, validateAllProperties: true))
+            if (
+                !Validator.TryValidateObject(
+                    instance,
+                    context,
+                    results,
+                    validateAllProperties: true
+                )
+            )
             {
                 var errors = string.Join("; ", results.Select(r => r.ErrorMessage));
                 throw new ValidationException(errors);

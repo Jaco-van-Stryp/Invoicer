@@ -24,19 +24,21 @@ public class GetAllCompaniesHandlerTests(DatabaseFixture db) : IntegrationTestBa
 
         foreach (var name in companyNames)
         {
-            await DbContext.Companies.AddAsync(new Domain.Entities.Company
-            {
-                Id = Guid.NewGuid(),
-                Name = name,
-                Address = "123 Test St",
-                TaxNumber = "TAX-000",
-                PhoneNumber = "555-0000",
-                Email = $"{name.ToLower().Replace(" ", "")}@test.com",
-                PaymentDetails = "Bank: Test",
-                LogoUrl = "",
-                UserId = user.Id,
-                User = user,
-            });
+            await DbContext.Companies.AddAsync(
+                new Domain.Entities.Company
+                {
+                    Id = Guid.NewGuid(),
+                    Name = name,
+                    Address = "123 Test St",
+                    TaxNumber = "TAX-000",
+                    PhoneNumber = "555-0000",
+                    Email = $"{name.ToLower().Replace(" ", "")}@test.com",
+                    PaymentDetails = "Bank: Test",
+                    LogoUrl = "",
+                    UserId = user.Id,
+                    User = user,
+                }
+            );
         }
 
         await DbContext.SaveChangesAsync();

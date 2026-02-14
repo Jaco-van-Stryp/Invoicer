@@ -9,7 +9,11 @@ namespace Invoicer.Tests.Features.Products.DeleteProduct;
 [Collection("Database")]
 public class DeleteProductHandlerTests(DatabaseFixture db) : IntegrationTestBase(db)
 {
-    private async Task<(User User, Domain.Entities.Company Company, Product Product)> SeedUserWithCompanyAndProductAsync()
+    private async Task<(
+        User User,
+        Domain.Entities.Company Company,
+        Product Product
+    )> SeedUserWithCompanyAndProductAsync()
     {
         var user = new User
         {
@@ -59,10 +63,7 @@ public class DeleteProductHandlerTests(DatabaseFixture db) : IntegrationTestBase
         SetCurrentUser(user.Id, user.Email);
         var handler = new DeleteProductHandler(DbContext, CurrentUserService);
 
-        var command = new DeleteProductCommand(
-            CompanyId: company.Id,
-            ProductId: product.Id
-        );
+        var command = new DeleteProductCommand(CompanyId: company.Id, ProductId: product.Id);
 
         // Act
         await handler.Handle(command, CancellationToken.None);
@@ -165,10 +166,7 @@ public class DeleteProductHandlerTests(DatabaseFixture db) : IntegrationTestBase
         SetCurrentUser(user.Id, user.Email);
         var handler = new DeleteProductHandler(DbContext, CurrentUserService);
 
-        var command = new DeleteProductCommand(
-            CompanyId: company.Id,
-            ProductId: Guid.NewGuid()
-        );
+        var command = new DeleteProductCommand(CompanyId: company.Id, ProductId: Guid.NewGuid());
 
         // Act & Assert
         var act = () => handler.Handle(command, CancellationToken.None);
@@ -196,10 +194,7 @@ public class DeleteProductHandlerTests(DatabaseFixture db) : IntegrationTestBase
         SetCurrentUser(user2.Id, user2.Email);
         var handler = new DeleteProductHandler(DbContext, CurrentUserService);
 
-        var command = new DeleteProductCommand(
-            CompanyId: company.Id,
-            ProductId: product.Id
-        );
+        var command = new DeleteProductCommand(CompanyId: company.Id, ProductId: product.Id);
 
         // Act & Assert
         var act = () => handler.Handle(command, CancellationToken.None);

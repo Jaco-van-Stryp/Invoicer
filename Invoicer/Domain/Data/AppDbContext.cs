@@ -20,13 +20,14 @@ namespace Invoicer.Domain.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<User>()
-                .HasIndex(u => u.Email)
-                .IsUnique();
+            modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
 
-            modelBuilder.Entity<User>()
-                .Property(u => u.RowVersion)
-                .IsRowVersion();
+            modelBuilder.Entity<User>().Property(u => u.RowVersion).IsRowVersion();
+
+            modelBuilder
+                .Entity<ProductInvoice>()
+                .HasIndex(pi => new { pi.ProductId, pi.InvoiceId })
+                .IsUnique();
         }
     }
 }
