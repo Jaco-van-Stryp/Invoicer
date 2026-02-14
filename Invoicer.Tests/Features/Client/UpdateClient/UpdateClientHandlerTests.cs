@@ -1,19 +1,19 @@
 using FluentAssertions;
 using Invoicer.Domain.Entities;
 using Invoicer.Domain.Exceptions;
-using Invoicer.Features.Products.UpdateProduct;
+using Invoicer.Features.Client.UpdateClient;
 using Invoicer.Tests.Infrastructure;
 
-namespace Invoicer.Tests.Features.Products.UpdateProduct;
+namespace Invoicer.Tests.Features.Client.UpdateClient;
 
 [Collection("Database")]
-public class UpdateProductHandlerTests(DatabaseFixture db) : IntegrationTestBase(db)
+public class UpdateClientHandlerTests(DatabaseFixture db) : IntegrationTestBase(db)
 {
     private async Task<(
         User User,
         Domain.Entities.Company Company,
-        Product Product
-    )> SeedUserWithCompanyAndProductAsync()
+        Domain.Entities.Client Client
+    )> SeedUserWithCompanyAndClientAsync()
     {
         var user = new User
         {
@@ -38,38 +38,40 @@ public class UpdateProductHandlerTests(DatabaseFixture db) : IntegrationTestBase
             UserId = user.Id,
             User = user,
         };
-        var product = new Product
+        var client = new Domain.Entities.Client
         {
             Id = Guid.NewGuid(),
-            Name = "Original Widget",
-            Price = 10m,
-            Description = "Original description",
-            ImageUrl = "https://test.com/original.png",
+            Name = "Original Client",
+            Email = "original@test.com",
+            Address = "Original Address",
+            TaxNumber = "TAX-ORIG",
+            PhoneNumber = "555-0300",
             CompanyId = company.Id,
             Company = company,
         };
         await DbContext.Users.AddAsync(user);
         await DbContext.Companies.AddAsync(company);
-        await DbContext.Products.AddAsync(product);
+        await DbContext.Clients.AddAsync(client);
         await DbContext.SaveChangesAsync();
-        return (user, company, product);
+        return (user, company, client);
     }
 
     [Fact]
     public async Task Handle_AllFieldsProvided_UpdatesAllFields()
     {
         // Arrange
-        var (user, company, product) = await SeedUserWithCompanyAndProductAsync();
+        var (user, company, client) = await SeedUserWithCompanyAndClientAsync();
         SetCurrentUser(user.Id, user.Email);
-        var handler = new UpdateProductHandler(DbContext, CurrentUserService);
+        var handler = new UpdateClientHandler(DbContext, CurrentUserService);
 
-        var command = new UpdateProductCommand(
+        var command = new UpdateClientCommand(
             CompanyId: company.Id,
-            ProductId: product.Id,
-            Name: "Updated Widget",
-            Price: 49.99m,
-            Description: "Updated description",
-            ImageUrl: "https://test.com/updated.png"
+            ClientId: client.Id,
+            Name: "Updated Client",
+            Email: "updated@test.com",
+            Address: "Updated Address",
+            TaxNumber: "TAX-UPD",
+            PhoneNumber: "555-0999"
         );
 
         // Act
@@ -77,29 +79,31 @@ public class UpdateProductHandlerTests(DatabaseFixture db) : IntegrationTestBase
 
         // Assert
         DbContext.ChangeTracker.Clear();
-        var saved = await DbContext.Products.FindAsync(product.Id);
+        var saved = await DbContext.Clients.FindAsync(client.Id);
         saved.Should().NotBeNull();
-        saved!.Name.Should().Be("Updated Widget");
-        saved.Price.Should().Be(49.99m);
-        saved.Description.Should().Be("Updated description");
-        saved.ImageUrl.Should().Be("https://test.com/updated.png");
+        saved!.Name.Should().Be("Updated Client");
+        saved.Email.Should().Be("updated@test.com");
+        saved.Address.Should().Be("Updated Address");
+        saved.TaxNumber.Should().Be("TAX-UPD");
+        saved.PhoneNumber.Should().Be("555-0999");
     }
 
     [Fact]
     public async Task Handle_OnlyNameProvided_UpdatesOnlyName()
     {
         // Arrange
-        var (user, company, product) = await SeedUserWithCompanyAndProductAsync();
+        var (user, company, client) = await SeedUserWithCompanyAndClientAsync();
         SetCurrentUser(user.Id, user.Email);
-        var handler = new UpdateProductHandler(DbContext, CurrentUserService);
+        var handler = new UpdateClientHandler(DbContext, CurrentUserService);
 
-        var command = new UpdateProductCommand(
+        var command = new UpdateClientCommand(
             CompanyId: company.Id,
-            ProductId: product.Id,
+            ClientId: client.Id,
             Name: "New Name Only",
-            Price: null,
-            Description: null,
-            ImageUrl: null
+            Email: null,
+            Address: null,
+            TaxNumber: null,
+            PhoneNumber: null
         );
 
         // Act
@@ -107,29 +111,31 @@ public class UpdateProductHandlerTests(DatabaseFixture db) : IntegrationTestBase
 
         // Assert
         DbContext.ChangeTracker.Clear();
-        var saved = await DbContext.Products.FindAsync(product.Id);
+        var saved = await DbContext.Clients.FindAsync(client.Id);
         saved.Should().NotBeNull();
         saved!.Name.Should().Be("New Name Only");
-        saved.Price.Should().Be(10m);
-        saved.Description.Should().Be("Original description");
-        saved.ImageUrl.Should().Be("https://test.com/original.png");
+        saved.Email.Should().Be("original@test.com");
+        saved.Address.Should().Be("Original Address");
+        saved.TaxNumber.Should().Be("TAX-ORIG");
+        saved.PhoneNumber.Should().Be("555-0300");
     }
 
     [Fact]
-    public async Task Handle_OnlyPriceProvided_UpdatesOnlyPrice()
+    public async Task Handle_OnlyEmailProvided_UpdatesOnlyEmail()
     {
         // Arrange
-        var (user, company, product) = await SeedUserWithCompanyAndProductAsync();
+        var (user, company, client) = await SeedUserWithCompanyAndClientAsync();
         SetCurrentUser(user.Id, user.Email);
-        var handler = new UpdateProductHandler(DbContext, CurrentUserService);
+        var handler = new UpdateClientHandler(DbContext, CurrentUserService);
 
-        var command = new UpdateProductCommand(
+        var command = new UpdateClientCommand(
             CompanyId: company.Id,
-            ProductId: product.Id,
+            ClientId: client.Id,
             Name: null,
-            Price: 99.99m,
-            Description: null,
-            ImageUrl: null
+            Email: "newemail@test.com",
+            Address: null,
+            TaxNumber: null,
+            PhoneNumber: null
         );
 
         // Act
@@ -137,28 +143,29 @@ public class UpdateProductHandlerTests(DatabaseFixture db) : IntegrationTestBase
 
         // Assert
         DbContext.ChangeTracker.Clear();
-        var saved = await DbContext.Products.FindAsync(product.Id);
+        var saved = await DbContext.Clients.FindAsync(client.Id);
         saved.Should().NotBeNull();
-        saved!.Name.Should().Be("Original Widget");
-        saved.Price.Should().Be(99.99m);
-        saved.Description.Should().Be("Original description");
+        saved!.Name.Should().Be("Original Client");
+        saved.Email.Should().Be("newemail@test.com");
+        saved.Address.Should().Be("Original Address");
     }
 
     [Fact]
     public async Task Handle_NoFieldsProvided_NothingChanges()
     {
         // Arrange
-        var (user, company, product) = await SeedUserWithCompanyAndProductAsync();
+        var (user, company, client) = await SeedUserWithCompanyAndClientAsync();
         SetCurrentUser(user.Id, user.Email);
-        var handler = new UpdateProductHandler(DbContext, CurrentUserService);
+        var handler = new UpdateClientHandler(DbContext, CurrentUserService);
 
-        var command = new UpdateProductCommand(
+        var command = new UpdateClientCommand(
             CompanyId: company.Id,
-            ProductId: product.Id,
+            ClientId: client.Id,
             Name: null,
-            Price: null,
-            Description: null,
-            ImageUrl: null
+            Email: null,
+            Address: null,
+            TaxNumber: null,
+            PhoneNumber: null
         );
 
         // Act
@@ -166,12 +173,13 @@ public class UpdateProductHandlerTests(DatabaseFixture db) : IntegrationTestBase
 
         // Assert
         DbContext.ChangeTracker.Clear();
-        var saved = await DbContext.Products.FindAsync(product.Id);
+        var saved = await DbContext.Clients.FindAsync(client.Id);
         saved.Should().NotBeNull();
-        saved!.Name.Should().Be("Original Widget");
-        saved.Price.Should().Be(10m);
-        saved.Description.Should().Be("Original description");
-        saved.ImageUrl.Should().Be("https://test.com/original.png");
+        saved!.Name.Should().Be("Original Client");
+        saved.Email.Should().Be("original@test.com");
+        saved.Address.Should().Be("Original Address");
+        saved.TaxNumber.Should().Be("TAX-ORIG");
+        saved.PhoneNumber.Should().Be("555-0300");
     }
 
     [Fact]
@@ -179,15 +187,16 @@ public class UpdateProductHandlerTests(DatabaseFixture db) : IntegrationTestBase
     {
         // Arrange
         SetCurrentUser(Guid.NewGuid());
-        var handler = new UpdateProductHandler(DbContext, CurrentUserService);
+        var handler = new UpdateClientHandler(DbContext, CurrentUserService);
 
-        var command = new UpdateProductCommand(
+        var command = new UpdateClientCommand(
             CompanyId: Guid.NewGuid(),
-            ProductId: Guid.NewGuid(),
+            ClientId: Guid.NewGuid(),
             Name: "Doesn't Matter",
-            Price: null,
-            Description: null,
-            ImageUrl: null
+            Email: null,
+            Address: null,
+            TaxNumber: null,
+            PhoneNumber: null
         );
 
         // Act & Assert
@@ -213,15 +222,16 @@ public class UpdateProductHandlerTests(DatabaseFixture db) : IntegrationTestBase
         await DbContext.SaveChangesAsync();
 
         SetCurrentUser(user.Id, user.Email);
-        var handler = new UpdateProductHandler(DbContext, CurrentUserService);
+        var handler = new UpdateClientHandler(DbContext, CurrentUserService);
 
-        var command = new UpdateProductCommand(
+        var command = new UpdateClientCommand(
             CompanyId: Guid.NewGuid(),
-            ProductId: Guid.NewGuid(),
+            ClientId: Guid.NewGuid(),
             Name: "No Company",
-            Price: null,
-            Description: null,
-            ImageUrl: null
+            Email: null,
+            Address: null,
+            TaxNumber: null,
+            PhoneNumber: null
         );
 
         // Act & Assert
@@ -230,32 +240,33 @@ public class UpdateProductHandlerTests(DatabaseFixture db) : IntegrationTestBase
     }
 
     [Fact]
-    public async Task Handle_NonExistentProduct_ThrowsProductNotFoundException()
+    public async Task Handle_NonExistentClient_ThrowsClientNotFoundException()
     {
         // Arrange
-        var (user, company, _) = await SeedUserWithCompanyAndProductAsync();
+        var (user, company, _) = await SeedUserWithCompanyAndClientAsync();
         SetCurrentUser(user.Id, user.Email);
-        var handler = new UpdateProductHandler(DbContext, CurrentUserService);
+        var handler = new UpdateClientHandler(DbContext, CurrentUserService);
 
-        var command = new UpdateProductCommand(
+        var command = new UpdateClientCommand(
             CompanyId: company.Id,
-            ProductId: Guid.NewGuid(),
-            Name: "No Product",
-            Price: null,
-            Description: null,
-            ImageUrl: null
+            ClientId: Guid.NewGuid(),
+            Name: "No Client",
+            Email: null,
+            Address: null,
+            TaxNumber: null,
+            PhoneNumber: null
         );
 
         // Act & Assert
         var act = () => handler.Handle(command, CancellationToken.None);
-        await act.Should().ThrowAsync<ProductNotFoundException>();
+        await act.Should().ThrowAsync<ClientNotFoundException>();
     }
 
     [Fact]
     public async Task Handle_CompanyBelongsToOtherUser_ThrowsCompanyNotFoundException()
     {
         // Arrange
-        var (user1, company, product) = await SeedUserWithCompanyAndProductAsync();
+        var (user1, company, client) = await SeedUserWithCompanyAndClientAsync();
         var user2 = new User
         {
             Id = Guid.NewGuid(),
@@ -270,15 +281,16 @@ public class UpdateProductHandlerTests(DatabaseFixture db) : IntegrationTestBase
         await DbContext.SaveChangesAsync();
 
         SetCurrentUser(user2.Id, user2.Email);
-        var handler = new UpdateProductHandler(DbContext, CurrentUserService);
+        var handler = new UpdateClientHandler(DbContext, CurrentUserService);
 
-        var command = new UpdateProductCommand(
+        var command = new UpdateClientCommand(
             CompanyId: company.Id,
-            ProductId: product.Id,
+            ClientId: client.Id,
             Name: "Hijacked",
-            Price: null,
-            Description: null,
-            ImageUrl: null
+            Email: null,
+            Address: null,
+            TaxNumber: null,
+            PhoneNumber: null
         );
 
         // Act & Assert

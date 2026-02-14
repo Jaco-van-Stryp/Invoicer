@@ -1,19 +1,19 @@
 using FluentAssertions;
 using Invoicer.Domain.Entities;
 using Invoicer.Domain.Exceptions;
-using Invoicer.Features.Products.DeleteProduct;
+using Invoicer.Features.Client.DeleteClient;
 using Invoicer.Tests.Infrastructure;
 
-namespace Invoicer.Tests.Features.Products.DeleteProduct;
+namespace Invoicer.Tests.Features.Client.DeleteClient;
 
 [Collection("Database")]
-public class DeleteProductHandlerTests(DatabaseFixture db) : IntegrationTestBase(db)
+public class DeleteClientHandlerTests(DatabaseFixture db) : IntegrationTestBase(db)
 {
     private async Task<(
         User User,
         Domain.Entities.Company Company,
-        Product Product
-    )> SeedUserWithCompanyAndProductAsync()
+        Domain.Entities.Client Client
+    )> SeedUserWithCompanyAndClientAsync()
     {
         var user = new User
         {
@@ -38,77 +38,79 @@ public class DeleteProductHandlerTests(DatabaseFixture db) : IntegrationTestBase
             UserId = user.Id,
             User = user,
         };
-        var product = new Product
+        var client = new Domain.Entities.Client
         {
             Id = Guid.NewGuid(),
-            Name = "Doomed Widget",
-            Price = 10m,
-            Description = "About to be deleted",
-            ImageUrl = "https://test.com/doomed.png",
+            Name = "Doomed Client",
+            Email = "doomed@test.com",
+            Address = "123 Doomed St",
+            TaxNumber = "TAX-DOOM",
+            PhoneNumber = "555-0666",
             CompanyId = company.Id,
             Company = company,
         };
         await DbContext.Users.AddAsync(user);
         await DbContext.Companies.AddAsync(company);
-        await DbContext.Products.AddAsync(product);
+        await DbContext.Clients.AddAsync(client);
         await DbContext.SaveChangesAsync();
-        return (user, company, product);
+        return (user, company, client);
     }
 
     [Fact]
-    public async Task Handle_ValidCommand_DeletesProductFromDatabase()
+    public async Task Handle_ValidCommand_DeletesClientFromDatabase()
     {
         // Arrange
-        var (user, company, product) = await SeedUserWithCompanyAndProductAsync();
+        var (user, company, client) = await SeedUserWithCompanyAndClientAsync();
         SetCurrentUser(user.Id, user.Email);
-        var handler = new DeleteProductHandler(DbContext, CurrentUserService);
+        var handler = new DeleteClientHandler(DbContext, CurrentUserService);
 
-        var command = new DeleteProductCommand(CompanyId: company.Id, ProductId: product.Id);
+        var command = new DeleteClientCommand(CompanyId: company.Id, ClientId: client.Id);
 
         // Act
         await handler.Handle(command, CancellationToken.None);
 
         // Assert
         DbContext.ChangeTracker.Clear();
-        var deleted = await DbContext.Products.FindAsync(product.Id);
-        deleted.Should().BeNull("the product should have been removed from the database");
+        var deleted = await DbContext.Clients.FindAsync(client.Id);
+        deleted.Should().BeNull("the client should have been removed from the database");
     }
 
     [Fact]
-    public async Task Handle_DeleteOneProduct_OtherProductsRemain()
+    public async Task Handle_DeleteOneClient_OtherClientsRemain()
     {
         // Arrange
-        var (user, company, product1) = await SeedUserWithCompanyAndProductAsync();
-        var product2 = new Product
+        var (user, company, client1) = await SeedUserWithCompanyAndClientAsync();
+        var client2 = new Domain.Entities.Client
         {
             Id = Guid.NewGuid(),
-            Name = "Survivor Widget",
-            Price = 20m,
-            Description = "Should remain",
-            ImageUrl = "https://test.com/survivor.png",
+            Name = "Survivor Client",
+            Email = "survivor@test.com",
+            Address = "456 Safe St",
+            TaxNumber = "TAX-SAFE",
+            PhoneNumber = "555-0777",
             CompanyId = company.Id,
             Company = company,
         };
-        await DbContext.Products.AddAsync(product2);
+        await DbContext.Clients.AddAsync(client2);
         await DbContext.SaveChangesAsync();
 
         SetCurrentUser(user.Id, user.Email);
-        var handler = new DeleteProductHandler(DbContext, CurrentUserService);
+        var handler = new DeleteClientHandler(DbContext, CurrentUserService);
 
-        // Act — delete only the first product
+        // Act — delete only the first client
         await handler.Handle(
-            new DeleteProductCommand(company.Id, product1.Id),
+            new DeleteClientCommand(company.Id, client1.Id),
             CancellationToken.None
         );
 
         // Assert
         DbContext.ChangeTracker.Clear();
-        var deleted = await DbContext.Products.FindAsync(product1.Id);
+        var deleted = await DbContext.Clients.FindAsync(client1.Id);
         deleted.Should().BeNull();
 
-        var remaining = await DbContext.Products.FindAsync(product2.Id);
+        var remaining = await DbContext.Clients.FindAsync(client2.Id);
         remaining.Should().NotBeNull();
-        remaining!.Name.Should().Be("Survivor Widget");
+        remaining!.Name.Should().Be("Survivor Client");
     }
 
     [Fact]
@@ -116,12 +118,9 @@ public class DeleteProductHandlerTests(DatabaseFixture db) : IntegrationTestBase
     {
         // Arrange
         SetCurrentUser(Guid.NewGuid());
-        var handler = new DeleteProductHandler(DbContext, CurrentUserService);
+        var handler = new DeleteClientHandler(DbContext, CurrentUserService);
 
-        var command = new DeleteProductCommand(
-            CompanyId: Guid.NewGuid(),
-            ProductId: Guid.NewGuid()
-        );
+        var command = new DeleteClientCommand(CompanyId: Guid.NewGuid(), ClientId: Guid.NewGuid());
 
         // Act & Assert
         var act = () => handler.Handle(command, CancellationToken.None);
@@ -146,12 +145,9 @@ public class DeleteProductHandlerTests(DatabaseFixture db) : IntegrationTestBase
         await DbContext.SaveChangesAsync();
 
         SetCurrentUser(user.Id, user.Email);
-        var handler = new DeleteProductHandler(DbContext, CurrentUserService);
+        var handler = new DeleteClientHandler(DbContext, CurrentUserService);
 
-        var command = new DeleteProductCommand(
-            CompanyId: Guid.NewGuid(),
-            ProductId: Guid.NewGuid()
-        );
+        var command = new DeleteClientCommand(CompanyId: Guid.NewGuid(), ClientId: Guid.NewGuid());
 
         // Act & Assert
         var act = () => handler.Handle(command, CancellationToken.None);
@@ -159,25 +155,25 @@ public class DeleteProductHandlerTests(DatabaseFixture db) : IntegrationTestBase
     }
 
     [Fact]
-    public async Task Handle_NonExistentProduct_ThrowsProductNotFoundException()
+    public async Task Handle_NonExistentClient_ThrowsClientNotFoundException()
     {
         // Arrange
-        var (user, company, _) = await SeedUserWithCompanyAndProductAsync();
+        var (user, company, _) = await SeedUserWithCompanyAndClientAsync();
         SetCurrentUser(user.Id, user.Email);
-        var handler = new DeleteProductHandler(DbContext, CurrentUserService);
+        var handler = new DeleteClientHandler(DbContext, CurrentUserService);
 
-        var command = new DeleteProductCommand(CompanyId: company.Id, ProductId: Guid.NewGuid());
+        var command = new DeleteClientCommand(CompanyId: company.Id, ClientId: Guid.NewGuid());
 
         // Act & Assert
         var act = () => handler.Handle(command, CancellationToken.None);
-        await act.Should().ThrowAsync<ProductNotFoundException>();
+        await act.Should().ThrowAsync<ClientNotFoundException>();
     }
 
     [Fact]
     public async Task Handle_CompanyBelongsToOtherUser_ThrowsCompanyNotFoundException()
     {
         // Arrange
-        var (user1, company, product) = await SeedUserWithCompanyAndProductAsync();
+        var (user1, company, client) = await SeedUserWithCompanyAndClientAsync();
         var user2 = new User
         {
             Id = Guid.NewGuid(),
@@ -192,9 +188,9 @@ public class DeleteProductHandlerTests(DatabaseFixture db) : IntegrationTestBase
         await DbContext.SaveChangesAsync();
 
         SetCurrentUser(user2.Id, user2.Email);
-        var handler = new DeleteProductHandler(DbContext, CurrentUserService);
+        var handler = new DeleteClientHandler(DbContext, CurrentUserService);
 
-        var command = new DeleteProductCommand(CompanyId: company.Id, ProductId: product.Id);
+        var command = new DeleteClientCommand(CompanyId: company.Id, ClientId: client.Id);
 
         // Act & Assert
         var act = () => handler.Handle(command, CancellationToken.None);

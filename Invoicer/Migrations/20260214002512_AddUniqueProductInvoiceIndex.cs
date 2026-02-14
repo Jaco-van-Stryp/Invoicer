@@ -12,13 +12,15 @@ namespace Invoicer.Migrations
         {
             migrationBuilder.DropIndex(
                 name: "IX_ProductInvoices_ProductId",
-                table: "ProductInvoices");
+                table: "ProductInvoices"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductInvoices_ProductId_InvoiceId",
                 table: "ProductInvoices",
                 columns: new[] { "ProductId", "InvoiceId" },
-                unique: true);
+                unique: true
+            );
         }
 
         /// <inheritdoc />
@@ -26,12 +28,14 @@ namespace Invoicer.Migrations
         {
             migrationBuilder.DropIndex(
                 name: "IX_ProductInvoices_ProductId_InvoiceId",
-                table: "ProductInvoices");
+                table: "ProductInvoices"
+            );
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProductInvoices_ProductId",
                 table: "ProductInvoices",
-                column: "ProductId");
+                column: "ProductId"
+            );
         }
     }
 }
