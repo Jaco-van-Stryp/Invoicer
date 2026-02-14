@@ -7,7 +7,9 @@ namespace Invoicer.Infrastructure.DependencyInjection;
 public static class AwsServiceExtensions
 {
     public static IServiceCollection AddAwsServices(
-        this IServiceCollection services, IConfiguration configuration)
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
     {
         var sesOptions = configuration.GetSection("SES").Get<SesOptions>() ?? new SesOptions();
 

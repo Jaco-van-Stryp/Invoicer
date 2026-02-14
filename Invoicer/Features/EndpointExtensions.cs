@@ -1,6 +1,8 @@
 using Invoicer.Features.Auth;
+using Invoicer.Features.Client;
 using Invoicer.Features.Company;
 using Invoicer.Features.File;
+using Invoicer.Features.Invoice;
 using Invoicer.Features.Products;
 
 namespace Invoicer.Features;
@@ -15,6 +17,8 @@ public static class EndpointExtensions
         group.MapCompanyEndpoints();
         group.MapProductEndpoints();
         group.MapFileEndpoints();
+        group.MapClientEndpoints();
+        group.MapInvoiceEndpoints();
 
         return app;
     }

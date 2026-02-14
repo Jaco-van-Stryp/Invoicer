@@ -5,9 +5,7 @@ namespace Invoicer.Features.File.Upload;
 
 public static class UploadFileEndpoint
 {
-    public static IEndpointRouteBuilder MapUploadFileEndpoint(
-        this IEndpointRouteBuilder app
-    )
+    public static IEndpointRouteBuilder MapUploadFileEndpoint(this IEndpointRouteBuilder app)
     {
         app.MapPost(
                 "upload",

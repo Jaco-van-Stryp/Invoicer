@@ -18,17 +18,18 @@ namespace Invoicer.Infrastructure.ExceptionHandling
             };
 
             if (exception is ApiException)
-                _logger.LogWarning(exception, "API exception {StatusCode}: {Title}", statusCode, title);
+                _logger.LogWarning(
+                    exception,
+                    "API exception {StatusCode}: {Title}",
+                    statusCode,
+                    title
+                );
             else
                 _logger.LogError(exception, "Unhandled exception {StatusCode}", statusCode);
 
             httpContext.Response.StatusCode = statusCode;
             await httpContext.Response.WriteAsJsonAsync(
-                new ProblemDetails
-                {
-                    Status = statusCode,
-                    Title = title,
-                },
+                new ProblemDetails { Status = statusCode, Title = title },
                 cancellationToken
             );
 

@@ -2,6 +2,5 @@
 
 namespace Invoicer.Features.Company.GetAllCompanies
 {
-    public readonly record struct GetAllCompaniesQuery()
-        : IRequest<List<GetAllCompaniesResponse>>;
+    public readonly record struct GetAllCompaniesQuery() : IRequest<List<GetAllCompaniesResponse>>;
 }

@@ -213,7 +213,8 @@ namespace Invoicer.Migrations
 
                     b.HasIndex("InvoiceId");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ProductId", "InvoiceId")
+                        .IsUnique();
 
                     b.ToTable("ProductInvoices");
                 });
@@ -265,7 +266,7 @@ namespace Invoicer.Migrations
             modelBuilder.Entity("Invoicer.Domain.Entities.Client", b =>
                 {
                     b.HasOne("Invoicer.Domain.Entities.Company", "Company")
-                        .WithMany()
+                        .WithMany("Clients")
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -293,7 +294,7 @@ namespace Invoicer.Migrations
                         .IsRequired();
 
                     b.HasOne("Invoicer.Domain.Entities.Company", "Company")
-                        .WithMany()
+                        .WithMany("Invoices")
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -306,7 +307,7 @@ namespace Invoicer.Migrations
             modelBuilder.Entity("Invoicer.Domain.Entities.Product", b =>
                 {
                     b.HasOne("Invoicer.Domain.Entities.Company", "Company")
-                        .WithMany()
+                        .WithMany("Products")
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -339,6 +340,15 @@ namespace Invoicer.Migrations
                     b.Navigation("Invoice");
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Invoicer.Domain.Entities.Company", b =>
+                {
+                    b.Navigation("Clients");
+
+                    b.Navigation("Invoices");
+
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("Invoicer.Domain.Entities.Invoice", b =>

@@ -1,4 +1,3 @@
-
 using MediatR;
 
 namespace Invoicer.Features.File.Upload;

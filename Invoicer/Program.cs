@@ -3,8 +3,8 @@ using Invoicer.Infrastructure.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services
-    .AddSwaggerConfiguration()
+builder
+    .Services.AddSwaggerConfiguration()
     .AddPostgres(builder.Configuration)
     .AddJwtAuthentication(builder.Configuration)
     .AddAwsServices(builder.Configuration)

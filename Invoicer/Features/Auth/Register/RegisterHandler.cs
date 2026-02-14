@@ -14,8 +14,10 @@ namespace Invoicer.Features.Auth.Register
             CancellationToken cancellationToken
         )
         {
-            var existingUser = await _dbContext.Users
-                .FirstOrDefaultAsync(x => x.Email == request.Email, cancellationToken);
+            var existingUser = await _dbContext.Users.FirstOrDefaultAsync(
+                x => x.Email == request.Email,
+                cancellationToken
+            );
 
             if (existingUser == null)
             {
@@ -37,14 +39,19 @@ namespace Invoicer.Features.Auth.Register
                 catch (DbUpdateException)
                 {
                     _dbContext.Entry(user).State = EntityState.Detached;
-                    existingUser = await _dbContext.Users
-                        .FirstOrDefaultAsync(x => x.Email == request.Email, cancellationToken);
+                    existingUser = await _dbContext.Users.FirstOrDefaultAsync(
+                        x => x.Email == request.Email,
+                        cancellationToken
+                    );
                 }
             }
 
-            if (existingUser != null && existingUser.IsLocked
+            if (
+                existingUser != null
+                && existingUser.IsLocked
                 && existingUser.LockoutEnd.HasValue
-                && existingUser.LockoutEnd.Value > DateTime.UtcNow)
+                && existingUser.LockoutEnd.Value > DateTime.UtcNow
+            )
             {
                 // User is locked — return success to avoid email enumeration, but don't send token
                 return new RegisterResponse(Guid.NewGuid());

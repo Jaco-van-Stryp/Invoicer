@@ -4,9 +4,8 @@ using Minio.DataModel.Args;
 
 namespace Invoicer.Infrastructure.StorageService;
 
-public class StorageService(
-    IMinioClient minioClient,
-    IOptions<StorageServiceOptions> options) : IStorageService
+public class StorageService(IMinioClient minioClient, IOptions<StorageServiceOptions> options)
+    : IStorageService
 {
     private readonly string _bucketName = options.Value.BucketName;
 
@@ -35,11 +34,13 @@ public class StorageService(
         var getArgs = new GetObjectArgs()
             .WithBucket(_bucketName)
             .WithObject(fileName.ToString())
-            .WithCallbackStream(async (stream, ct) =>
-            {
-                await stream.CopyToAsync(memoryStream, ct);
-                memoryStream.Position = 0;
-            });
+            .WithCallbackStream(
+                async (stream, ct) =>
+                {
+                    await stream.CopyToAsync(memoryStream, ct);
+                    memoryStream.Position = 0;
+                }
+            );
 
         await minioClient.GetObjectAsync(getArgs);
 
@@ -49,12 +50,12 @@ public class StorageService(
     private async Task EnsureBucketExistsAsync()
     {
         var exists = await minioClient.BucketExistsAsync(
-            new BucketExistsArgs().WithBucket(_bucketName));
+            new BucketExistsArgs().WithBucket(_bucketName)
+        );
 
         if (!exists)
         {
-            await minioClient.MakeBucketAsync(
-                new MakeBucketArgs().WithBucket(_bucketName));
+            await minioClient.MakeBucketAsync(new MakeBucketArgs().WithBucket(_bucketName));
         }
     }
 }

@@ -9,7 +9,9 @@ namespace Invoicer.Infrastructure.DependencyInjection;
 public static class AuthServiceExtensions
 {
     public static IServiceCollection AddJwtAuthentication(
-        this IServiceCollection services, IConfiguration configuration)
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
     {
         var jwtOptions =
             configuration.GetSection("Jwt").Get<JwtOptions>()
@@ -25,7 +27,8 @@ public static class AuthServiceExtensions
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(jwtOptions.Secret)),
+                        Encoding.UTF8.GetBytes(jwtOptions.Secret)
+                    ),
                     ValidateIssuer = true,
                     ValidIssuer = jwtOptions.Issuer,
                     ValidateAudience = true,
