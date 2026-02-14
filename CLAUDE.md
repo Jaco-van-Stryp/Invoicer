@@ -71,12 +71,12 @@ Endpoints inject `ISender` (not `IMediator`) from MediatR. URL paths use kebab-c
 
 Each feature action follows this file convention inside `Features/{Aggregate}/{Action}/`:
 
-| File | Purpose |
-|------|---------|
+| File                                       | Purpose                                                               |
+| ------------------------------------------ | --------------------------------------------------------------------- |
 | `{Action}Command.cs` or `{Action}Query.cs` | MediatR request (`readonly record struct` with validation attributes) |
-| `{Action}Handler.cs` | `IRequestHandler<TRequest, TResponse>` implementation |
-| `{Action}Endpoint.cs` | Static extension method mapping the Minimal API route |
-| `{Action}Response.cs` | Response record |
+| `{Action}Handler.cs`                       | `IRequestHandler<TRequest, TResponse>` implementation                 |
+| `{Action}Endpoint.cs`                      | Static extension method mapping the Minimal API route                 |
+| `{Action}Response.cs`                      | Response record                                                       |
 
 Also add the aggregate-level `{Feature}Endpoints.cs` if it doesn't exist, and wire it in `EndpointExtensions.MapEndpoints()`.
 
@@ -87,6 +87,7 @@ Request validation uses `System.ComponentModel.DataAnnotations` attributes on co
 ### Authentication
 
 Passwordless email-based flow:
+
 1. `POST /api/auth/get-access-token` — sends a 6-digit code via SES, returns an `AccessTokenKey` (Guid)
 2. `POST /api/auth/login` — validates code + key, returns a JWT (8-hour expiry)
 3. Endpoints requiring auth use `.RequireAuthorization()`
@@ -119,25 +120,26 @@ Tests live in `Invoicer.Tests/` using **xUnit** + **FluentAssertions** + **NSubs
 - Respawn resets the database between each test (clean state, no test interference)
 - The main project uses `<InternalsVisibleTo>Invoicer.Tests</InternalsVisibleTo>`
 
-### Test Base Classes (`Invoicer.Tests/Infrastructure/`)
+### Test Strategy
 
-**`IntegrationTestBase`** — for handler-level tests (real DB, mocked services):
+**All tests are handler-level integration tests** — instantiate the handler directly with a real `AppDbContext` and mocked `ICurrentUserService`. Do **not** write endpoint/HTTP-level tests (no `WebApplicationFactory`, no `HttpClient`). The whole point of MediatR/CQRS is that business logic lives in handlers, so test handlers directly.
+
+### Test Base Class (`Invoicer.Tests/Infrastructure/`)
+
+**`IntegrationTestBase`** — the only test base class:
+
 - Provides `AppDbContext DbContext` and mocked `ICurrentUserService`
 - Helper: `SetCurrentUser(Guid userId, string email)` to configure the mock
+- Helper: `CreateDbContext()` — creates a fresh `AppDbContext` for assertion queries
 - Call `DbContext.ChangeTracker.Clear()` before assertions to force DB round-trips
-
-**`FunctionalTestBase`** — for endpoint-level HTTP tests (WebApplicationFactory):
-- Provides `HttpClient Client`
-- Helper: `CreateAuthenticatedClient(userId, email)` — adds `X-Test-UserId`/`X-Test-Email` headers
-- Helper: `CreateAuthenticatedUserAsync()` — seeds a user and returns an authenticated client
-- `InvoicerApiFactory` replaces DB, auth (`TestAuthHandler`), and AWS SES with test doubles
 
 ### Adding Tests for a New Feature
 
 1. Create `Invoicer.Tests/Features/{Aggregate}/{Action}/{Action}HandlerTests.cs`
 2. Extend `IntegrationTestBase`, use `[Collection("Database")]`
-3. For endpoint tests, extend `FunctionalTestBase`
-4. xUnit 2.9.x `IAsyncLifetime` uses `Task` return types, **not** `ValueTask`
+3. Instantiate the handler directly: `new XxxHandler(DbContext, CurrentUserService)`
+4. Test happy paths, authorization (wrong user), and error cases (not found) via handler exceptions
+5. xUnit 2.9.x `IAsyncLifetime` uses `Task` return types, **not** `ValueTask`
 
 ## Gotchas
 
