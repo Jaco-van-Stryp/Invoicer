@@ -1,113 +1,87 @@
-<div class="min-h-dvh flex items-center justify-center">
-  <div class="w-full max-w-md px-4">
-    <!-- Branding -->
-    <div class="text-center mb-8">
-      <div
-        class="inline-flex items-center justify-center w-75 h-75 rounded-2xl bg-primary text-primary-contrast text-3xl mx-auto overflow-hidden"
-      >
-        <logo />
+<div class="login-container">
+  <div class="absolute top-8 left-8">
+    <logo />
+  </div>
+  <p-card class="login-card">
+    @if (step() === 'email') {
+      <div class="flex flex-col gap-2 text-center mb-6">
+        <h1 class="text-3xl font-bold">Welcome Back!</h1>
+        <p class="text-lg text-muted-color">
+          Sign in to continue to Invoicer.
+        </p>
       </div>
-      <h1 class="text-4xl font-bold m-0">Invoicer</h1>
-      <p class="text-muted-color mt-2">Invoicing Made Simple</p>
-    </div>
-
-    <!-- Login Card -->
-    <p-card>
-      @if (step() === 'email') {
-        <!-- Step 1: Email -->
-        <div class="flex flex-col gap-5">
-          <div class="text-center">
-            <h2 class="text-xl font-semibold m-0">Welcome back</h2>
-            <p class="text-muted-color mt-1 text-sm">Enter your email to get started!</p>
-          </div>
-
-          <p-floatlabel variant="on">
-            <input
-              pInputText
-              id="email"
-              type="email"
-              class="w-full"
-              [ngModel]="email()"
-              (ngModelChange)="email.set($event)"
-              autocomplete="email"
-            />
-            <label for="email">Email address</label>
-          </p-floatlabel>
-
-          <p-button
-            label="Send Code"
-            icon="pi pi-envelope"
-            [loading]="loading()"
-            [disabled]="!isEmailValid()"
-            styleClass="w-full"
-            (click)="requestOtp()"
+      <div class="flex flex-col gap-5">
+        <p-floatLabel>
+          <input
+            pInputText
+            id="email"
+            type="email"
+            class="w-full"
+            [ngModel]="email()"
+            (ngModelChange)="email.set($event)"
+            autocomplete="email"
           />
-
-          <p-divider align="center">
-            <span class="text-muted-color text-sm">or</span>
-          </p-divider>
-
-          <p class="text-center text-sm m-0">
-            <span class="text-muted-color">Don't have an account? </span>
-            <a routerLink="/register" class="text-primary font-medium no-underline hover:underline">
-              Sign up
-            </a>
+          <label for="email">Email</label>
+        </p-floatLabel>
+        <p-button
+          label="Send Code"
+          icon="pi pi-arrow-right"
+          iconPos="right"
+          [loading]="loading()"
+          [disabled]="!isEmailValid()"
+          styleClass="w-full"
+          (click)="requestOtp()"
+        />
+        <div class="mt-4 text-center text-sm">
+          Don't have an account?
+          <a routerLink="/register" class="underline"> Sign up </a>
+        </div>
+      </div>
+    } @else {
+      <div class="flex flex-col items-center gap-5">
+        <div class="text-center">
+          <h2 class="text-2xl font-bold m-0">Check your inbox</h2>
+          <p class="text-muted-color mt-1">
+            We sent a 6-digit code to
+            <br />
+            <strong>{{ email() }}</strong>
           </p>
         </div>
-      } @else {
-        <!-- Step 2: OTP Verification -->
-        <div class="flex flex-col items-center gap-5">
-          <div class="text-center">
-            <div
-              class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary text-xl mx-auto mb-3"
-            >
-              <span class="pi pi-envelope" aria-hidden="true"></span>
-            </div>
-            <h2 class="text-xl font-semibold m-0">Check your inbox</h2>
-            <p class="text-muted-color mt-1 text-sm">
-              We sent a 6-digit code to
-              <br />
-              <strong>{{ email() }}</strong>
-            </p>
-          </div>
 
-          <p-inputotp
-            [ngModel]="otpCode()"
-            (ngModelChange)="otpCode.set($event)"
-            [length]="6"
-            [integerOnly]="true"
-          />
+        <p-inputOtp [ngModel]="otpCode()" (ngModelChange)="otpCode.set($event)" [length]="6" />
 
+        <p-button
+          label="Verify & Login"
+          icon="pi pi-check"
+          [loading]="loading()"
+          [disabled]="!isOtpComplete()"
+          styleClass="w-full"
+          (click)="login()"
+        />
+
+        <div class="flex items-center justify-between w-full">
           <p-button
-            label="Verify & Login"
-            icon="pi pi-sign-in"
-            [loading]="loading()"
-            [disabled]="!isOtpComplete()"
-            styleClass="w-full"
-            (click)="login()"
+            label="Back"
+            icon="pi pi-arrow-left"
+            [text]="true"
+            size="small"
+            (click)="backToEmail()"
           />
-
-          <div class="flex items-center justify-between w-full">
-            <p-button
-              label="Back"
-              icon="pi pi-arrow-left"
-              [text]="true"
-              size="small"
-              (click)="step.set('email')"
-            />
-            <p-button
-              label="Resend code"
-              icon="pi pi-refresh"
-              [text]="true"
-              size="small"
-              [loading]="otpLoading()"
-              [disabled]="otpLoading()"
-              (click)="requestOtp()"
-            />
-          </div>
+          <p-button
+            label="Resend code"
+            icon="pi pi-refresh"
+            [text]="true"
+            size="small"
+            [disabled]="resendTimer() > 0"
+            [pTooltip]="resendTimer() > 0 ? 'Resend code in ' + resendTimer() + 's' : undefined"
+            tooltipPosition="bottom"
+            (click)="requestOtp()"
+          />
         </div>
-      }
-    </p-card>
+      </div>
+    }
+  </p-card>
+  <div class="absolute bottom-4 left-4">
     <copyright />
   </div>
 </div>

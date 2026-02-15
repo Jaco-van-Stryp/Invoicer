@@ -1,18 +1,17 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, OnDestroy, signal } from '@angular/core';
 import { AbstractControl, FormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { DividerModule } from 'primeng/divider';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputOtpModule } from 'primeng/inputotp';
 import { InputTextModule } from 'primeng/inputtext';
+import { TooltipModule } from 'primeng/tooltip'; // Import TooltipModule
 import { AuthService, GetAccessTokenQuery, LoginResponse } from '../../../api';
 import { AuthStore } from '../../../Services/auth-store';
 import { Copyright } from '../../General/copyright/copyright';
 import { Logo } from '../../General/logo/logo';
-import { LottieAnimation } from "../../General/lottie-animation/lottie-animation";
 
 @Component({
   selector: 'app-login',
@@ -21,18 +20,18 @@ import { LottieAnimation } from "../../General/lottie-animation/lottie-animation
     RouterLink,
     ButtonModule,
     CardModule,
-    DividerModule,
     FloatLabelModule,
     InputOtpModule,
     InputTextModule,
     Copyright,
     Logo,
-    LottieAnimation
-],
+    TooltipModule, // Add TooltipModule to imports
+  ],
   host: { class: 'block' },
+  styleUrl: './login.css',
   templateUrl: './login.html',
 })
-export class Login {
+export class Login implements OnDestroy {
   router = inject(Router);
   authService = inject(AuthService);
   authStore = inject(AuthStore);
@@ -40,10 +39,12 @@ export class Login {
 
   step = signal<'email' | 'otp'>('email');
   loading = signal(false);
-  otpLoading = signal(false);
   email = signal('');
   otpCode = signal('');
   accessTokenKey = signal('');
+
+  resendTimer = signal(0);
+  private resendInterval: any;
 
   isEmailValid = computed(() => {
     const email = this.email();
@@ -54,13 +55,13 @@ export class Login {
 
   requestOtp() {
     this.loading.set(true);
-    this.otpLoading.set(true);
     const query: GetAccessTokenQuery = { email: this.email() };
     this.authService.getAccessToken(query).subscribe({
       next: (response) => {
         this.accessTokenKey.set(response.accessTokenKey ?? '');
         this.otpCode.set('');
         this.step.set('otp');
+        this.startResendTimer();
         this.messageService.add({
           severity: 'success',
           summary: 'Code Sent',
@@ -69,7 +70,6 @@ export class Login {
       },
       error: () => {
         this.loading.set(false);
-        this.otpLoading.set(false);
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
@@ -78,7 +78,6 @@ export class Login {
       },
       complete: () => {
         this.loading.set(false);
-        this.otpLoading.set(false);
       },
     });
   }
@@ -120,5 +119,25 @@ export class Login {
           this.loading.set(false);
         },
       });
+  }
+
+  startResendTimer() {
+    this.resendTimer.set(120);
+    this.resendInterval = setInterval(() => {
+      this.resendTimer.update(value => value - 1);
+      if (this.resendTimer() === 0) {
+        clearInterval(this.resendInterval);
+      }
+    }, 1000);
+  }
+
+  backToEmail() {
+    this.step.set('email');
+    clearInterval(this.resendInterval);
+    this.resendTimer.set(0);
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.resendInterval);
   }
 }
