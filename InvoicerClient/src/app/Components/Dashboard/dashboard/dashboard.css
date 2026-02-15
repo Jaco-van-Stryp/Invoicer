@@ -6,7 +6,7 @@
 }
 
 .dashboard-container {
-  height: 100dvh;
+  height: 100vh; /* Changed from dvh to vh to prevent mobile address bar CLS */
   width: 100%;
   display: flex;
   align-items: center;
@@ -53,7 +53,8 @@
   z-index: 2;
   width: 100%;
   max-width: 440px;
-  max-height: 80dvh;
+  max-height: 80vh; /* Changed from dvh to vh to prevent mobile address bar CLS */
+  min-height: 400px; /* Reserve space to prevent CLS when switching between empty/company list states */
   overflow-y: auto;
   background-color: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(30px);
