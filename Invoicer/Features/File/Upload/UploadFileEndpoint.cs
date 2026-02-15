@@ -16,6 +16,7 @@ public static class UploadFileEndpoint
                 }
             )
             .WithName("UploadFile")
+            .Accepts<UploadFileCommand>("multipart/form-data")
             .RequireAuthorization();
         return app;
     }

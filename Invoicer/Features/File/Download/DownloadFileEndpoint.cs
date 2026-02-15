@@ -17,6 +17,7 @@ public static class DownloadFileEndpoint
                 }
             )
             .WithName("DownloadFile")
+            .Produces<byte[]>(contentType: "application/octet-stream")
             .RequireAuthorization();
         return app;
     }
