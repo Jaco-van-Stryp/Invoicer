@@ -1,0 +1,75 @@
+:host {
+  --purple: #a855f7;
+  --pink: #ec4899;
+  --blue: #3b82f6;
+  --green: #22c55e;
+}
+
+.login-container {
+  height: 100dvh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  background-color: var(--surface-ground);
+}
+
+.login-container::before,
+.login-container::after {
+  content: '';
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  opacity: 0.3;
+  z-index: 1;
+  filter: blur(100px);
+}
+
+.login-container::before {
+  background-image: radial-gradient(circle, var(--purple), var(--pink));
+  top: -100px;
+  left: -100px;
+  animation: move-blob-1 15s infinite alternate;
+}
+
+.login-container::after {
+  background-image: radial-gradient(circle, var(--blue), var(--green));
+  bottom: -100px;
+  right: -100px;
+  animation: move-blob-2 15s infinite alternate;
+}
+
+.login-card {
+  z-index: 2;
+  width: 100%;
+  max-width: 400px;
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  color: var(--text-color);
+}
+
+@keyframes move-blob-1 {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(100px, 50px) scale(1.2);
+  }
+}
+
+@keyframes move-blob-2 {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(-100px, -50px) scale(1.2);
+  }
+}

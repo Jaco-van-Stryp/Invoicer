@@ -14,7 +14,7 @@ namespace Invoicer.Features.Products.GetAllProducts
                     {
                         var query = new GetAllProductsQuery(CompanyId);
                         var result = await sender.Send(query);
-                        return Results.Ok(result);
+                        return TypedResults.Ok(result);
                     }
                 )
                 .WithName("GetAllProducts")
