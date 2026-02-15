@@ -1,4 +1,3 @@
-using Invoicer.Features;
 using Invoicer.Infrastructure.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,29 +12,8 @@ builder
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+await app.ApplyMigrationsAsync();
 
-app.UseExceptionHandler();
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseHttpsRedirection();
-}
-
-app.UseDefaultFiles();
-app.UseStaticFiles();
-
-app.UseCors("AllowAll");
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapEndpoints();
-
-app.MapFallbackToFile("index.html");
+app.ConfigureMiddleware();
 
 app.Run();
