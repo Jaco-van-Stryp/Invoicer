@@ -1,6 +1,7 @@
 .gitignore
 README.md
 api.module.ts
+api/aPI.service.ts
 api/api.ts
 api/auth.service.ts
 api/client.service.ts
@@ -27,6 +28,7 @@ model/getAllCompaniesResponse.ts
 model/getAllInvoicesResponse.ts
 model/getAllProductsResponse.ts
 model/invoiceProductItem.ts
+model/joinWaitingListCommand.ts
 model/loginCommand.ts
 model/loginResponse.ts
 model/models.ts
@@ -37,6 +39,5 @@ model/updateCompanyDetailsCommand.ts
 model/updateInvoiceCommand.ts
 model/updateInvoiceProductItem.ts
 model/updateProductCommand.ts
-model/uploadFileCommand.ts
 param.ts
 variables.ts

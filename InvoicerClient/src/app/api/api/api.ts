@@ -1,3 +1,5 @@
+export * from './aPI.service';
+import { APIService } from './aPI.service';
 export * from './auth.service';
 import { AuthService } from './auth.service';
 export * from './client.service';
@@ -11,6 +13,7 @@ import { InvoiceService } from './invoice.service';
 export * from './product.service';
 import { ProductService } from './product.service';
 export const APIS = [
+  APIService,
   AuthService,
   ClientService,
   CompanyService,
