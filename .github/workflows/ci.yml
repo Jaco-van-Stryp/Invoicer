@@ -66,6 +66,8 @@ jobs:
     needs: build-and-push
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     runs-on: self-hosted
+    env:
+      DOCKER_API_VERSION: "1.41"
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
