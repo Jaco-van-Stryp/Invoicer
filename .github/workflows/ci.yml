@@ -31,21 +31,20 @@ jobs:
     needs: test
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     runs-on: self-hosted
+    timeout-minutes: 30
     env:
       DOCKER_API_VERSION: "1.41"
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ap-southeast-2
+      ECR_REGISTRY: 721651106263.dkr.ecr.ap-southeast-2.amazonaws.com
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
       - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+        run: |
+          aws ecr get-login-password --region ap-southeast-2 | \
+            docker login --username AWS --password-stdin 721651106263.dkr.ecr.ap-southeast-2.amazonaws.com
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -63,8 +62,8 @@ jobs:
           provenance: false
           sbom: false
           tags: |
-            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
-            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+            721651106263.dkr.ecr.ap-southeast-2.amazonaws.com/invoicer:latest
+            721651106263.dkr.ecr.ap-southeast-2.amazonaws.com/invoicer:${{ github.sha }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
 
@@ -77,25 +76,22 @@ jobs:
     needs: build-and-push
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     runs-on: self-hosted
+    timeout-minutes: 10
     env:
       DOCKER_API_VERSION: "1.41"
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ap-southeast-2
+      ECR_REGISTRY: 721651106263.dkr.ecr.ap-southeast-2.amazonaws.com
     steps:
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
       - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+        run: |
+          aws ecr get-login-password --region ap-southeast-2 | \
+            docker login --username AWS --password-stdin 721651106263.dkr.ecr.ap-southeast-2.amazonaws.com
 
       - name: Deploy
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          IMAGE="${ECR_REGISTRY}/invoicer:latest"
+          IMAGE="721651106263.dkr.ecr.ap-southeast-2.amazonaws.com/invoicer:latest"
 
           docker pull $IMAGE
 
