@@ -1,7 +1,6 @@
 import { Component, inject, signal, computed, afterNextRender, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -15,7 +14,6 @@ import { LottieAnimation } from '../../General/lottie-animation/lottie-animation
   selector: 'app-landing',
   imports: [
     FormsModule,
-    RouterLink,
     ButtonModule,
     InputTextModule,
     RippleModule,
