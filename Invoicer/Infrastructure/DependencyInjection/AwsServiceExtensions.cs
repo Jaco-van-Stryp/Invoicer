@@ -1,6 +1,7 @@
 using Amazon.SimpleEmailV2;
 using Invoicer.Infrastructure.EmailService;
 using Invoicer.Infrastructure.EmailTemplateService;
+using Invoicer.Infrastructure.EmailValidationService;
 
 namespace Invoicer.Infrastructure.DependencyInjection;
 
@@ -22,6 +23,7 @@ public static class AwsServiceExtensions
         services.Configure<SesOptions>(configuration.GetSection("SES"));
         services.AddSingleton<IEmailService, EmailService.EmailService>();
         services.AddSingleton<IEmailTemplateService, EmailTemplateService.EmailTemplateService>();
+        services.AddSingleton<IEmailValidationService, EmailValidationService.EmailValidationService>();
 
         return services;
     }

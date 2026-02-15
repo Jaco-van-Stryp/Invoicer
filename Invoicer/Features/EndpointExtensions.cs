@@ -4,6 +4,7 @@ using Invoicer.Features.Company;
 using Invoicer.Features.File;
 using Invoicer.Features.Invoice;
 using Invoicer.Features.Products;
+using Invoicer.Features.WaitingList;
 
 namespace Invoicer.Features;
 
@@ -19,6 +20,7 @@ public static class EndpointExtensions
         group.MapFileEndpoints();
         group.MapClientEndpoints();
         group.MapInvoiceEndpoints();
+        group.MapWaitingListEndpoints();
 
         return app;
     }

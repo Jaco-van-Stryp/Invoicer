@@ -1,12 +1,13 @@
 ﻿using Invoicer.Domain.Data;
 using Invoicer.Domain.Entities;
 using Invoicer.Features.Auth.GetAccessToken;
+using Invoicer.Infrastructure.EmailValidationService;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Invoicer.Features.Auth.Register
 {
-    public class RegisterHandler(AppDbContext _dbContext, ISender _sender)
+    public class RegisterHandler(AppDbContext _dbContext, ISender _sender, IEmailValidationService _emailValidationService)
         : IRequestHandler<RegisterCommand, RegisterResponse>
     {
         public async Task<RegisterResponse> Handle(
@@ -14,6 +15,12 @@ namespace Invoicer.Features.Auth.Register
             CancellationToken cancellationToken
         )
         {
+            // TOOD - if joining from waiting list, account for that by updating the waiting list entry instead.
+
+            var isValidEmail = await _emailValidationService.IsValidEmail(request.Email);
+            if (!isValidEmail)
+                return new RegisterResponse(Guid.NewGuid());
+
             var existingUser = await _dbContext.Users.FirstOrDefaultAsync(
                 x => x.Email == request.Email,
                 cancellationToken

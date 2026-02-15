@@ -15,6 +15,7 @@ namespace Invoicer.Domain.Data
         public DbSet<ProductInvoice> ProductInvoices { get; set; }
         public DbSet<AuthToken> AuthTokens { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<WaitingList> WaitingList { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
