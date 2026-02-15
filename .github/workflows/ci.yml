@@ -31,6 +31,8 @@ jobs:
     needs: test
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     runs-on: self-hosted
+    env:
+      DOCKER_API_VERSION: "1.41"
     steps:
       - uses: actions/checkout@v4
 
