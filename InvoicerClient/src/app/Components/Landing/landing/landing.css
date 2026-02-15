@@ -217,6 +217,7 @@
   max-width: 500px;
   border-radius: 1.5rem;
   overflow: hidden;
+  aspect-ratio: 1;
 }
 
 /* SUCCESS */
@@ -228,6 +229,7 @@
   padding: 2rem;
   text-align: center;
   animation: popin 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  min-height: 250px; /* Reserve space to prevent CLS when form transitions to success */
 }
 .success-icon-wrapper {
   width: 64px;
