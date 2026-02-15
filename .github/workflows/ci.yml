@@ -22,7 +22,10 @@ jobs:
 
       - run: dotnet build --configuration Release
 
-      - run: dotnet test Invoicer.Tests --configuration Release --no-build
+      - name: Run tests
+        env:
+          DOCKER_API_VERSION: "1.41"
+        run: dotnet test Invoicer.Tests --configuration Release --no-build
 
   build-and-push:
     needs: test
