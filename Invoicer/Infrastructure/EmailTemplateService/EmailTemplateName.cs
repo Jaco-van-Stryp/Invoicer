@@ -6,5 +6,6 @@ namespace Invoicer.Infrastructure.EmailTemplateService
         Welcome,
         InvoiceSent,
         AccountLockedOut,
+        WaitingListConfirmation,
     }
 }
