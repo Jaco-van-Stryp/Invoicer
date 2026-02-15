@@ -217,7 +217,7 @@
   max-width: 500px;
   border-radius: 1.5rem;
   overflow: hidden;
-  aspect-ratio: 1; /* Reserve space for Lottie animation to prevent CLS */
+  aspect-ratio: 1;
 }
 
 /* SUCCESS */
