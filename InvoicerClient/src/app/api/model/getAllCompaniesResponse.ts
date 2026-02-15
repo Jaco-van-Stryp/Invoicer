@@ -8,12 +8,13 @@
  * Do not edit the class manually.
  */
 
-export interface CreateClientResponse {
+export interface GetAllCompaniesResponse {
   id?: string;
   name?: string | null;
-  email?: string | null;
   address?: string | null;
   taxNumber?: string | null;
   phoneNumber?: string | null;
-  companyId?: string;
+  email?: string | null;
+  paymentDetails?: string | null;
+  logoUrl?: string | null;
 }

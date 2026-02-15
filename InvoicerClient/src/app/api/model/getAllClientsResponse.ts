@@ -8,10 +8,11 @@
  * Do not edit the class manually.
  */
 
-export interface CreateProductCommand {
-  companyId?: string;
+export interface GetAllClientsResponse {
+  id?: string;
   name?: string | null;
-  price?: number;
-  description?: string | null;
-  imageUrl?: string | null;
+  email?: string | null;
+  address?: string | null;
+  taxNumber?: string | null;
+  phoneNumber?: string | null;
 }

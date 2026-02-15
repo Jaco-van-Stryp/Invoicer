@@ -124,7 +124,7 @@ export class Login implements OnDestroy {
   startResendTimer() {
     this.resendTimer.set(120);
     this.resendInterval = setInterval(() => {
-      this.resendTimer.update(value => value - 1);
+      this.resendTimer.update((value) => value - 1);
       if (this.resendTimer() === 0) {
         clearInterval(this.resendInterval);
       }

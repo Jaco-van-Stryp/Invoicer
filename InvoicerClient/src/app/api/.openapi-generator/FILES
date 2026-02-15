@@ -1,5 +1,4 @@
 .gitignore
-.openapi-generator-ignore
 README.md
 api.module.ts
 api/api.ts
@@ -11,7 +10,6 @@ api/invoice.service.ts
 api/product.service.ts
 configuration.ts
 encoder.ts
-git_push.sh
 index.ts
 model/createClientCommand.ts
 model/createClientResponse.ts
@@ -24,6 +22,11 @@ model/createProductCommand.ts
 model/createProductResponse.ts
 model/getAccessTokenQuery.ts
 model/getAccessTokenResponse.ts
+model/getAllClientsResponse.ts
+model/getAllCompaniesResponse.ts
+model/getAllInvoicesResponse.ts
+model/getAllProductsResponse.ts
+model/invoiceProductItem.ts
 model/loginCommand.ts
 model/loginResponse.ts
 model/models.ts

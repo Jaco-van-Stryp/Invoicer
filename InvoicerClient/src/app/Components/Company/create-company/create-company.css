@@ -5,7 +5,7 @@
   --green: #22c55e;
 }
 
-.register-container {
+.create-company-container {
   height: 100dvh;
   width: 100%;
   display: flex;
@@ -16,8 +16,8 @@
   background-color: var(--surface-ground);
 }
 
-.register-container::before,
-.register-container::after {
+.create-company-container::before,
+.create-company-container::after {
   content: '';
   position: absolute;
   width: 400px;
@@ -28,24 +28,26 @@
   filter: blur(100px);
 }
 
-.register-container::before {
+.create-company-container::before {
   background-image: radial-gradient(circle, var(--purple), var(--pink));
   top: -100px;
   left: -100px;
   animation: move-blob-1 15s infinite alternate;
 }
 
-.register-container::after {
+.create-company-container::after {
   background-image: radial-gradient(circle, var(--blue), var(--green));
   bottom: -100px;
   right: -100px;
   animation: move-blob-2 15s infinite alternate;
 }
 
-.register-card {
+.create-company-card {
   z-index: 2;
   width: 100%;
-  max-width: 400px;
+  max-width: 480px;
+  max-height: 90dvh;
+  overflow-y: auto;
   background-color: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);

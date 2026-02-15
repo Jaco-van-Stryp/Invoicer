@@ -6,7 +6,7 @@ import { Toast } from 'primeng/toast';
   selector: 'app-root',
   imports: [RouterOutlet, Toast],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrl: './app.css',
 })
 export class App {
   protected readonly title = signal('InvoicerClient');

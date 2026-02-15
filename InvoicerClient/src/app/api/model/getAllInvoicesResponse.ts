@@ -7,8 +7,14 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { InvoiceProductItem } from './invoiceProductItem';
 
-export interface CreateInvoiceResponse {
+export interface GetAllInvoicesResponse {
   id?: string;
   invoiceNumber?: string | null;
+  invoiceDate?: string;
+  invoiceDue?: string;
+  clientId?: string;
+  clientName?: string | null;
+  products?: Array<InvoiceProductItem> | null;
 }

@@ -14,7 +14,7 @@ namespace Invoicer.Features.Invoice.GetAllInvoices
                     {
                         var query = new GetAllInvoicesQuery(CompanyId);
                         var result = await sender.Send(query);
-                        return Results.Ok(result);
+                        return TypedResults.Ok(result);
                     }
                 )
                 .WithName("GetAllInvoices")

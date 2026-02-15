@@ -10,8 +10,8 @@
 import { CreateInvoiceProductItem } from './createInvoiceProductItem';
 
 export interface CreateInvoiceCommand {
-  companyId: string;
-  clientId: string;
+  companyId?: string;
+  clientId?: string;
   invoiceNumber: string;
   invoiceDate?: string;
   invoiceDue?: string;

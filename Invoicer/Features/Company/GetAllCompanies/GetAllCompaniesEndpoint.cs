@@ -14,7 +14,7 @@ namespace Invoicer.Features.Company.GetAllCompanies
                     {
                         var query = new GetAllCompaniesQuery();
                         var result = await sender.Send(query);
-                        return Results.Ok(result);
+                        return TypedResults.Ok(result);
                     }
                 )
                 .WithName("GetAllCompanies")

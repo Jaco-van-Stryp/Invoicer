@@ -9,8 +9,8 @@
  */
 
 export interface UpdateClientCommand {
-  companyId: string;
-  clientId: string;
+  companyId?: string;
+  clientId?: string;
   name?: string | null;
   email?: string | null;
   address?: string | null;

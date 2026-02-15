@@ -12,7 +12,7 @@ namespace Invoicer.Features.Client.GetAllClients
                     {
                         var query = new GetAllClientsQuery(CompanyId);
                         var result = await sender.Send(query);
-                        return Results.Ok(result);
+                        return TypedResults.Ok(result);
                     }
                 )
                 .WithName("GetAllClients")

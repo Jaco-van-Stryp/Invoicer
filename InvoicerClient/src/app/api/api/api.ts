@@ -10,4 +10,11 @@ export * from './invoice.service';
 import { InvoiceService } from './invoice.service';
 export * from './product.service';
 import { ProductService } from './product.service';
-export const APIS = [AuthService, ClientService, CompanyService, FileService, InvoiceService, ProductService];
+export const APIS = [
+  AuthService,
+  ClientService,
+  CompanyService,
+  FileService,
+  InvoiceService,
+  ProductService,
+];
