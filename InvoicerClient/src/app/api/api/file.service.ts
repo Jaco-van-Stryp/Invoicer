@@ -23,9 +23,6 @@ import { CustomHttpParameterCodec } from '../encoder';
 import { Observable } from 'rxjs';
 
 // @ts-ignore
-import { UploadFileCommand } from '../model/uploadFileCommand';
-
-// @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS } from '../variables';
 import { Configuration } from '../configuration';
 
@@ -58,6 +55,20 @@ export class FileService {
       this.configuration.basePath = basePath;
     }
     this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
+  }
+
+  /**
+   * @param consumes string[] mime-types
+   * @return true: consumes contains 'multipart/form-data', false: otherwise
+   */
+  private canConsumeForm(consumes: string[]): boolean {
+    const form = 'multipart/form-data';
+    for (const consume of consumes) {
+      if (form === consume) {
+        return true;
+      }
+    }
+    return false;
   }
 
   // @ts-ignore
@@ -113,25 +124,41 @@ export class FileService {
     filename: string,
     observe?: 'body',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any>;
+    options?: {
+      httpHeaderAccept?: 'application/octet-stream';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<string>;
   public downloadFile(
     filename: string,
     observe?: 'response',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpResponse<any>>;
+    options?: {
+      httpHeaderAccept?: 'application/octet-stream';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<string>>;
   public downloadFile(
     filename: string,
     observe?: 'events',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpEvent<any>>;
+    options?: {
+      httpHeaderAccept?: 'application/octet-stream';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<string>>;
   public downloadFile(
     filename: string,
     observe: any = 'body',
     reportProgress: boolean = false,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
+    options?: {
+      httpHeaderAccept?: 'application/octet-stream';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
   ): Observable<any> {
     if (filename === null || filename === undefined) {
       throw new Error(
@@ -151,7 +178,7 @@ export class FileService {
     let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
     if (localVarHttpHeaderAcceptSelected === undefined) {
       // to determine the Accept header
-      const httpHeaderAccepts: string[] = [];
+      const httpHeaderAccepts: string[] = ['application/octet-stream'];
       localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
     }
     if (localVarHttpHeaderAcceptSelected !== undefined) {
@@ -180,7 +207,7 @@ export class FileService {
     }
 
     let localVarPath = `/api/file/download/${this.configuration.encodeParam({ name: 'filename', value: filename, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: 'uuid' })}`;
-    return this.httpClient.request<any>('get', `${this.configuration.basePath}${localVarPath}`, {
+    return this.httpClient.request<string>('get', `${this.configuration.basePath}${localVarPath}`, {
       context: localVarHttpContext,
       responseType: <any>responseType_,
       withCredentials: this.configuration.withCredentials,
@@ -192,12 +219,12 @@ export class FileService {
   }
 
   /**
-   * @param uploadFileCommand
+   * @param fileStream
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
   public uploadFile(
-    uploadFileCommand: UploadFileCommand,
+    fileStream?: Blob,
     observe?: 'body',
     reportProgress?: boolean,
     options?: {
@@ -207,7 +234,7 @@ export class FileService {
     },
   ): Observable<string>;
   public uploadFile(
-    uploadFileCommand: UploadFileCommand,
+    fileStream?: Blob,
     observe?: 'response',
     reportProgress?: boolean,
     options?: {
@@ -217,7 +244,7 @@ export class FileService {
     },
   ): Observable<HttpResponse<string>>;
   public uploadFile(
-    uploadFileCommand: UploadFileCommand,
+    fileStream?: Blob,
     observe?: 'events',
     reportProgress?: boolean,
     options?: {
@@ -227,7 +254,7 @@ export class FileService {
     },
   ): Observable<HttpEvent<string>>;
   public uploadFile(
-    uploadFileCommand: UploadFileCommand,
+    fileStream?: Blob,
     observe: any = 'body',
     reportProgress: boolean = false,
     options?: {
@@ -236,12 +263,6 @@ export class FileService {
       transferCache?: boolean;
     },
   ): Observable<any> {
-    if (uploadFileCommand === null || uploadFileCommand === undefined) {
-      throw new Error(
-        'Required parameter uploadFileCommand was null or undefined when calling uploadFile.',
-      );
-    }
-
     let localVarHeaders = this.defaultHeaders;
 
     let localVarCredential: string | undefined;
@@ -272,11 +293,25 @@ export class FileService {
     }
 
     // to determine the Content-Type header
-    const consumes: string[] = ['application/json'];
-    const httpContentTypeSelected: string | undefined =
-      this.configuration.selectHeaderContentType(consumes);
-    if (httpContentTypeSelected !== undefined) {
-      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    const consumes: string[] = ['multipart/form-data'];
+
+    const canConsumeForm = this.canConsumeForm(consumes);
+
+    let localVarFormParams: { append(param: string, value: any): any };
+    let localVarUseForm = false;
+    let localVarConvertFormParamsToString = false;
+    // use FormData to transmit files using content-type "multipart/form-data"
+    // see https://stackoverflow.com/questions/4007969/application-x-www-form-urlencoded-or-multipart-form-data
+    localVarUseForm = canConsumeForm;
+    if (localVarUseForm) {
+      localVarFormParams = new FormData();
+    } else {
+      localVarFormParams = new HttpParams({ encoder: this.encoder });
+    }
+
+    if (fileStream !== undefined) {
+      localVarFormParams =
+        (localVarFormParams.append('fileStream', <any>fileStream) as any) || localVarFormParams;
     }
 
     let responseType_: 'text' | 'json' | 'blob' = 'json';
@@ -296,7 +331,9 @@ export class FileService {
       `${this.configuration.basePath}${localVarPath}`,
       {
         context: localVarHttpContext,
-        body: uploadFileCommand,
+        body: localVarConvertFormParamsToString
+          ? localVarFormParams.toString()
+          : localVarFormParams,
         responseType: <any>responseType_,
         withCredentials: this.configuration.withCredentials,
         headers: localVarHeaders,

@@ -52,6 +52,7 @@ export class Dashboard implements OnInit {
           summary: 'Error',
           detail: 'Failed to load companies.',
         });
+        this.loading.set(false);
       },
       complete: () => {
         this.loading.set(false);
@@ -64,7 +65,7 @@ export class Dashboard implements OnInit {
     this.messageService.add({
       severity: 'success',
       summary: 'Company Selected',
-      detail: `Now working with ${company.name}`,
+      detail: `Now working with ${company.name ?? 'Unknown Company'}`,
     });
   }
 

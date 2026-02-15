@@ -59,7 +59,7 @@
         <p class="text-lg text-muted-color">Choose a company to work with.</p>
       </div>
       <div class="flex flex-col gap-3">
-        @for (company of companies(); track company.id) {
+        @for (company of companies(); track company.id ?? $index) {
           <button class="company-item" (click)="selectCompany(company)">
             <div class="flex items-center gap-3">
               <div class="company-avatar">

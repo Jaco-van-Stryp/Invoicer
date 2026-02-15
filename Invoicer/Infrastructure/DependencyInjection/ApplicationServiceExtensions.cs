@@ -1,3 +1,5 @@
+using Invoicer.Infrastructure.EmailTemplateService;
+using Invoicer.Infrastructure.EmailValidationService;
 using Invoicer.Infrastructure.ExceptionHandling;
 using Invoicer.Infrastructure.Validation;
 
@@ -11,6 +13,9 @@ public static class ApplicationServiceExtensions
         IHostEnvironment environment
     )
     {
+        services.AddMemoryCache();
+        services.AddHttpClient();
+
         services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
@@ -19,6 +24,9 @@ public static class ApplicationServiceExtensions
 
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
+
+        services.AddSingleton<IEmailTemplateService, EmailTemplateService.EmailTemplateService>();
+        services.AddSingleton<IEmailValidationService, EmailValidationService.EmailValidationService>();
 
         services.AddCors(options =>
         {

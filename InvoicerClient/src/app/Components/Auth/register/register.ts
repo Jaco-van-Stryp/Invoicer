@@ -148,11 +148,16 @@ export class Register implements OnDestroy {
   }
 
   startResendTimer() {
+    if (this.resendInterval) {
+      clearInterval(this.resendInterval);
+      this.resendInterval = null;
+    }
     this.resendTimer.set(120);
     this.resendInterval = setInterval(() => {
       this.resendTimer.update((value) => value - 1);
       if (this.resendTimer() === 0) {
         clearInterval(this.resendInterval);
+        this.resendInterval = null;
       }
     }, 1000);
   }

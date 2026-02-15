@@ -1,0 +1,236 @@
+<!-- ═══════════════════════════  NAV  ═══════════════════════════ -->
+<nav class="landing-nav" [class.visible]="isVisible()">
+  <div class="nav-inner">
+    <div class="nav-logo cursor-pointer" (click)="scrollTo('hero')">
+      <logo />
+    </div>
+    <div class="nav-links">
+      <a class="nav-link" (click)="scrollTo('features')">Features</a>
+      <a class="nav-link" (click)="scrollTo('stats')">Why Invoicer</a>
+      <a class="nav-link nav-cta" (click)="scrollTo('waitlist')">Join Waitlist</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════  HERO  ═══════════════════════════ -->
+<header id="hero" class="hero-section">
+  <div class="hero-blob hero-blob-1"></div>
+  <div class="hero-blob hero-blob-2"></div>
+  <div class="hero-blob hero-blob-3"></div>
+
+  <div class="hero-content" [class.visible]="isVisible()">
+    <div class="hero-text">
+      <div class="hero-badge">
+        <i class="pi pi-sparkles"></i>
+        <span>Coming Soon — Join the Waitlist</span>
+      </div>
+
+      <h1 class="hero-title">
+        Invoicing made
+        <span class="gradient-text">effortless</span>
+        for modern businesses
+      </h1>
+
+      <p class="hero-subtitle">
+        Create professional invoices, manage clients, and track your products — all from one
+        beautiful, lightning-fast platform. No passwords. No friction. Just business.
+      </p>
+
+      <!-- Hero CTA -->
+      <div class="hero-cta">
+        @if (!submitted()) {
+          <div class="hero-input-group">
+            <input
+              pInputText
+              type="email"
+              placeholder="Enter your email address"
+              class="hero-email-input"
+              [ngModel]="email()"
+              (ngModelChange)="email.set($event)"
+              (keyup.enter)="joinWaitingList()"
+              autocomplete="email"
+              aria-label="Email address for waiting list"
+            />
+            <p-button
+              label="Get Early Access"
+              icon="pi pi-arrow-right"
+              iconPos="right"
+              [loading]="loading()"
+              [disabled]="!isEmailValid()"
+              (click)="joinWaitingList()"
+              styleClass="hero-cta-btn"
+            />
+          </div>
+          <p class="hero-privacy">
+            <i class="pi pi-shield"></i>
+            No spam, ever. We'll only email you when we launch.
+          </p>
+        } @else {
+          <div class="success-state">
+            <div class="success-icon-wrapper">
+              <i class="pi pi-check-circle"></i>
+            </div>
+            <h3>You're on the list!</h3>
+            <p>We'll send you an invite as soon as Invoicer is ready.</p>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="hero-animation-wrapper">
+        <animation [animationName]="'business'"></animation>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════  STATS  ═══════════════════════════ -->
+<section id="stats" class="stats-section">
+  <div class="stats-grid">
+    @for (stat of stats; track stat.label) {
+      <div class="stat-item">
+        <span class="stat-value">{{ stat.value }}</span>
+        <span class="stat-label">{{ stat.label }}</span>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- ═══════════════════════════  FEATURES  ═══════════════════════════ -->
+<section id="features" class="features-section">
+  <div class="features-header">
+    <h2 class="section-title">
+      Everything you need to
+      <span class="gradient-text">get paid faster</span>
+    </h2>
+    <p class="section-subtitle">
+      Invoicer brings together invoicing, client management, and product tracking into one
+      streamlined experience — built for freelancers, agencies, and small businesses.
+    </p>
+  </div>
+
+  <div class="features-grid">
+    @for (feature of features; track feature.title; let i = $index) {
+      <article class="feature-card" [class.visible]="isVisible()">
+        <div class="feature-icon-wrapper">
+          <i [class]="feature.icon"></i>
+        </div>
+        <h3 class="feature-title">{{ feature.title }}</h3>
+        <p class="feature-description">{{ feature.description }}</p>
+      </article>
+    }
+  </div>
+</section>
+
+<!-- ═══════════════════════════  HOW IT WORKS  ═══════════════════════════ -->
+<section class="how-section">
+  <div class="features-header">
+    <h2 class="section-title">
+      Simple as
+      <span class="gradient-text">1-2-3</span>
+    </h2>
+    <p class="section-subtitle">Get from zero to invoiced in under a minute.</p>
+  </div>
+
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-number">1</div>
+      <h3>Sign Up Instantly</h3>
+      <p>Enter your email. Receive a code. You're in — no passwords required.</p>
+    </div>
+    <div class="step-connector">
+      <i class="pi pi-arrow-right"></i>
+    </div>
+    <div class="step-card">
+      <div class="step-number">2</div>
+      <h3>Set Up Your Business</h3>
+      <p>Add your company details, products, and client list in minutes.</p>
+    </div>
+    <div class="step-connector">
+      <i class="pi pi-arrow-right"></i>
+    </div>
+    <div class="step-card">
+      <div class="step-number">3</div>
+      <h3>Send Your First Invoice</h3>
+      <p>Pick a client, add products, and send a professional invoice instantly.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════  CTA / WAITLIST  ═══════════════════════════ -->
+<section id="waitlist" class="waitlist-section">
+  <div class="waitlist-blob waitlist-blob-1"></div>
+  <div class="waitlist-blob waitlist-blob-2"></div>
+
+  <div class="waitlist-content">
+    <h2 class="section-title text-white">
+      Ready to simplify your
+      <span class="gradient-text">invoicing</span>?
+    </h2>
+    <p class="section-subtitle" style="color: rgba(255, 255, 255, 0.8)">
+      Join hundreds of business owners already on the waiting list. Be the first to experience the
+      future of invoicing.
+    </p>
+
+    @if (!submitted()) {
+      <div class="waitlist-form">
+        <div class="hero-input-group">
+          <input
+            pInputText
+            type="email"
+            placeholder="Enter your email address"
+            class="hero-email-input"
+            [ngModel]="email()"
+            (ngModelChange)="email.set($event)"
+            (keyup.enter)="joinWaitingList()"
+            autocomplete="email"
+            aria-label="Email address for waiting list"
+          />
+          <p-button
+            label="Join the Waitlist"
+            icon="pi pi-arrow-right"
+            iconPos="right"
+            [loading]="loading()"
+            [disabled]="!isEmailValid()"
+            (click)="joinWaitingList()"
+            styleClass="hero-cta-btn"
+          />
+        </div>
+        <p class="hero-privacy" style="color: rgba(255, 255, 255, 0.6)">
+          <i class="pi pi-shield"></i>
+          Free forever during beta. No credit card required.
+        </p>
+      </div>
+    } @else {
+      <div class="success-state" style="color: #fff">
+        <div class="success-icon-wrapper">
+          <i class="pi pi-check-circle"></i>
+        </div>
+        <h3>You're on the list!</h3>
+        <p>We'll send you an invite as soon as Invoicer is ready.</p>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- ═══════════════════════════  FOOTER  ═══════════════════════════ -->
+<footer class="landing-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <logo />
+      <p class="footer-tagline">Invoicing made effortless for modern businesses.</p>
+    </div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h4>Product</h4>
+        <a (click)="scrollTo('features')">Features</a>
+        <a (click)="scrollTo('stats')">Why Invoicer</a>
+        <a (click)="scrollTo('waitlist')">Join Waitlist</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <copyright />
+  </div>
+</footer>
