@@ -10,6 +10,7 @@ import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { BASE_PATH } from './api/variables';
 import { environment } from '../environments/environment';
+import { provideLottieOptions } from 'ngx-lottie';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -24,6 +25,9 @@ export const appConfig: ApplicationConfig = {
       theme: {
         preset: Aura,
       },
+    }),
+    provideLottieOptions({
+      player: () => import('lottie-web'),
     }),
   ],
 };

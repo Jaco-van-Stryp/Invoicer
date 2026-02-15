@@ -10,6 +10,9 @@ import { InputOtpModule } from 'primeng/inputotp';
 import { InputTextModule } from 'primeng/inputtext';
 import { AuthService, GetAccessTokenQuery, LoginResponse } from '../../../api';
 import { AuthStore } from '../../../Services/auth-store';
+import { Copyright } from '../../General/copyright/copyright';
+import { Logo } from '../../General/logo/logo';
+import { LottieAnimation } from "../../General/lottie-animation/lottie-animation";
 
 @Component({
   selector: 'app-login',
@@ -22,7 +25,10 @@ import { AuthStore } from '../../../Services/auth-store';
     FloatLabelModule,
     InputOtpModule,
     InputTextModule,
-  ],
+    Copyright,
+    Logo,
+    LottieAnimation
+],
   host: { class: 'block' },
   templateUrl: './login.html',
 })
