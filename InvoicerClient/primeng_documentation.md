@@ -103,7 +103,7 @@
 - [Angular Table Component](https://primeng.org/table): Table displays data in tabular format.
 - [Angular Tabs Component](https://primeng.org/tabs): Tabs is a container component to group content with tabs.
 - [Angular Tag Component](https://primeng.org/tag): Tag component is used to categorize content.
-- [Angular Terminal Component](https://primeng.org/terminal):
+- [Angular Terminal Component](https://primeng.org/terminal): Provides a command-line style UI component for interactive command input and output, useful for building shell-like interfaces or developer tools.
 - [Angular Textarea Component](https://primeng.org/textarea): Textarea adds styling and autoResize functionality to standard textarea element.
 - [Angular TieredMenu Component](https://primeng.org/tieredmenu): TieredMenu displays submenus in nested overlays.
 - [Angular Timeline Component](https://primeng.org/timeline): Timeline visualizes a series of chained events.

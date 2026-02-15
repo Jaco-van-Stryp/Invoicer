@@ -21,3 +21,6 @@
 #docs/*.md
 # Then explicitly reverse the ignore rule for a single file:
 #!docs/README.md
+
+# Prevent regeneration of git_push.sh (contains credential-embedding patterns)
+git_push.sh

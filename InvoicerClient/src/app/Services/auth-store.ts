@@ -10,12 +10,16 @@ export class AuthStore {
   readonly isLoggedIn = computed(() => !!this.tokenSignal());
 
   setToken(token: string): void {
-    localStorage.setItem(TOKEN_KEY, token);
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem(TOKEN_KEY, token);
+    }
     this.tokenSignal.set(token);
   }
 
   clearToken(): void {
-    localStorage.removeItem(TOKEN_KEY);
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem(TOKEN_KEY);
+    }
     this.tokenSignal.set(null);
   }
 

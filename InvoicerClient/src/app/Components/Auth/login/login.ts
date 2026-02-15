@@ -34,6 +34,7 @@ export class Login {
 
   step = signal<'email' | 'otp'>('email');
   loading = signal(false);
+  otpLoading = signal(false);
   email = signal('');
   otpCode = signal('');
   accessTokenKey = signal('');
@@ -47,6 +48,7 @@ export class Login {
 
   requestOtp() {
     this.loading.set(true);
+    this.otpLoading.set(true);
     const query: GetAccessTokenQuery = { email: this.email() };
     this.authService.getAccessToken(query).subscribe({
       next: (response) => {
@@ -61,6 +63,7 @@ export class Login {
       },
       error: () => {
         this.loading.set(false);
+        this.otpLoading.set(false);
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
@@ -69,6 +72,7 @@ export class Login {
       },
       complete: () => {
         this.loading.set(false);
+        this.otpLoading.set(false);
       },
     });
   }
@@ -85,13 +89,19 @@ export class Login {
         next: (response: LoginResponse) => {
           if (response.token) {
             this.authStore.setToken(response.token);
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: 'Logged in successfully',
+            });
+            this.router.navigate(['/dashboard']);
+          } else {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Authentication Failed',
+              detail: 'No token received. Please try again.',
+            });
           }
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Logged in successfully',
-          });
-          this.router.navigate(['/dashboard']);
         },
         error: () => {
           this.messageService.add({

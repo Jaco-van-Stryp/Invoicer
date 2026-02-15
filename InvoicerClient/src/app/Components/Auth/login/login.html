@@ -100,6 +100,8 @@
               icon="pi pi-refresh"
               [text]="true"
               size="small"
+              [loading]="otpLoading()"
+              [disabled]="otpLoading()"
               (click)="requestOtp()"
             />
           </div>

@@ -6,12 +6,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 When working on this project, use Context7 (`mcp__context7__query-docs`) to look up current documentation. Resolve library IDs first with `mcp__context7__resolve-library-id`, or use these known IDs directly:
 
-| Library           | Context7 ID                       | Use for                                    |
-| ----------------- | --------------------------------- | ------------------------------------------ |
-| Angular 21        | `/websites/angular_dev`           | Components, signals, routing, SSR, DI      |
-| PrimeNG 20+       | `/websites/v20_primeng`           | UI components (Button, InputOtp, Table etc) |
-| Tailwind CSS      | *(resolve at query time)*         | Utility classes, responsive design          |
-| .NET / EF Core    | *(resolve at query time)*         | API, DbContext, migrations                  |
+| Library        | Context7 ID               | Use for                                      |
+| -------------- | ------------------------- | -------------------------------------------- |
+| Angular 21     | `/websites/angular_dev`   | Components, signals, routing, SSR, DI        |
+| PrimeNG 21     | `/websites/v20_primeng`   | UI components (Button, InputOtp, Table etc.) |
+| Tailwind CSS   | _(resolve at query time)_ | Utility classes, responsive design           |
+| .NET / EF Core | _(resolve at query time)_ | API, DbContext, migrations                   |
 
 ## Build & Run Commands
 
@@ -185,6 +185,7 @@ InvoicerClient/
 The `InvoicerClient/src/app/api/` directory is **auto-generated** by OpenAPI Generator from the .NET backend's Swagger spec. **Do not edit files in this directory manually** — they will be overwritten.
 
 To regenerate after backend API changes:
+
 1. Run the .NET API (`dotnet run --project Invoicer`)
 2. Run `npm run generate` from `InvoicerClient/`
 3. Generated services are `@Injectable({ providedIn: 'root' })` and use `HttpClient`
