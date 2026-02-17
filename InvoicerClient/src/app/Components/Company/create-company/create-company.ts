@@ -3,25 +3,21 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { CompanyService, CreateCompanyCommand } from '../../../api';
 import { Copyright } from '../../General/copyright/copyright';
-import { Logo } from '../../General/logo/logo';
 
 @Component({
   selector: 'app-create-company',
   imports: [
     FormsModule,
     ButtonModule,
-    CardModule,
     FloatLabelModule,
     InputTextModule,
     TextareaModule,
     Copyright,
-    Logo,
   ],
   host: { class: 'block' },
   styleUrl: './create-company.css',
