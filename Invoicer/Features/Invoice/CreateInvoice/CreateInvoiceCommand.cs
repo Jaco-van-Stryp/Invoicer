@@ -6,10 +6,10 @@ namespace Invoicer.Features.Invoice.CreateInvoice
     public readonly record struct CreateInvoiceCommand(
         Guid CompanyId,
         Guid ClientId,
-        [property: Required] string InvoiceNumber,
+        [property: Required] string InvoiceNumber, // TODO not required? - generate in backend
         DateTime InvoiceDate,
         DateTime InvoiceDue,
-        [property: Required] [property: MinLength(1)] List<CreateInvoiceProductItem> Products
+        [property: Required][property: MinLength(1)] List<CreateInvoiceProductItem> Products
     ) : IRequest<CreateInvoiceResponse>;
 
     public readonly record struct CreateInvoiceProductItem(

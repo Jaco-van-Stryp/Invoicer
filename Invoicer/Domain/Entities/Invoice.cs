@@ -15,4 +15,6 @@
     }
 
     // TODO - later, create a payments received table to track payments against invoices
+    // TODO - Invoices should have a status which shows if the clicent saw the invoice, and reminders, overdue trackers, etc. 
+    // TODO - Status to show if it's paid or not, etc. figure it out later
 }
