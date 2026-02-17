@@ -1,0 +1,85 @@
+<div class="page-header">
+  <div>
+    <h1 class="text-3xl font-bold m-0">Invoices</h1>
+    <p class="text-muted-color mt-1 mb-0">Manage your invoices</p>
+  </div>
+  <button class="btn-gradient" (click)="openNew()">
+    <i class="pi pi-plus" aria-hidden="true"></i>
+    New Invoice
+  </button>
+</div>
+
+<div class="table-card">
+  <div class="table-toolbar">
+    <p-iconfield>
+      <p-inputicon styleClass="pi pi-search" />
+      <input pInputText type="text" placeholder="Search invoices..." (input)="onFilter($event)" />
+    </p-iconfield>
+  </div>
+
+  <p-table
+    #dt
+    [value]="invoices()"
+    [loading]="loading()"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[5, 10, 25]"
+    [globalFilterFields]="['invoiceNumber', 'clientName']"
+    [scrollable]="true"
+    dataKey="id"
+  >
+    <ng-template #header>
+      <tr>
+        <th pSortableColumn="invoiceNumber">Invoice # <p-sortIcon field="invoiceNumber" /></th>
+        <th pSortableColumn="clientName">Client <p-sortIcon field="clientName" /></th>
+        <th pSortableColumn="invoiceDate">Date <p-sortIcon field="invoiceDate" /></th>
+        <th pSortableColumn="invoiceDue">Due Date <p-sortIcon field="invoiceDue" /></th>
+        <th>Total</th>
+        <th style="width: 8rem">Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template #body let-invoice>
+      <tr>
+        <td>{{ invoice.invoiceNumber }}</td>
+        <td>{{ invoice.clientName }}</td>
+        <td>{{ invoice.invoiceDate | date: 'mediumDate' }}</td>
+        <td>{{ invoice.invoiceDue | date: 'mediumDate' }}</td>
+        <td>{{ getTotal(invoice) | currency }}</td>
+        <td>
+          <div class="flex gap-2">
+            <p-button
+              icon="pi pi-pencil"
+              [rounded]="true"
+              [text]="true"
+              (click)="editInvoice(invoice)"
+              pTooltip="Edit"
+            />
+            <p-button
+              icon="pi pi-trash"
+              [rounded]="true"
+              [text]="true"
+              severity="danger"
+              (click)="deleteInvoice(invoice)"
+              pTooltip="Delete"
+            />
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="6" class="text-center py-6 text-muted-color">
+          No invoices found. Click "New Invoice" to create one.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
+<app-invoice-form-dialog
+  [(visible)]="dialogVisible"
+  [invoice]="selectedInvoice()"
+  (saved)="onSaved()"
+/>
+
+<p-confirmDialog />

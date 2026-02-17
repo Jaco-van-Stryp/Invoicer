@@ -1,0 +1,66 @@
+<p-dialog
+  [header]="dialogTitle()"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '32rem' }"
+  [closable]="true"
+>
+  <div class="flex flex-col gap-5 mt-4">
+    <p-floatLabel>
+      <input
+        pInputText
+        id="productName"
+        class="w-full"
+        [ngModel]="name()"
+        (ngModelChange)="name.set($event)"
+      />
+      <label for="productName">Name *</label>
+    </p-floatLabel>
+
+    <p-floatLabel>
+      <textarea
+        pTextarea
+        id="productDescription"
+        class="w-full"
+        rows="3"
+        [ngModel]="description()"
+        (ngModelChange)="description.set($event)"
+      ></textarea>
+      <label for="productDescription">Description *</label>
+    </p-floatLabel>
+
+    <p-floatLabel>
+      <p-inputNumber
+        id="productPrice"
+        [ngModel]="price()"
+        (ngModelChange)="price.set($event)"
+        mode="currency"
+        currency="USD"
+        styleClass="w-full"
+      />
+      <label for="productPrice">Price *</label>
+    </p-floatLabel>
+
+    <p-floatLabel>
+      <input
+        pInputText
+        id="productImageUrl"
+        class="w-full"
+        [ngModel]="imageUrl()"
+        (ngModelChange)="imageUrl.set($event)"
+      />
+      <label for="productImageUrl">Image URL</label>
+    </p-floatLabel>
+  </div>
+
+  <ng-template #footer>
+    <p-button label="Cancel" [text]="true" (click)="visible.set(false)" />
+    <p-button
+      [label]="isEditing() ? 'Update' : 'Create'"
+      icon="pi pi-check"
+      [loading]="saving()"
+      [disabled]="!isFormValid()"
+      (click)="save()"
+    />
+  </ng-template>
+</p-dialog>

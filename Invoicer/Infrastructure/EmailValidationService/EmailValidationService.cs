@@ -16,6 +16,8 @@ public class EmailValidationService(IMemoryCache _memoryCache, IHttpClientFactor
     {
         if (IsDuplicateEmail(email))
             return false;
+        if (ContainsPlusAddressing(email))
+            return false;
         if (!IsBasicFormatValid(email))
             return false;
 
@@ -59,6 +61,16 @@ public class EmailValidationService(IMemoryCache _memoryCache, IHttpClientFactor
         return parts.Length == 2
             ? (parts[0], parts[1])
             : (string.Empty, string.Empty);
+    }
+
+    private static bool ContainsPlusAddressing(string email)
+    {
+        if (email.Contains('+'))
+        {
+            Log.Warning("Email {Email} rejected due to plus addressing", email);
+            return true;
+        }
+        return false;
     }
 
     private async Task<bool> HasMailServerAsync(string domain)

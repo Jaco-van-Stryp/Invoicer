@@ -26,7 +26,37 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     loadComponent: () =>
-      import('./Components/Dashboard/dashboard/dashboard').then((m) => m.Dashboard),
+      import('./Components/Dashboard/dashboard-layout/dashboard-layout').then(
+        (m) => m.DashboardLayout,
+      ),
     title: 'Dashboard — Invoicer',
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./Components/Dashboard/dashboard-home/dashboard-home').then(
+            (m) => m.DashboardHome,
+          ),
+        title: 'Dashboard — Invoicer',
+      },
+      {
+        path: 'clients',
+        loadComponent: () =>
+          import('./Components/Client/client-list/client-list').then((m) => m.ClientList),
+        title: 'Clients — Invoicer',
+      },
+      {
+        path: 'products',
+        loadComponent: () =>
+          import('./Components/Product/product-list/product-list').then((m) => m.ProductList),
+        title: 'Products — Invoicer',
+      },
+      {
+        path: 'invoices',
+        loadComponent: () =>
+          import('./Components/Invoice/invoice-list/invoice-list').then((m) => m.InvoiceList),
+        title: 'Invoices — Invoicer',
+      },
+    ],
   },
 ];
