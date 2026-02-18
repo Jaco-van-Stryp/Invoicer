@@ -10,7 +10,12 @@ namespace Invoicer.Tests.Features.Payment.RecordPayment;
 [Collection("Database")]
 public class RecordPaymentHandlerTests(DatabaseFixture db) : IntegrationTestBase(db)
 {
-    private async Task<(User User, Domain.Entities.Company Company, Client Client, Domain.Entities.Invoice Invoice)> SeedFullScenarioAsync(decimal productPrice = 100m, int quantity = 2)
+    private async Task<(
+        User User,
+        Domain.Entities.Company Company,
+        Client Client,
+        Domain.Entities.Invoice Invoice
+    )> SeedFullScenarioAsync(decimal productPrice = 100m, int quantity = 2)
     {
         var user = new User
         {
@@ -184,10 +189,17 @@ public class RecordPaymentHandlerTests(DatabaseFixture db) : IntegrationTestBase
         SetCurrentUser(Guid.NewGuid());
         var handler = new RecordPaymentHandler(DbContext, CurrentUserService);
 
-        var act = () => handler.Handle(
-            new RecordPaymentCommand(Guid.NewGuid(), Guid.NewGuid(), 100m, DateTime.UtcNow, null),
-            CancellationToken.None
-        );
+        var act = () =>
+            handler.Handle(
+                new RecordPaymentCommand(
+                    Guid.NewGuid(),
+                    Guid.NewGuid(),
+                    100m,
+                    DateTime.UtcNow,
+                    null
+                ),
+                CancellationToken.None
+            );
 
         await act.Should().ThrowAsync<UserNotFoundException>();
     }
@@ -212,10 +224,11 @@ public class RecordPaymentHandlerTests(DatabaseFixture db) : IntegrationTestBase
         SetCurrentUser(otherUser.Id, otherUser.Email);
         var handler = new RecordPaymentHandler(DbContext, CurrentUserService);
 
-        var act = () => handler.Handle(
-            new RecordPaymentCommand(company.Id, invoice.Id, 100m, DateTime.UtcNow, null),
-            CancellationToken.None
-        );
+        var act = () =>
+            handler.Handle(
+                new RecordPaymentCommand(company.Id, invoice.Id, 100m, DateTime.UtcNow, null),
+                CancellationToken.None
+            );
 
         await act.Should().ThrowAsync<CompanyNotFoundException>();
     }
@@ -227,10 +240,11 @@ public class RecordPaymentHandlerTests(DatabaseFixture db) : IntegrationTestBase
         SetCurrentUser(user.Id, user.Email);
         var handler = new RecordPaymentHandler(DbContext, CurrentUserService);
 
-        var act = () => handler.Handle(
-            new RecordPaymentCommand(company.Id, Guid.NewGuid(), 100m, DateTime.UtcNow, null),
-            CancellationToken.None
-        );
+        var act = () =>
+            handler.Handle(
+                new RecordPaymentCommand(company.Id, Guid.NewGuid(), 100m, DateTime.UtcNow, null),
+                CancellationToken.None
+            );
 
         await act.Should().ThrowAsync<InvoiceNotFoundException>();
     }

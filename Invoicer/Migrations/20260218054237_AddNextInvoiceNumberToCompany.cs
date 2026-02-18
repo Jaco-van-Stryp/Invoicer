@@ -15,15 +15,14 @@ namespace Invoicer.Migrations
                 table: "Companies",
                 type: "integer",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: 0
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "NextInvoiceNumber",
-                table: "Companies");
+            migrationBuilder.DropColumn(name: "NextInvoiceNumber", table: "Companies");
         }
     }
 }

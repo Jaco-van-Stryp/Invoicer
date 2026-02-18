@@ -59,7 +59,12 @@ namespace Invoicer.Features.Payment.RecordPayment
             _dbContext.Payments.Add(payment);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
-            return new RecordPaymentResponse(payment.Id, payment.Amount, payment.PaidOn, invoice.Status);
+            return new RecordPaymentResponse(
+                payment.Id,
+                payment.Amount,
+                payment.PaidOn,
+                invoice.Status
+            );
         }
     }
 }

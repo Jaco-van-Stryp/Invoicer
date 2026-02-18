@@ -51,15 +51,16 @@ namespace Invoicer.Features.Invoice.GetDashboardStats
                 .ToListAsync(cancellationToken);
 
             var statusSummary = new InvoiceStatusSummary(
-                PaidCount: statusCounts
-                    .FirstOrDefault(s => s.Status == InvoiceStatus.Paid)
-                    ?.Count ?? 0,
+                PaidCount: statusCounts.FirstOrDefault(s => s.Status == InvoiceStatus.Paid)?.Count
+                    ?? 0,
                 PartialCount: statusCounts
                     .FirstOrDefault(s => s.Status == InvoiceStatus.Partial)
-                    ?.Count ?? 0,
+                    ?.Count
+                    ?? 0,
                 UnpaidCount: statusCounts
                     .FirstOrDefault(s => s.Status == InvoiceStatus.Unpaid)
-                    ?.Count ?? 0
+                    ?.Count
+                    ?? 0
             );
 
             return new GetDashboardStatsResponse(monthlyIncome, incomeByClient, statusSummary);

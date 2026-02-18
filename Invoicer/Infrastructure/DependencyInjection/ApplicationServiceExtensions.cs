@@ -26,7 +26,10 @@ public static class ApplicationServiceExtensions
         services.AddProblemDetails();
 
         services.AddSingleton<IEmailTemplateService, EmailTemplateService.EmailTemplateService>();
-        services.AddSingleton<IEmailValidationService, EmailValidationService.EmailValidationService>();
+        services.AddSingleton<
+            IEmailValidationService,
+            EmailValidationService.EmailValidationService
+        >();
 
         services.AddCors(options =>
         {

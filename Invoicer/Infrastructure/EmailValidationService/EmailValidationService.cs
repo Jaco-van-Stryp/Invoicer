@@ -7,7 +7,10 @@ using Serilog;
 
 namespace Invoicer.Infrastructure.EmailValidationService;
 
-public class EmailValidationService(IMemoryCache _memoryCache, IHttpClientFactory _httpClientFactory) : IEmailValidationService
+public class EmailValidationService(
+    IMemoryCache _memoryCache,
+    IHttpClientFactory _httpClientFactory
+) : IEmailValidationService
 {
     private const string DisposableDomainsCacheKey = "DisposableEmailDomains";
     private static readonly TimeSpan CacheDuration = TimeSpan.FromHours(24);
@@ -52,15 +55,12 @@ public class EmailValidationService(IMemoryCache _memoryCache, IHttpClientFactor
         }
     }
 
-    private static string NormalizeEmail(string email)
-        => email.Trim().ToLowerInvariant();
+    private static string NormalizeEmail(string email) => email.Trim().ToLowerInvariant();
 
     private static (string LocalPart, string Domain) SplitEmail(string normalized)
     {
         var parts = normalized.Split('@');
-        return parts.Length == 2
-            ? (parts[0], parts[1])
-            : (string.Empty, string.Empty);
+        return parts.Length == 2 ? (parts[0], parts[1]) : (string.Empty, string.Empty);
     }
 
     private static bool ContainsPlusAddressing(string email)
@@ -88,15 +88,21 @@ public class EmailValidationService(IMemoryCache _memoryCache, IHttpClientFactor
         }
         catch (Exception ex)
         {
-            Log.Warning(ex, "MX/A check failed for domain {Domain} - treating as valid (fail-open)", domain);
+            Log.Warning(
+                ex,
+                "MX/A check failed for domain {Domain} - treating as valid (fail-open)",
+                domain
+            );
             return true; // fail-open: don't block on transient DNS issues
         }
     }
 
     private async Task<HashSet<string>> GetDisposableEmailDomainsAsync()
     {
-        if (_memoryCache.TryGetValue(DisposableDomainsCacheKey, out HashSet<string>? cached) &&
-            cached is { Count: > 0 })
+        if (
+            _memoryCache.TryGetValue(DisposableDomainsCacheKey, out HashSet<string>? cached)
+            && cached is { Count: > 0 }
+        )
         {
             return cached;
         }
@@ -105,7 +111,7 @@ public class EmailValidationService(IMemoryCache _memoryCache, IHttpClientFactor
 
         var options = new MemoryCacheEntryOptions
         {
-            AbsoluteExpirationRelativeToNow = CacheDuration
+            AbsoluteExpirationRelativeToNow = CacheDuration,
         };
 
         _memoryCache.Set(DisposableDomainsCacheKey, domains, options);
@@ -115,7 +121,8 @@ public class EmailValidationService(IMemoryCache _memoryCache, IHttpClientFactor
 
     private async Task<HashSet<string>> FetchDisposableDomainsAsync()
     {
-        const string url = "https://raw.githubusercontent.com/disposable-email-domains/disposable-email-domains/main/disposable_email_blocklist.conf";
+        const string url =
+            "https://raw.githubusercontent.com/disposable-email-domains/disposable-email-domains/main/disposable_email_blocklist.conf";
 
         try
         {
@@ -132,7 +139,11 @@ public class EmailValidationService(IMemoryCache _memoryCache, IHttpClientFactor
             foreach (var line in content.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries))
             {
                 var trimmed = line.Trim();
-                if (string.IsNullOrEmpty(trimmed) || trimmed.StartsWith('#') || trimmed.StartsWith("//"))
+                if (
+                    string.IsNullOrEmpty(trimmed)
+                    || trimmed.StartsWith('#')
+                    || trimmed.StartsWith("//")
+                )
                     continue;
 
                 domains.Add(trimmed);
@@ -144,7 +155,11 @@ public class EmailValidationService(IMemoryCache _memoryCache, IHttpClientFactor
                 return domains;
             }
 
-            Log.Warning("Disposable list suspiciously small ({Count} entries) from {Url}", domains.Count, url);
+            Log.Warning(
+                "Disposable list suspiciously small ({Count} entries) from {Url}",
+                domains.Count,
+                url
+            );
         }
         catch (Exception ex)
         {
@@ -154,7 +169,6 @@ public class EmailValidationService(IMemoryCache _memoryCache, IHttpClientFactor
         // Fail-open: don't block emails if list fetch fails
         return new HashSet<string>(StringComparer.OrdinalIgnoreCase);
     }
-
 
     public bool IsDuplicateEmail(string email)
     {

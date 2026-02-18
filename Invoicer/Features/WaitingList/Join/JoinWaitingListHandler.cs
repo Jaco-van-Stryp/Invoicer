@@ -11,25 +11,24 @@ public class JoinWaitingListHandler(
     AppDbContext _dbContext,
     IEmailValidationService _emailValidationService,
     IEmailService _emailService,
-    IEmailTemplateService _emailTemplateService) : IRequestHandler<JoinWaitingListCommand>
+    IEmailTemplateService _emailTemplateService
+) : IRequestHandler<JoinWaitingListCommand>
 {
     public async Task Handle(JoinWaitingListCommand request, CancellationToken cancellationToken)
     {
-
-
         var isValidEmail = await _emailValidationService.IsValidEmail(request.Email);
-        if (!isValidEmail) return;
+        if (!isValidEmail)
+            return;
 
-        var waitingListUser = await _dbContext.WaitingList
-                .FirstOrDefaultAsync(w => w.Email == request.Email, cancellationToken);
+        var waitingListUser = await _dbContext.WaitingList.FirstOrDefaultAsync(
+            w => w.Email == request.Email,
+            cancellationToken
+        );
 
         if (waitingListUser is not null)
             return;
 
-        var newWaitingListUser = new Domain.Entities.WaitingList
-        {
-            Email = request.Email,
-        };
+        var newWaitingListUser = new Domain.Entities.WaitingList { Email = request.Email };
 
         _dbContext.WaitingList.Add(newWaitingListUser);
         await _dbContext.SaveChangesAsync(cancellationToken);
@@ -40,11 +39,13 @@ public class JoinWaitingListHandler(
             {
                 { "Email", request.Email },
                 { "AppUrl", "https://invoicer.co.nz" },
-            });
+            }
+        );
 
         await _emailService.SendEmailAsync(
             request.Email,
             "You're on the Invoicer waiting list! 🎉",
-            body);
+            body
+        );
     }
 }

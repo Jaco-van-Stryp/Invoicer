@@ -10,7 +10,16 @@ namespace Invoicer.Tests.Features.Payment.DeletePayment;
 [Collection("Database")]
 public class DeletePaymentHandlerTests(DatabaseFixture db) : IntegrationTestBase(db)
 {
-    private async Task<(User User, Domain.Entities.Company Company, Domain.Entities.Invoice Invoice, Domain.Entities.Payment Payment)> SeedInvoiceWithPaymentAsync(decimal productPrice = 100m, int quantity = 2, decimal paymentAmount = 50m)
+    private async Task<(
+        User User,
+        Domain.Entities.Company Company,
+        Domain.Entities.Invoice Invoice,
+        Domain.Entities.Payment Payment
+    )> SeedInvoiceWithPaymentAsync(
+        decimal productPrice = 100m,
+        int quantity = 2,
+        decimal paymentAmount = 50m
+    )
     {
         var user = new User
         {
@@ -167,10 +176,11 @@ public class DeletePaymentHandlerTests(DatabaseFixture db) : IntegrationTestBase
         SetCurrentUser(user.Id, user.Email);
         var handler = new DeletePaymentHandler(DbContext, CurrentUserService);
 
-        var act = () => handler.Handle(
-            new DeletePaymentCommand(company.Id, invoice.Id, Guid.NewGuid()),
-            CancellationToken.None
-        );
+        var act = () =>
+            handler.Handle(
+                new DeletePaymentCommand(company.Id, invoice.Id, Guid.NewGuid()),
+                CancellationToken.None
+            );
 
         await act.Should().ThrowAsync<PaymentNotFoundException>();
     }
@@ -181,10 +191,11 @@ public class DeletePaymentHandlerTests(DatabaseFixture db) : IntegrationTestBase
         SetCurrentUser(Guid.NewGuid());
         var handler = new DeletePaymentHandler(DbContext, CurrentUserService);
 
-        var act = () => handler.Handle(
-            new DeletePaymentCommand(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid()),
-            CancellationToken.None
-        );
+        var act = () =>
+            handler.Handle(
+                new DeletePaymentCommand(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid()),
+                CancellationToken.None
+            );
 
         await act.Should().ThrowAsync<UserNotFoundException>();
     }
@@ -209,10 +220,11 @@ public class DeletePaymentHandlerTests(DatabaseFixture db) : IntegrationTestBase
         SetCurrentUser(otherUser.Id, otherUser.Email);
         var handler = new DeletePaymentHandler(DbContext, CurrentUserService);
 
-        var act = () => handler.Handle(
-            new DeletePaymentCommand(Guid.NewGuid(), invoice.Id, payment.Id),
-            CancellationToken.None
-        );
+        var act = () =>
+            handler.Handle(
+                new DeletePaymentCommand(Guid.NewGuid(), invoice.Id, payment.Id),
+                CancellationToken.None
+            );
 
         await act.Should().ThrowAsync<CompanyNotFoundException>();
     }
@@ -224,10 +236,11 @@ public class DeletePaymentHandlerTests(DatabaseFixture db) : IntegrationTestBase
         SetCurrentUser(user.Id, user.Email);
         var handler = new DeletePaymentHandler(DbContext, CurrentUserService);
 
-        var act = () => handler.Handle(
-            new DeletePaymentCommand(company.Id, Guid.NewGuid(), payment.Id),
-            CancellationToken.None
-        );
+        var act = () =>
+            handler.Handle(
+                new DeletePaymentCommand(company.Id, Guid.NewGuid(), payment.Id),
+                CancellationToken.None
+            );
 
         await act.Should().ThrowAsync<InvoiceNotFoundException>();
     }

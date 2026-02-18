@@ -9,7 +9,13 @@ namespace Invoicer.Tests.Features.Invoice.GetDashboardStats;
 [Collection("Database")]
 public class GetDashboardStatsHandlerTests(DatabaseFixture db) : IntegrationTestBase(db)
 {
-    private async Task<(User User, Domain.Entities.Company Company, Client Client1, Client Client2, Product Product)> SeedBaseScenarioAsync()
+    private async Task<(
+        User User,
+        Domain.Entities.Company Company,
+        Client Client1,
+        Client Client2,
+        Product Product
+    )> SeedBaseScenarioAsync()
     {
         var user = new User
         {
@@ -137,7 +143,10 @@ public class GetDashboardStatsHandlerTests(DatabaseFixture db) : IntegrationTest
         SetCurrentUser(user.Id, user.Email);
         var handler = new GetDashboardStatsHandler(DbContext, CurrentUserService);
 
-        var result = await handler.Handle(new GetDashboardStatsQuery(company.Id), CancellationToken.None);
+        var result = await handler.Handle(
+            new GetDashboardStatsQuery(company.Id),
+            CancellationToken.None
+        );
 
         result.MonthlyIncome.Should().BeEmpty();
         result.IncomeByClient.Should().BeEmpty();
@@ -153,14 +162,32 @@ public class GetDashboardStatsHandlerTests(DatabaseFixture db) : IntegrationTest
         var invoice = await CreateInvoiceAsync(company, client1, product);
 
         // Two payments in January 2025 and one in February 2025
-        await CreatePaymentAsync(invoice, company, 100m, new DateTime(2025, 1, 10, 0, 0, 0, DateTimeKind.Utc));
-        await CreatePaymentAsync(invoice, company, 200m, new DateTime(2025, 1, 20, 0, 0, 0, DateTimeKind.Utc));
-        await CreatePaymentAsync(invoice, company, 300m, new DateTime(2025, 2, 5, 0, 0, 0, DateTimeKind.Utc));
+        await CreatePaymentAsync(
+            invoice,
+            company,
+            100m,
+            new DateTime(2025, 1, 10, 0, 0, 0, DateTimeKind.Utc)
+        );
+        await CreatePaymentAsync(
+            invoice,
+            company,
+            200m,
+            new DateTime(2025, 1, 20, 0, 0, 0, DateTimeKind.Utc)
+        );
+        await CreatePaymentAsync(
+            invoice,
+            company,
+            300m,
+            new DateTime(2025, 2, 5, 0, 0, 0, DateTimeKind.Utc)
+        );
 
         SetCurrentUser(user.Id, user.Email);
         var handler = new GetDashboardStatsHandler(DbContext, CurrentUserService);
 
-        var result = await handler.Handle(new GetDashboardStatsQuery(company.Id), CancellationToken.None);
+        var result = await handler.Handle(
+            new GetDashboardStatsQuery(company.Id),
+            CancellationToken.None
+        );
 
         result.MonthlyIncome.Should().HaveCount(2);
 
@@ -186,7 +213,10 @@ public class GetDashboardStatsHandlerTests(DatabaseFixture db) : IntegrationTest
         SetCurrentUser(user.Id, user.Email);
         var handler = new GetDashboardStatsHandler(DbContext, CurrentUserService);
 
-        var result = await handler.Handle(new GetDashboardStatsQuery(company.Id), CancellationToken.None);
+        var result = await handler.Handle(
+            new GetDashboardStatsQuery(company.Id),
+            CancellationToken.None
+        );
 
         result.IncomeByClient.Should().HaveCount(2);
 
@@ -212,7 +242,10 @@ public class GetDashboardStatsHandlerTests(DatabaseFixture db) : IntegrationTest
         SetCurrentUser(user.Id, user.Email);
         var handler = new GetDashboardStatsHandler(DbContext, CurrentUserService);
 
-        var result = await handler.Handle(new GetDashboardStatsQuery(company.Id), CancellationToken.None);
+        var result = await handler.Handle(
+            new GetDashboardStatsQuery(company.Id),
+            CancellationToken.None
+        );
 
         result.StatusSummary.PaidCount.Should().Be(2);
         result.StatusSummary.PartialCount.Should().Be(1);
@@ -261,7 +294,10 @@ public class GetDashboardStatsHandlerTests(DatabaseFixture db) : IntegrationTest
         SetCurrentUser(user.Id, user.Email);
         var handler = new GetDashboardStatsHandler(DbContext, CurrentUserService);
 
-        var result = await handler.Handle(new GetDashboardStatsQuery(company.Id), CancellationToken.None);
+        var result = await handler.Handle(
+            new GetDashboardStatsQuery(company.Id),
+            CancellationToken.None
+        );
 
         result.MonthlyIncome.Should().HaveCount(1);
         result.MonthlyIncome.First().TotalPaid.Should().Be(100m);
@@ -273,7 +309,8 @@ public class GetDashboardStatsHandlerTests(DatabaseFixture db) : IntegrationTest
         SetCurrentUser(Guid.NewGuid());
         var handler = new GetDashboardStatsHandler(DbContext, CurrentUserService);
 
-        var act = () => handler.Handle(new GetDashboardStatsQuery(Guid.NewGuid()), CancellationToken.None);
+        var act = () =>
+            handler.Handle(new GetDashboardStatsQuery(Guid.NewGuid()), CancellationToken.None);
 
         await act.Should().ThrowAsync<UserNotFoundException>();
     }
@@ -285,7 +322,8 @@ public class GetDashboardStatsHandlerTests(DatabaseFixture db) : IntegrationTest
         SetCurrentUser(user.Id, user.Email);
         var handler = new GetDashboardStatsHandler(DbContext, CurrentUserService);
 
-        var act = () => handler.Handle(new GetDashboardStatsQuery(Guid.NewGuid()), CancellationToken.None);
+        var act = () =>
+            handler.Handle(new GetDashboardStatsQuery(Guid.NewGuid()), CancellationToken.None);
 
         await act.Should().ThrowAsync<CompanyNotFoundException>();
     }
