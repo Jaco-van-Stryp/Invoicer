@@ -4,10 +4,11 @@ import { ButtonModule } from 'primeng/button';
 import { CompanyStore } from '../../../Services/company-store';
 import { AuthStore } from '../../../Services/auth-store';
 import { CompanyPicker } from '../company-picker/company-picker';
+import { EditCompanyDialog } from '../../Company/edit-company-dialog/edit-company-dialog';
 
 @Component({
   selector: 'app-dashboard-layout',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, ButtonModule, CompanyPicker],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ButtonModule, CompanyPicker, EditCompanyDialog],
   host: { class: 'block' },
   styleUrl: './dashboard-layout.css',
   templateUrl: './dashboard-layout.html',
@@ -18,6 +19,7 @@ export class DashboardLayout {
   router = inject(Router);
 
   sidebarOpen = signal(false);
+  editCompanyVisible = signal(false);
 
   navItems = [
     { label: 'Dashboard', icon: 'pi pi-home', route: '/dashboard' },

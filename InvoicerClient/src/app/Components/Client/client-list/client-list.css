@@ -39,7 +39,6 @@
   background: var(--surface-card);
   border: 1px solid var(--surface-border);
   border-radius: 1rem;
-  overflow: hidden;
 }
 
 .table-toolbar {

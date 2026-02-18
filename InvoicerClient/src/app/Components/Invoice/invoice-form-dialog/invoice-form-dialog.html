@@ -19,7 +19,8 @@
       </p-floatLabel>
     }
 
-    <p-floatLabel>
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium">Client *</label>
       <p-select
         id="invoiceClient"
         [options]="clients()"
@@ -32,11 +33,11 @@
         [loading]="loadingData()"
         appendTo="body"
       />
-      <label for="invoiceClient">Client *</label>
-    </p-floatLabel>
+    </div>
 
     <div class="grid grid-cols-2 gap-4">
-      <p-floatLabel>
+      <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium">Invoice Date *</label>
         <p-datepicker
           id="invoiceDate"
           [ngModel]="invoiceDate()"
@@ -45,10 +46,10 @@
           styleClass="w-full"
           appendTo="body"
         />
-        <label for="invoiceDate">Invoice Date *</label>
-      </p-floatLabel>
+      </div>
 
-      <p-floatLabel>
+      <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium">Due Date *</label>
         <p-datepicker
           id="invoiceDue"
           [ngModel]="invoiceDue()"
@@ -57,8 +58,7 @@
           styleClass="w-full"
           appendTo="body"
         />
-        <label for="invoiceDue">Due Date *</label>
-      </p-floatLabel>
+      </div>
     </div>
 
     <!-- Product line items -->

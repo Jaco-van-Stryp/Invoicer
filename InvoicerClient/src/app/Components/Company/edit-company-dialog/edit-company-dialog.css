@@ -1,0 +1,7 @@
+.logo-preview {
+  width: 4rem;
+  height: 4rem;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  border: 1px solid var(--surface-border);
+}

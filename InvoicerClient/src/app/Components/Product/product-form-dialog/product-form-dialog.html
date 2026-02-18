@@ -41,16 +41,40 @@
       <label for="productPrice">Price *</label>
     </p-floatLabel>
 
-    <p-floatLabel>
-      <input
-        pInputText
-        id="productImageUrl"
-        class="w-full"
-        [ngModel]="imageUrl()"
-        (ngModelChange)="imageUrl.set($event)"
-      />
-      <label for="productImageUrl">Image URL</label>
-    </p-floatLabel>
+    <!-- Product Image Upload -->
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-medium">Product Image</label>
+      @if (imagePreview()) {
+        <div class="flex items-center gap-3">
+          <img [src]="imagePreview()!" alt="Product image preview" class="product-image-preview" />
+          <p-button
+            icon="pi pi-times"
+            [rounded]="true"
+            [text]="true"
+            severity="danger"
+            size="small"
+            (click)="removeImage()"
+            pTooltip="Remove image"
+            aria-label="Remove image"
+          />
+        </div>
+      } @else {
+        <p-fileUpload
+          mode="basic"
+          accept="image/*"
+          [maxFileSize]="5000000"
+          chooseLabel="Upload Image"
+          chooseIcon="pi pi-upload"
+          [auto]="true"
+          [customUpload]="true"
+          (uploadHandler)="onImageSelected($event)"
+          styleClass="w-full"
+        />
+      }
+      @if (uploadingImage()) {
+        <small class="text-muted-color">Uploading...</small>
+      }
+    </div>
   </div>
 
   <ng-template #footer>
