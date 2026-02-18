@@ -110,6 +110,42 @@
             ></textarea>
             <label for="company-payment">Payment Details</label>
           </p-floatLabel>
+
+          <!-- Logo Upload -->
+          <div class="flex flex-col gap-2">
+            <label class="text-sm font-medium">Company Logo</label>
+            @if (logoPreview()) {
+              <div class="flex items-center gap-3">
+                <img [src]="logoPreview()" alt="Logo preview" class="logo-preview" />
+                <p-button
+                  icon="pi pi-times"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="danger"
+                  size="small"
+                  (click)="removeLogo()"
+                  pTooltip="Remove logo"
+                  aria-label="Remove logo"
+                />
+              </div>
+            } @else {
+              <p-fileUpload
+                mode="basic"
+                accept="image/*"
+                [maxFileSize]="5000000"
+                chooseLabel="Upload Logo"
+                chooseIcon="pi pi-upload"
+                [auto]="true"
+                [customUpload]="true"
+                (uploadHandler)="onLogoSelected($event)"
+                styleClass="w-full"
+              />
+            }
+            @if (uploadingLogo()) {
+              <small class="text-muted-color">Uploading...</small>
+            }
+          </div>
+
           <p-button
             label="Create Company"
             icon="pi pi-building"

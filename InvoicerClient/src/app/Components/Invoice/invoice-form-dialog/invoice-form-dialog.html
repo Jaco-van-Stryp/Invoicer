@@ -6,16 +6,18 @@
   [closable]="true"
 >
   <div class="flex flex-col gap-5 mt-4">
-    <p-floatLabel>
-      <input
-        pInputText
-        id="invoiceNumber"
-        class="w-full"
-        [ngModel]="invoiceNumber()"
-        (ngModelChange)="invoiceNumber.set($event)"
-      />
-      <label for="invoiceNumber">Invoice Number *</label>
-    </p-floatLabel>
+    @if (isEditing()) {
+      <p-floatLabel>
+        <input
+          pInputText
+          id="invoiceNumber"
+          class="w-full"
+          [ngModel]="invoiceNumber()"
+          (ngModelChange)="invoiceNumber.set($event)"
+        />
+        <label for="invoiceNumber">Invoice Number</label>
+      </p-floatLabel>
+    }
 
     <p-floatLabel>
       <p-select
@@ -28,6 +30,7 @@
         placeholder="Select a client"
         styleClass="w-full"
         [loading]="loadingData()"
+        appendTo="body"
       />
       <label for="invoiceClient">Client *</label>
     </p-floatLabel>
@@ -40,6 +43,7 @@
           (ngModelChange)="invoiceDate.set($event)"
           dateFormat="yy-mm-dd"
           styleClass="w-full"
+          appendTo="body"
         />
         <label for="invoiceDate">Invoice Date *</label>
       </p-floatLabel>
@@ -51,6 +55,7 @@
           (ngModelChange)="invoiceDue.set($event)"
           dateFormat="yy-mm-dd"
           styleClass="w-full"
+          appendTo="body"
         />
         <label for="invoiceDue">Due Date *</label>
       </p-floatLabel>
@@ -87,6 +92,7 @@
               placeholder="Select product"
               styleClass="w-full"
               [loading]="loadingData()"
+              appendTo="body"
             />
           </div>
           <div class="line-quantity">

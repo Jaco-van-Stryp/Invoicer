@@ -77,7 +77,6 @@ export class InvoiceFormDialog {
 
   isFormValid = computed(() => {
     return (
-      !!this.invoiceNumber().trim() &&
       !!this.selectedClientId() &&
       !!this.invoiceDate() &&
       !!this.invoiceDue() &&
@@ -109,8 +108,11 @@ export class InvoiceFormDialog {
       } else {
         this.invoiceNumber.set('');
         this.selectedClientId.set(null);
-        this.invoiceDate.set(null);
-        this.invoiceDue.set(null);
+        const today = new Date();
+        const due = new Date();
+        due.setDate(due.getDate() + 30);
+        this.invoiceDate.set(today);
+        this.invoiceDue.set(due);
         this.productLines.set([]);
       }
     });
@@ -213,7 +215,6 @@ export class InvoiceFormDialog {
         .createInvoice({
           companyId,
           clientId: this.selectedClientId()!,
-          invoiceNumber: this.invoiceNumber(),
           invoiceDate: this.invoiceDate() ? this.formatDate(this.invoiceDate()!) : undefined,
           invoiceDue: this.invoiceDue() ? this.formatDate(this.invoiceDue()!) : undefined,
           products: this.productLines().map((l) => ({

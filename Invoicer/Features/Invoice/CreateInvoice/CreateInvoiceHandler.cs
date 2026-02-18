@@ -35,9 +35,12 @@ namespace Invoicer.Features.Invoice.CreateInvoice
             if (client == null)
                 throw new ClientNotFoundException();
 
+            var invoiceNumber = $"INV-{company.NextInvoiceNumber:D4}";
+            company.NextInvoiceNumber++;
+
             var invoice = new Domain.Entities.Invoice
             {
-                InvoiceNumber = request.InvoiceNumber,
+                InvoiceNumber = invoiceNumber,
                 InvoiceDate = request.InvoiceDate,
                 InvoiceDue = request.InvoiceDue,
                 ClientId = request.ClientId,

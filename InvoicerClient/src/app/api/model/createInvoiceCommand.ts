@@ -12,7 +12,6 @@ import { CreateInvoiceProductItem } from './createInvoiceProductItem';
 export interface CreateInvoiceCommand {
   companyId?: string;
   clientId?: string;
-  invoiceNumber: string;
   invoiceDate?: string;
   invoiceDue?: string;
   products: Array<CreateInvoiceProductItem>;

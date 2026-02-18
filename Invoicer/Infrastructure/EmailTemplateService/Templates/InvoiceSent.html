@@ -1,33 +1,33 @@
-<h1 style="margin:0 0 16px; font-size:22px; color:#111827;">You've Received an Invoice</h1>
-<p style="margin:0 0 24px; font-size:15px; color:#6B7280; line-height:1.6;">
-    Hi {{ClientName}}, you have a new invoice from <strong style="color:#111827;">{{CompanyName}}</strong>.
+<h1 style="margin:0 0 16px; font-size:22px; color:#F3F4F6;">You've Received an Invoice</h1>
+<p style="margin:0 0 24px; font-size:15px; color:#9CA3AF; line-height:1.6;">
+    Hi {{ClientName}}, you have a new invoice from <strong style="color:#F3F4F6;">{{CompanyName}}</strong>.
 </p>
 <!-- Invoice Summary Card -->
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F9FAFB; border-radius:8px; border:1px solid #E5E7EB; margin-bottom:24px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:rgba(255,255,255,0.05); border-radius:10px; border:1px solid rgba(255,255,255,0.1); margin-bottom:24px;">
     <tr>
         <td style="padding:24px;">
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                     <td style="padding-bottom:12px;">
-                        <span style="font-size:13px; color:#9CA3AF; text-transform:uppercase; letter-spacing:1px;">Invoice Number</span><br />
-                        <span style="font-size:16px; color:#111827; font-weight:600;">{{InvoiceNumber}}</span>
+                        <span style="font-size:13px; color:#6B7280; text-transform:uppercase; letter-spacing:1px;">Invoice Number</span><br />
+                        <span style="font-size:16px; color:#F3F4F6; font-weight:600;">{{InvoiceNumber}}</span>
                     </td>
                     <td align="right" style="padding-bottom:12px;">
-                        <span style="font-size:13px; color:#9CA3AF; text-transform:uppercase; letter-spacing:1px;">Total Amount</span><br />
-                        <span style="font-size:20px; color:#4F46E5; font-weight:bold;">{{TotalAmount}}</span>
+                        <span style="font-size:13px; color:#6B7280; text-transform:uppercase; letter-spacing:1px;">Total Amount</span><br />
+                        <span style="font-size:20px; color:#a855f7; font-weight:bold;">{{TotalAmount}}</span>
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="2" style="border-top:1px solid #E5E7EB; padding-top:12px;">
+                    <td colspan="2" style="border-top:1px solid rgba(255,255,255,0.1); padding-top:12px;">
                         <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                             <tr>
                                 <td>
-                                    <span style="font-size:13px; color:#9CA3AF;">Date Issued</span><br />
-                                    <span style="font-size:14px; color:#374151;">{{InvoiceDate}}</span>
+                                    <span style="font-size:13px; color:#6B7280;">Date Issued</span><br />
+                                    <span style="font-size:14px; color:#D1D5DB;">{{InvoiceDate}}</span>
                                 </td>
                                 <td align="right">
-                                    <span style="font-size:13px; color:#9CA3AF;">Due Date</span><br />
-                                    <span style="font-size:14px; color:#374151;">{{InvoiceDueDate}}</span>
+                                    <span style="font-size:13px; color:#6B7280;">Due Date</span><br />
+                                    <span style="font-size:14px; color:#D1D5DB;">{{InvoiceDueDate}}</span>
                                 </td>
                             </tr>
                         </table>
@@ -41,7 +41,7 @@
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
     <tr>
         <td style="padding-bottom:8px;">
-            <span style="font-size:14px; font-weight:600; color:#374151;">Line Items</span>
+            <span style="font-size:14px; font-weight:600; color:#D1D5DB;">Line Items</span>
         </td>
     </tr>
     <tr>
@@ -50,6 +50,6 @@
         </td>
     </tr>
 </table>
-<p style="margin:0; font-size:14px; color:#9CA3AF; line-height:1.5;">
+<p style="margin:0; font-size:14px; color:#6B7280; line-height:1.5;">
     If you have any questions about this invoice, please contact {{CompanyName}} directly.
 </p>

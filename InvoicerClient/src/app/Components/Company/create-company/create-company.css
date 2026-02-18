@@ -158,6 +158,14 @@
   color: var(--text-color);
 }
 
+.logo-preview {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  border-radius: 0.5rem;
+  border: 1px solid var(--glass-border);
+}
+
 /* Animations */
 @keyframes fb1 {
   0% {
