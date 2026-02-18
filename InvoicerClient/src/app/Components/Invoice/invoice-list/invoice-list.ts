@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, viewChild, computed } from '@angular/core';
+import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -7,9 +7,11 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { Table, TableModule } from 'primeng/table';
-import { InvoiceService, GetAllInvoicesResponse } from '../../../api';
+import { TagModule } from 'primeng/tag';
+import { InvoiceService, GetAllInvoicesResponse, InvoiceStatus } from '../../../api';
 import { CompanyStore } from '../../../Services/company-store';
 import { InvoiceFormDialog } from '../invoice-form-dialog/invoice-form-dialog';
+import { RecordPaymentDialog } from '../record-payment-dialog/record-payment-dialog';
 
 @Component({
   selector: 'app-invoice-list',
@@ -22,7 +24,9 @@ import { InvoiceFormDialog } from '../invoice-form-dialog/invoice-form-dialog';
     InputIconModule,
     InputTextModule,
     ConfirmDialogModule,
+    TagModule,
     InvoiceFormDialog,
+    RecordPaymentDialog,
   ],
   host: { class: 'block' },
   styleUrl: './invoice-list.css',
@@ -38,6 +42,8 @@ export class InvoiceList implements OnInit {
   loading = signal(true);
   dialogVisible = signal(false);
   selectedInvoice = signal<GetAllInvoicesResponse | null>(null);
+  paymentDialogVisible = signal(false);
+  selectedInvoiceForPayment = signal<GetAllInvoicesResponse | null>(null);
 
   dt = viewChild<Table>('dt');
 
@@ -64,9 +70,16 @@ export class InvoiceList implements OnInit {
     });
   }
 
-  getTotal(invoice: GetAllInvoicesResponse): number {
-    if (!invoice.products) return 0;
-    return invoice.products.reduce((sum, p) => sum + (p.price ?? 0) * (p.quantity ?? 0), 0);
+  statusSeverity(status: InvoiceStatus | undefined): 'success' | 'warn' | 'danger' {
+    if (status === InvoiceStatus.NUMBER_2) return 'success';
+    if (status === InvoiceStatus.NUMBER_1) return 'warn';
+    return 'danger';
+  }
+
+  statusLabel(status: InvoiceStatus | undefined): string {
+    if (status === InvoiceStatus.NUMBER_2) return 'Paid';
+    if (status === InvoiceStatus.NUMBER_1) return 'Partial';
+    return 'Unpaid';
   }
 
   openNew() {
@@ -77,6 +90,11 @@ export class InvoiceList implements OnInit {
   editInvoice(invoice: GetAllInvoicesResponse) {
     this.selectedInvoice.set(invoice);
     this.dialogVisible.set(true);
+  }
+
+  openPaymentDialog(invoice: GetAllInvoicesResponse) {
+    this.selectedInvoiceForPayment.set(invoice);
+    this.paymentDialogVisible.set(true);
   }
 
   deleteInvoice(invoice: GetAllInvoicesResponse) {

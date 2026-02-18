@@ -34,6 +34,65 @@
   </div>
 </div>
 
+<!-- Income charts -->
+@if (dashboardStats()) {
+  <div class="charts-grid">
+    <div class="chart-card chart-card--wide">
+      <h3 class="chart-title">Monthly Income</h3>
+      @if (monthlyChartData()) {
+        <div class="chart-container">
+          <p-chart type="bar" [data]="monthlyChartData()" [options]="barChartOptions" />
+        </div>
+      } @else {
+        <p class="chart-empty">No payment data yet.</p>
+      }
+    </div>
+    <div class="chart-card">
+      <h3 class="chart-title">Income by Client</h3>
+      @if (clientChartData()) {
+        <div class="chart-container">
+          <p-chart type="doughnut" [data]="clientChartData()" [options]="doughnutChartOptions" />
+        </div>
+      } @else {
+        <p class="chart-empty">No payment data yet.</p>
+      }
+    </div>
+    <div class="chart-card">
+      <h3 class="chart-title">Invoice Status</h3>
+      @if (statusChartData()) {
+        <div class="chart-container">
+          <p-chart type="pie" [data]="statusChartData()" [options]="pieChartOptions" />
+        </div>
+      } @else {
+        <p class="chart-empty">No invoices yet.</p>
+      }
+    </div>
+  </div>
+}
+
+<!-- Recent payments -->
+@if (recentPayments().length > 0) {
+  <div class="info-card" style="margin-bottom: 2rem;">
+    <h2 class="text-xl font-semibold mb-4">Recent Payments</h2>
+    <div class="payments-table">
+      <div class="payments-table-header">
+        <span>Invoice</span>
+        <span>Client</span>
+        <span>Date</span>
+        <span class="text-right">Amount</span>
+      </div>
+      @for (p of recentPayments(); track $index) {
+        <div class="payments-table-row">
+          <span class="font-mono text-sm">{{ p.invoiceNumber }}</span>
+          <span>{{ p.clientName }}</span>
+          <span class="text-muted-color text-sm">{{ p.paidOn | date: 'mediumDate' }}</span>
+          <span class="text-right font-semibold">{{ p.amount | currency }}</span>
+        </div>
+      }
+    </div>
+  </div>
+}
+
 <!-- Company info card -->
 <div class="info-card">
   <h2 class="text-xl font-semibold mb-4">Company Details</h2>

@@ -1,0 +1,105 @@
+<p-dialog
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '36rem' }"
+  [header]="'Record Payment — ' + (invoice()?.invoiceNumber ?? '')"
+  [closable]="true"
+>
+  @if (invoice()) {
+    <div class="payment-dialog-body">
+      <!-- Outstanding balance -->
+      <div class="balance-row">
+        <span class="balance-label">Outstanding Balance</span>
+        <span class="balance-amount" [class.balance-zero]="outstanding() <= 0">
+          {{ outstanding() | currency }}
+        </span>
+      </div>
+      <div class="balance-meta">
+        <span>Total Due: {{ invoice()?.totalDue ?? 0 | currency }}</span>
+        <span>Total Paid: {{ invoice()?.totalPaid ?? 0 | currency }}</span>
+      </div>
+
+      <!-- Existing payments -->
+      @if (invoice()?.payments?.length) {
+        <div class="payments-section">
+          <h4 class="payments-heading">Payments Recorded</h4>
+          <div class="payments-list">
+            @for (payment of invoice()!.payments!; track payment.paymentId) {
+              <div class="payment-row">
+                <div class="payment-info">
+                  <span class="payment-amount">{{ payment.amount | currency }}</span>
+                  <span class="payment-date">{{ payment.paidOn | date: 'mediumDate' }}</span>
+                  @if (payment.notes) {
+                    <span class="payment-notes">{{ payment.notes }}</span>
+                  }
+                </div>
+                <p-button
+                  icon="pi pi-trash"
+                  [rounded]="true"
+                  [text]="true"
+                  severity="danger"
+                  size="small"
+                  [loading]="deleting() === payment.paymentId"
+                  (click)="deletePayment(payment)"
+                  pTooltip="Remove payment"
+                />
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- New payment form -->
+      <div class="new-payment-section">
+        <h4 class="payments-heading">Add Payment</h4>
+
+        <div class="form-field">
+          <label for="amount">Amount</label>
+          <p-inputnumber
+            inputId="amount"
+            [(ngModel)]="amount"
+            mode="currency"
+            currency="USD"
+            [min]="0.01"
+            placeholder="0.00"
+            styleClass="w-full"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="paidOn">Date Paid</label>
+          <p-datepicker
+            inputId="paidOn"
+            [(ngModel)]="paidOn"
+            dateFormat="dd/mm/yy"
+            [showIcon]="true"
+            appendTo="body"
+            styleClass="w-full"
+          />
+        </div>
+
+        <div class="form-field">
+          <label for="notes">Notes (optional)</label>
+          <input
+            pInputText
+            id="notes"
+            [(ngModel)]="notes"
+            placeholder="e.g. Wire transfer, Cheque #123"
+            class="w-full"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="dialog-footer">
+      <p-button label="Cancel" severity="secondary" [outlined]="true" (click)="cancel()" />
+      <p-button
+        label="Record Payment"
+        icon="pi pi-check"
+        [loading]="saving()"
+        [disabled]="!isFormValid()"
+        (click)="save()"
+      />
+    </div>
+  }
+</p-dialog>

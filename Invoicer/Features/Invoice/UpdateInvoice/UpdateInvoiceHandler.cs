@@ -37,9 +37,9 @@ namespace Invoicer.Features.Invoice.UpdateInvoice
             if (request.InvoiceNumber is not null)
                 invoice.InvoiceNumber = request.InvoiceNumber;
             if (request.InvoiceDate is not null)
-                invoice.InvoiceDate = request.InvoiceDate.Value;
+                invoice.InvoiceDate = DateTime.SpecifyKind(request.InvoiceDate.Value, DateTimeKind.Utc);
             if (request.InvoiceDue is not null)
-                invoice.InvoiceDue = request.InvoiceDue.Value;
+                invoice.InvoiceDue = DateTime.SpecifyKind(request.InvoiceDue.Value, DateTimeKind.Utc);
             if (request.ClientId is not null)
             {
                 var client = company.Clients.FirstOrDefault(c => c.Id == request.ClientId);

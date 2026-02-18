@@ -10,6 +10,8 @@ export * from './file.service';
 import { FileService } from './file.service';
 export * from './invoice.service';
 import { InvoiceService } from './invoice.service';
+export * from './payment.service';
+import { PaymentService } from './payment.service';
 export * from './product.service';
 import { ProductService } from './product.service';
 export const APIS = [
@@ -19,5 +21,6 @@ export const APIS = [
   CompanyService,
   FileService,
   InvoiceService,
+  PaymentService,
   ProductService,
 ];

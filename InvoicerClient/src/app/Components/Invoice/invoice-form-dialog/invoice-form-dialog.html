@@ -6,19 +6,6 @@
   [closable]="true"
 >
   <div class="flex flex-col gap-5 mt-4">
-    @if (isEditing()) {
-      <p-floatLabel>
-        <input
-          pInputText
-          id="invoiceNumber"
-          class="w-full"
-          [ngModel]="invoiceNumber()"
-          (ngModelChange)="invoiceNumber.set($event)"
-        />
-        <label for="invoiceNumber">Invoice Number</label>
-      </p-floatLabel>
-    }
-
     <div class="flex flex-col gap-1">
       <label class="text-sm font-medium">Client *</label>
       <p-select
@@ -31,6 +18,8 @@
         placeholder="Select a client"
         styleClass="w-full"
         [loading]="loadingData()"
+        [filter]="true"
+        filterPlaceholder="Search clients..."
         appendTo="body"
       />
     </div>
@@ -92,6 +81,8 @@
               placeholder="Select product"
               styleClass="w-full"
               [loading]="loadingData()"
+              [filter]="true"
+              filterPlaceholder="Search products..."
               appendTo="body"
             />
           </div>

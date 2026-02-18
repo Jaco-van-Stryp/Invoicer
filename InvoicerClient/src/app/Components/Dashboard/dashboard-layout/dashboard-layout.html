@@ -43,7 +43,11 @@
           <span class="company-name">{{ companyStore.company()?.name }}</span>
         </div>
         <div class="sidebar-actions">
-          <button class="sidebar-action-btn" (click)="editCompanyVisible.set(true)" title="Edit Company">
+          <button
+            class="sidebar-action-btn"
+            (click)="editCompanyVisible.set(true)"
+            title="Edit Company"
+          >
             <i class="pi pi-cog" aria-hidden="true"></i>
             <span class="nav-label">Edit</span>
           </button>

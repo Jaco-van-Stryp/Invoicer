@@ -153,6 +153,9 @@ namespace Invoicer.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ClientId");
@@ -160,6 +163,36 @@ namespace Invoicer.Migrations
                     b.HasIndex("CompanyId");
 
                     b.ToTable("Invoices");
+                });
+
+            modelBuilder.Entity("Invoicer.Domain.Entities.Payment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("InvoiceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("PaidOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.HasIndex("CompanyId", "PaidOn");
+
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("Invoicer.Domain.Entities.Product", b =>
@@ -337,6 +370,25 @@ namespace Invoicer.Migrations
                     b.Navigation("Company");
                 });
 
+            modelBuilder.Entity("Invoicer.Domain.Entities.Payment", b =>
+                {
+                    b.HasOne("Invoicer.Domain.Entities.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Invoicer.Domain.Entities.Invoice", "Invoice")
+                        .WithMany("Payments")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+
+                    b.Navigation("Invoice");
+                });
+
             modelBuilder.Entity("Invoicer.Domain.Entities.Product", b =>
                 {
                     b.HasOne("Invoicer.Domain.Entities.Company", "Company")
@@ -386,6 +438,8 @@ namespace Invoicer.Migrations
 
             modelBuilder.Entity("Invoicer.Domain.Entities.Invoice", b =>
                 {
+                    b.Navigation("Payments");
+
                     b.Navigation("Products");
                 });
 

@@ -8,7 +8,14 @@ import { EditCompanyDialog } from '../../Company/edit-company-dialog/edit-compan
 
 @Component({
   selector: 'app-dashboard-layout',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, ButtonModule, CompanyPicker, EditCompanyDialog],
+  imports: [
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    ButtonModule,
+    CompanyPicker,
+    EditCompanyDialog,
+  ],
   host: { class: 'block' },
   styleUrl: './dashboard-layout.css',
   templateUrl: './dashboard-layout.html',

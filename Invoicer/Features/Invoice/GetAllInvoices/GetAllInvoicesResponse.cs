@@ -1,3 +1,5 @@
+using Invoicer.Domain.Entities;
+
 namespace Invoicer.Features.Invoice.GetAllInvoices
 {
     public record struct GetAllInvoicesResponse(
@@ -7,7 +9,11 @@ namespace Invoicer.Features.Invoice.GetAllInvoices
         DateTime InvoiceDue,
         Guid ClientId,
         string ClientName,
-        List<InvoiceProductItem> Products
+        InvoiceStatus Status,
+        decimal TotalDue,
+        decimal TotalPaid,
+        List<InvoiceProductItem> Products,
+        List<InvoicePaymentItem> Payments
     );
 
     public record struct InvoiceProductItem(
@@ -15,5 +21,12 @@ namespace Invoicer.Features.Invoice.GetAllInvoices
         string ProductName,
         decimal Price,
         int Quantity
+    );
+
+    public record struct InvoicePaymentItem(
+        Guid PaymentId,
+        decimal Amount,
+        DateTime PaidOn,
+        string? Notes
     );
 }

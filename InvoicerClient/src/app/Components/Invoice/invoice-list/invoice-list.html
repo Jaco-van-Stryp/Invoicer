@@ -34,8 +34,10 @@
         <th pSortableColumn="clientName">Client <p-sortIcon field="clientName" /></th>
         <th pSortableColumn="invoiceDate">Date <p-sortIcon field="invoiceDate" /></th>
         <th pSortableColumn="invoiceDue">Due Date <p-sortIcon field="invoiceDue" /></th>
+        <th>Status</th>
         <th>Total</th>
-        <th style="width: 8rem">Actions</th>
+        <th>Paid</th>
+        <th style="width: 10rem">Actions</th>
       </tr>
     </ng-template>
     <ng-template #body let-invoice>
@@ -44,9 +46,24 @@
         <td>{{ invoice.clientName }}</td>
         <td>{{ invoice.invoiceDate | date: 'mediumDate' }}</td>
         <td>{{ invoice.invoiceDue | date: 'mediumDate' }}</td>
-        <td>{{ getTotal(invoice) | currency }}</td>
+        <td>
+          <p-tag
+            [value]="statusLabel(invoice.status)"
+            [severity]="statusSeverity(invoice.status)"
+          />
+        </td>
+        <td>{{ invoice.totalDue ?? 0 | currency }}</td>
+        <td>{{ invoice.totalPaid ?? 0 | currency }}</td>
         <td>
           <div class="flex gap-2">
+            <p-button
+              icon="pi pi-dollar"
+              [rounded]="true"
+              [text]="true"
+              severity="success"
+              (click)="openPaymentDialog(invoice)"
+              pTooltip="Record Payment"
+            />
             <p-button
               icon="pi pi-pencil"
               [rounded]="true"
@@ -68,7 +85,7 @@
     </ng-template>
     <ng-template #emptymessage>
       <tr>
-        <td colspan="6" class="text-center py-6 text-muted-color">
+        <td colspan="8" class="text-center py-6 text-muted-color">
           No invoices found. Click "New Invoice" to create one.
         </td>
       </tr>
@@ -79,6 +96,12 @@
 <app-invoice-form-dialog
   [(visible)]="dialogVisible"
   [invoice]="selectedInvoice()"
+  (saved)="onSaved()"
+/>
+
+<app-record-payment-dialog
+  [(visible)]="paymentDialogVisible"
+  [invoice]="selectedInvoiceForPayment()"
   (saved)="onSaved()"
 />
 

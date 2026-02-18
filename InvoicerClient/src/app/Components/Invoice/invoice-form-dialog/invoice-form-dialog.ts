@@ -182,7 +182,6 @@ export class InvoiceFormDialog {
         .updateInvoice({
           companyId,
           invoiceId: this.invoice()!.id,
-          invoiceNumber: this.invoiceNumber(),
           clientId: this.selectedClientId(),
           invoiceDate: this.invoiceDate() ? this.formatDate(this.invoiceDate()!) : null,
           invoiceDue: this.invoiceDue() ? this.formatDate(this.invoiceDue()!) : null,

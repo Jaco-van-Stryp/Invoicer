@@ -41,8 +41,8 @@ namespace Invoicer.Features.Invoice.CreateInvoice
             var invoice = new Domain.Entities.Invoice
             {
                 InvoiceNumber = invoiceNumber,
-                InvoiceDate = request.InvoiceDate,
-                InvoiceDue = request.InvoiceDue,
+                InvoiceDate = DateTime.SpecifyKind(request.InvoiceDate, DateTimeKind.Utc),
+                InvoiceDue = DateTime.SpecifyKind(request.InvoiceDue, DateTimeKind.Utc),
                 ClientId = request.ClientId,
                 Client = client,
                 CompanyId = request.CompanyId,
