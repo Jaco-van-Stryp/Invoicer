@@ -2,6 +2,8 @@ using Invoicer.Features.Invoice.CreateInvoice;
 using Invoicer.Features.Invoice.DeleteInvoice;
 using Invoicer.Features.Invoice.GetAllInvoices;
 using Invoicer.Features.Invoice.GetDashboardStats;
+using Invoicer.Features.Invoice.GetPublicInvoice;
+using Invoicer.Features.Invoice.SendInvoiceEmail;
 using Invoicer.Features.Invoice.UpdateInvoice;
 
 namespace Invoicer.Features.Invoice
@@ -17,6 +19,8 @@ namespace Invoicer.Features.Invoice
             group.MapUpdateInvoiceEndpoint();
             group.MapDeleteInvoiceEndpoint();
             group.MapGetDashboardStatsEndpoint();
+            group.MapGetPublicInvoiceEndpoint();
+            group.MapSendInvoiceEmailEndpoint();
 
             return app;
         }

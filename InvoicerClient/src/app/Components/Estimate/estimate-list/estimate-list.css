@@ -66,7 +66,7 @@
   gap: 1.5rem;
 }
 
-.invoice-card {
+.estimate-card {
   background: var(--surface-card);
   border: 1px solid var(--surface-border);
   border-radius: 1rem;
@@ -77,20 +77,20 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.invoice-card:hover {
+.estimate-card:hover {
   border-color: rgba(168, 85, 247, 0.3);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
 }
 
-.invoice-card-header {
+.estimate-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
 }
 
-.invoice-card-number {
+.estimate-card-number {
   font-size: 0.875rem;
   font-weight: 700;
   font-family: 'Courier New', monospace;
@@ -98,14 +98,14 @@
   letter-spacing: 0.025em;
 }
 
-.invoice-card-client {
+.estimate-card-client {
   font-size: 1.125rem;
   font-weight: 600;
   color: var(--text-color);
   margin-bottom: 0.25rem;
 }
 
-.invoice-card-dates {
+.estimate-card-dates {
   display: flex;
   gap: 1.5rem;
   padding: 0.75rem 0;
@@ -132,12 +132,7 @@
   color: var(--text-color);
 }
 
-.invoice-card-amounts {
-  display: flex;
-  gap: 1.5rem;
-}
-
-.amount-item {
+.estimate-card-amount {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -152,16 +147,12 @@
 }
 
 .amount-value {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--text-color);
 }
 
-.amount-value.paid {
-  color: #22c55e;
-}
-
-.invoice-card-actions {
+.estimate-card-actions {
   display: flex;
   gap: 0.5rem;
   margin-top: 0.5rem;

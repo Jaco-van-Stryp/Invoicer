@@ -11,8 +11,10 @@ namespace Invoicer.Domain.Data
         public DbSet<Company> Companies { get; set; }
         public DbSet<Client> Clients { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
+        public DbSet<Estimate> Estimates { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductInvoice> ProductInvoices { get; set; }
+        public DbSet<ProductEstimate> ProductEstimates { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<AuthToken> AuthTokens { get; set; }
         public DbSet<User> Users { get; set; }
@@ -29,6 +31,11 @@ namespace Invoicer.Domain.Data
             modelBuilder
                 .Entity<ProductInvoice>()
                 .HasIndex(pi => new { pi.ProductId, pi.InvoiceId })
+                .IsUnique();
+
+            modelBuilder
+                .Entity<ProductEstimate>()
+                .HasIndex(pe => new { pe.ProductId, pe.EstimateId })
                 .IsUnique();
 
             modelBuilder

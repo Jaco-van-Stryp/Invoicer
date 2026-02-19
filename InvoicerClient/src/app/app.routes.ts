@@ -24,6 +24,14 @@ export const routes: Routes = [
     title: 'Create Company — Invoicer',
   },
   {
+    path: 'invoice/:id',
+    loadComponent: () =>
+      import('./Components/Invoice/public-invoice-view/public-invoice-view').then(
+        (m) => m.PublicInvoiceView,
+      ),
+    title: 'Invoice — Invoicer',
+  },
+  {
     path: 'dashboard',
     loadComponent: () =>
       import('./Components/Dashboard/dashboard-layout/dashboard-layout').then(
@@ -56,6 +64,12 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./Components/Invoice/invoice-list/invoice-list').then((m) => m.InvoiceList),
         title: 'Invoices — Invoicer',
+      },
+      {
+        path: 'estimates',
+        loadComponent: () =>
+          import('./Components/Estimate/estimate-list/estimate-list').then((m) => m.EstimateList),
+        title: 'Estimates — Invoicer',
       },
       {
         path: 'payments',

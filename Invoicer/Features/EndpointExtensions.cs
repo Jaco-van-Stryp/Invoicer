@@ -1,6 +1,7 @@
 using Invoicer.Features.Auth;
 using Invoicer.Features.Client;
 using Invoicer.Features.Company;
+using Invoicer.Features.Estimate;
 using Invoicer.Features.File;
 using Invoicer.Features.Invoice;
 using Invoicer.Features.Payment;
@@ -21,6 +22,7 @@ public static class EndpointExtensions
         group.MapFileEndpoints();
         group.MapClientEndpoints();
         group.MapInvoiceEndpoints();
+        group.MapEstimateEndpoints();
         group.MapPaymentEndpoints();
         group.MapWaitingListEndpoints();
 

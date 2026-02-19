@@ -6,6 +6,8 @@ export * from './client.service';
 import { ClientService } from './client.service';
 export * from './company.service';
 import { CompanyService } from './company.service';
+export * from './estimate.service';
+import { EstimateService } from './estimate.service';
 export * from './file.service';
 import { FileService } from './file.service';
 export * from './invoice.service';
@@ -19,6 +21,7 @@ export const APIS = [
   AuthService,
   ClientService,
   CompanyService,
+  EstimateService,
   FileService,
   InvoiceService,
   PaymentService,

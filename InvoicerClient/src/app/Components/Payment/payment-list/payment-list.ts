@@ -2,6 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { TableModule } from 'primeng/table';
+import { TooltipModule } from 'primeng/tooltip';
 import { HttpClient } from '@angular/common/http';
 import { CompanyStore } from '../../../Services/company-store';
 
@@ -17,7 +18,7 @@ interface GetAllPaymentsResponse {
 
 @Component({
   selector: 'app-payment-list',
-  imports: [CommonModule, ButtonModule, TableModule],
+  imports: [CommonModule, ButtonModule, TableModule, TooltipModule],
   host: { class: 'block' },
   styleUrl: './payment-list.css',
   templateUrl: './payment-list.html',

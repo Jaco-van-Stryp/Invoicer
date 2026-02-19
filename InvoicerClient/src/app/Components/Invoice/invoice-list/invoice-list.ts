@@ -8,6 +8,7 @@ import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
 import { Table, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
+import { TooltipModule } from 'primeng/tooltip';
 import { InvoiceService, GetAllInvoicesResponse, InvoiceStatus } from '../../../api';
 import { CompanyStore } from '../../../Services/company-store';
 import { InvoiceFormDialog } from '../invoice-form-dialog/invoice-form-dialog';
@@ -25,6 +26,7 @@ import { RecordPaymentDialog } from '../record-payment-dialog/record-payment-dia
     InputTextModule,
     ConfirmDialogModule,
     TagModule,
+    TooltipModule,
     InvoiceFormDialog,
     RecordPaymentDialog,
   ],
@@ -44,8 +46,13 @@ export class InvoiceList implements OnInit {
   selectedInvoice = signal<GetAllInvoicesResponse | null>(null);
   paymentDialogVisible = signal(false);
   selectedInvoiceForPayment = signal<GetAllInvoicesResponse | null>(null);
+  viewMode = signal<'table' | 'cards'>('cards'); // Default to card view
 
   dt = viewChild<Table>('dt');
+
+  toggleView() {
+    this.viewMode.update((mode) => (mode === 'table' ? 'cards' : 'table'));
+  }
 
   ngOnInit() {
     this.loadInvoices();
@@ -130,6 +137,28 @@ export class InvoiceList implements OnInit {
   onFilter(event: Event) {
     const value = (event.target as HTMLInputElement).value;
     this.dt()?.filterGlobal(value, 'contains');
+  }
+
+  sendEmail(invoice: GetAllInvoicesResponse) {
+    const companyId = this.companyStore.company()?.id;
+    if (!companyId || !invoice.id) return;
+
+    this.invoiceService.sendInvoiceEmail(invoice.id, { companyId }).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Email Sent',
+          detail: `Invoice ${invoice.invoiceNumber} has been sent to ${invoice.clientName}.`,
+        });
+      },
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to send email.',
+        });
+      },
+    });
   }
 
   onSaved() {

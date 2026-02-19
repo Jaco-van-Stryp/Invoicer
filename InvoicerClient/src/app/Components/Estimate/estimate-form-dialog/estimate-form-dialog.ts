@@ -1,0 +1,191 @@
+import { Component, input, model, output, inject, signal, effect, computed } from '@angular/core';
+import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
+import { DatePickerModule } from 'primeng/datepicker';
+import { SelectModule } from 'primeng/select';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { MessageService } from 'primeng/api';
+import {
+  EstimateService,
+  ClientService,
+  ProductService,
+  GetAllEstimatesResponse,
+  GetAllClientsResponse,
+  GetAllProductsResponse,
+  EstimateStatus,
+  CreateEstimateCommand,
+} from '../../../api';
+import { CompanyStore } from '../../../Services/company-store';
+
+@Component({
+  selector: 'app-estimate-form-dialog',
+  imports: [
+    ReactiveFormsModule,
+    DialogModule,
+    ButtonModule,
+    InputTextModule,
+    DatePickerModule,
+    SelectModule,
+    InputNumberModule,
+  ],
+  providers: [MessageService],
+  templateUrl: './estimate-form-dialog.html',
+  styleUrl: './estimate-form-dialog.css',
+})
+export class EstimateFormDialog {
+  visible = model.required<boolean>();
+  estimate = input<GetAllEstimatesResponse | null>(null);
+  saved = output<void>();
+
+  estimateService = inject(EstimateService);
+  clientService = inject(ClientService);
+  productService = inject(ProductService);
+  companyStore = inject(CompanyStore);
+  messageService = inject(MessageService);
+
+  clients = signal<GetAllClientsResponse[]>([]);
+  products = signal<GetAllProductsResponse[]>([]);
+  loading = signal(false);
+
+  statusOptions = [
+    { label: 'Draft', value: EstimateStatus.Draft },
+    { label: 'Sent', value: EstimateStatus.Sent },
+    { label: 'Accepted', value: EstimateStatus.Accepted },
+    { label: 'Declined', value: EstimateStatus.Declined },
+  ];
+
+  form = new FormGroup({
+    clientId: new FormControl<string | null>(null, Validators.required),
+    estimateDate: new FormControl<Date>(new Date(), Validators.required),
+    expiresOn: new FormControl<Date>(
+      new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      Validators.required,
+    ),
+    status: new FormControl<EstimateStatus>(EstimateStatus.Draft, Validators.required),
+    notes: new FormControl<string>(''),
+    products: new FormArray<FormGroup>([]),
+  });
+
+  constructor() {
+    effect(() => {
+      if (this.visible()) {
+        this.loadData();
+        this.resetForm();
+      }
+    });
+  }
+
+  get productsFormArray() {
+    return this.form.get('products') as FormArray;
+  }
+
+  loadData() {
+    const companyId = this.companyStore.company()?.id;
+    if (!companyId) return;
+
+    this.clientService.getAllClients(companyId).subscribe({
+      next: (r) => this.clients.set(r),
+    });
+
+    this.productService.getAllProducts(companyId).subscribe({
+      next: (r) => this.products.set(r),
+    });
+  }
+
+  resetForm() {
+    const est = this.estimate();
+
+    this.productsFormArray.clear();
+
+    if (est) {
+      this.form.patchValue({
+        clientId: est.clientId,
+        estimateDate: new Date(est.estimateDate),
+        expiresOn: new Date(est.expiresOn),
+        status: est.status,
+        notes: est.notes || '',
+      });
+
+      est.products?.forEach((p) => {
+        this.productsFormArray.push(
+          new FormGroup({
+            productId: new FormControl(p.productId, Validators.required),
+            quantity: new FormControl(p.quantity, [Validators.required, Validators.min(1)]),
+          }),
+        );
+      });
+    } else {
+      this.form.reset({
+        estimateDate: new Date(),
+        expiresOn: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        status: EstimateStatus.Draft,
+      });
+    }
+  }
+
+  addProduct() {
+    this.productsFormArray.push(
+      new FormGroup({
+        productId: new FormControl<string | null>(null, Validators.required),
+        quantity: new FormControl<number>(1, [Validators.required, Validators.min(1)]),
+      }),
+    );
+  }
+
+  removeProduct(index: number) {
+    this.productsFormArray.removeAt(index);
+  }
+
+  onSubmit() {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const companyId = this.companyStore.company()?.id;
+    if (!companyId) return;
+
+    this.loading.set(true);
+
+    const formValue = this.form.value;
+    const command: CreateEstimateCommand = {
+      companyId,
+      clientId: formValue.clientId!,
+      estimateDate: formValue.estimateDate!,
+      expiresOn: formValue.expiresOn!,
+      status: formValue.status!,
+      notes: formValue.notes || undefined,
+      products: formValue.products!.map((p: any) => ({
+        productId: p.productId,
+        quantity: p.quantity,
+      })),
+    };
+
+    this.estimateService.createEstimate(command).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Estimate created successfully',
+        });
+        this.visible.set(false);
+        this.saved.emit();
+        this.loading.set(false);
+      },
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to create estimate',
+        });
+        this.loading.set(false);
+      },
+    });
+  }
+
+  onCancel() {
+    this.visible.set(false);
+  }
+}

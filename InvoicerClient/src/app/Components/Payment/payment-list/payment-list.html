@@ -1,57 +1,52 @@
 <div class="page-header">
-  <h1 class="text-3xl font-bold m-0">Payments</h1>
-  <p class="text-muted-color mt-2 mb-0">View and manage all payments across invoices</p>
+  <div>
+    <h1 class="text-3xl font-bold m-0">Payments</h1>
+    <p class="text-muted-color mt-1 mb-0">View and manage all payments across invoices</p>
+  </div>
 </div>
 
-<div class="content-card">
+<div class="table-card">
   <p-table
     [value]="payments()"
     [loading]="loading()"
-    styleClass="p-datatable-sm"
     [paginator]="true"
-    [rows]="20"
-    [rowsPerPageOptions]="[10, 20, 50]"
-    [showCurrentPageReport]="true"
-    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} payments"
+    [rows]="10"
+    [rowsPerPageOptions]="[5, 10, 25]"
+    [scrollable]="true"
+    dataKey="id"
   >
     <ng-template #header>
       <tr>
-        <th pSortableColumn="invoiceNumber">Invoice <p-sortIcon field="invoiceNumber" /></th>
+        <th pSortableColumn="invoiceNumber">Invoice # <p-sortIcon field="invoiceNumber" /></th>
         <th pSortableColumn="clientName">Client <p-sortIcon field="clientName" /></th>
         <th pSortableColumn="paidOn">Date Paid <p-sortIcon field="paidOn" /></th>
-        <th pSortableColumn="amount" class="text-right">Amount <p-sortIcon field="amount" /></th>
+        <th>Amount</th>
         <th>Notes</th>
-        <th class="action-column">Actions</th>
+        <th style="width: 10rem">Actions</th>
       </tr>
     </ng-template>
     <ng-template #body let-payment>
       <tr>
-        <td class="font-mono text-sm">{{ payment.invoiceNumber }}</td>
+        <td>{{ payment.invoiceNumber }}</td>
         <td>{{ payment.clientName }}</td>
-        <td class="text-muted-color">{{ payment.paidOn | date: 'mediumDate' }}</td>
-        <td class="text-right font-semibold">{{ payment.amount | currency }}</td>
-        <td class="text-muted-color text-sm">{{ payment.notes || '—' }}</td>
-        <td class="action-column">
-          <button
-            pButton
+        <td>{{ payment.paidOn | date: 'mediumDate' }}</td>
+        <td>{{ payment.amount | currency }}</td>
+        <td>{{ payment.notes || '—' }}</td>
+        <td>
+          <p-button
             icon="pi pi-trash"
-            severity="danger"
-            [text]="true"
             [rounded]="true"
+            [text]="true"
+            severity="danger"
             (click)="deletePayment(payment.id)"
-            title="Delete payment"
-          ></button>
+            pTooltip="Delete"
+          />
         </td>
       </tr>
     </ng-template>
-    <ng-template #empty>
+    <ng-template #emptymessage>
       <tr>
-        <td colspan="6" class="text-center py-8">
-          <div class="flex flex-col items-center gap-3">
-            <i class="pi pi-wallet text-4xl text-muted-color"></i>
-            <p class="text-lg text-muted-color m-0">No payments recorded yet</p>
-          </div>
-        </td>
+        <td colspan="6" class="text-center py-6 text-muted-color">No payments recorded yet.</td>
       </tr>
     </ng-template>
   </p-table>
