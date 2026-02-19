@@ -182,9 +182,9 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.5rem;
+  padding: 0.625rem 0.5rem;
   border-radius: 0.5rem;
-  border: none;
+  border: 1px solid var(--glass-border);
   background: transparent;
   color: var(--text-color-secondary);
   cursor: pointer;
@@ -196,7 +196,8 @@
 
 .sidebar-action-btn:hover {
   color: var(--text-color);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 /* Main content */

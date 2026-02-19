@@ -57,6 +57,12 @@ export const routes: Routes = [
           import('./Components/Invoice/invoice-list/invoice-list').then((m) => m.InvoiceList),
         title: 'Invoices — Invoicer',
       },
+      {
+        path: 'payments',
+        loadComponent: () =>
+          import('./Components/Payment/payment-list/payment-list').then((m) => m.PaymentList),
+        title: 'Payments — Invoicer',
+      },
     ],
   },
 ];

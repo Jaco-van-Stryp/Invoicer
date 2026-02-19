@@ -1,5 +1,4 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
-import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { ChartModule } from 'primeng/chart';
@@ -16,7 +15,7 @@ import { CompanyStore } from '../../../Services/company-store';
 
 @Component({
   selector: 'app-dashboard-home',
-  imports: [RouterLink, ButtonModule, ChartModule, CurrencyPipe, DatePipe],
+  imports: [RouterLink, ButtonModule, ChartModule],
   host: { class: 'block' },
   styleUrl: './dashboard-home.css',
   templateUrl: './dashboard-home.html',
@@ -42,81 +41,94 @@ export class DashboardHome implements OnInit {
   monthlyChartData = computed(() => {
     const stats = this.dashboardStats();
     if (!stats?.monthlyIncome?.length) return null;
+
+    // Get last 12 months including empty months
+    const now = new Date();
+    const monthsData: { year: number; month: number; amount: number }[] = [];
+
+    for (let i = 11; i >= 0; i--) {
+      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+
+      const existing = stats.monthlyIncome.find((m) => m.year === year && m.month === month);
+      monthsData.push({
+        year,
+        month,
+        amount: existing?.totalPaid ?? 0,
+      });
+    }
+
     return {
-      labels: stats.monthlyIncome.map((m) => `${m.year}-${String(m.month).padStart(2, '0')}`),
+      labels: monthsData.map((m) => {
+        const monthNames = [
+          'Jan',
+          'Feb',
+          'Mar',
+          'Apr',
+          'May',
+          'Jun',
+          'Jul',
+          'Aug',
+          'Sep',
+          'Oct',
+          'Nov',
+          'Dec',
+        ];
+        return `${monthNames[m.month - 1]} ${m.year}`;
+      }),
       datasets: [
         {
           label: 'Income',
-          data: stats.monthlyIncome.map((m) => m.totalPaid ?? 0),
-          backgroundColor: '#6366f1',
-          borderRadius: 4,
+          data: monthsData.map((m) => m.amount),
+          borderColor: '#6366f1',
+          backgroundColor: 'rgba(99, 102, 241, 0.1)',
+          fill: true,
+          tension: 0.4,
+          pointRadius: 3,
+          pointHoverRadius: 6,
+          pointBackgroundColor: '#6366f1',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
         },
       ],
     };
   });
 
-  clientChartData = computed(() => {
-    const stats = this.dashboardStats();
-    if (!stats?.incomeByClient?.length) return null;
-    const colors = ['#6366f1', '#a855f7', '#ec4899', '#3b82f6', '#22c55e', '#f59e0b'];
-    return {
-      labels: stats.incomeByClient.map((c) => c.clientName ?? 'Unknown'),
-      datasets: [
-        {
-          data: stats.incomeByClient.map((c) => c.totalPaid ?? 0),
-          backgroundColor: stats.incomeByClient.map((_, i) => colors[i % colors.length]),
+  lineChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        mode: 'index' as const,
+        intersect: false,
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: 'rgba(255, 255, 255, 0.05)',
         },
-      ],
-    };
-  });
-
-  statusChartData = computed(() => {
-    const stats = this.dashboardStats();
-    if (!stats?.statusSummary) return null;
-    const s = stats.statusSummary;
-    return {
-      labels: ['Paid', 'Partial', 'Unpaid'],
-      datasets: [
-        {
-          data: [s.paidCount ?? 0, s.partialCount ?? 0, s.unpaidCount ?? 0],
-          backgroundColor: ['#22c55e', '#f59e0b', '#ef4444'],
+        ticks: {
+          color: 'rgba(255, 255, 255, 0.5)',
         },
-      ],
-    };
-  });
-
-  recentPayments = computed(() => {
-    return this.invoices()
-      .flatMap((inv) =>
-        (inv.payments ?? []).map((p) => ({
-          invoiceNumber: inv.invoiceNumber ?? '',
-          clientName: inv.clientName ?? '',
-          amount: p.amount ?? 0,
-          paidOn: p.paidOn ? new Date(p.paidOn) : null,
-          notes: p.notes,
-        })),
-      )
-      .sort((a, b) => (b.paidOn?.getTime() ?? 0) - (a.paidOn?.getTime() ?? 0))
-      .slice(0, 10);
-  });
-
-  barChartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: { y: { beginAtZero: true } },
-  };
-
-  doughnutChartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: { legend: { position: 'bottom' as const } },
-  };
-
-  pieChartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: { legend: { position: 'bottom' as const } },
+      },
+      x: {
+        grid: {
+          display: false,
+        },
+        ticks: {
+          color: 'rgba(255, 255, 255, 0.5)',
+        },
+      },
+    },
+    interaction: {
+      mode: 'nearest' as const,
+      axis: 'x' as const,
+      intersect: false,
+    },
   };
 
   ngOnInit() {

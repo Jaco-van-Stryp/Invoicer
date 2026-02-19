@@ -33,6 +33,7 @@ export class DashboardLayout {
     { label: 'Clients', icon: 'pi pi-users', route: '/dashboard/clients' },
     { label: 'Products', icon: 'pi pi-box', route: '/dashboard/products' },
     { label: 'Invoices', icon: 'pi pi-file', route: '/dashboard/invoices' },
+    { label: 'Payments', icon: 'pi pi-wallet', route: '/dashboard/payments' },
   ];
 
   toggleSidebar() {
