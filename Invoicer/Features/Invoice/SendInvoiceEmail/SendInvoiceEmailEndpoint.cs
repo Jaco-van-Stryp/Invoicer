@@ -10,7 +10,11 @@ public static class SendInvoiceEmailEndpoint
         group
             .MapPost(
                 "/{invoiceId:guid}/send-email",
-                async ([FromRoute] Guid invoiceId, [FromBody] SendInvoiceEmailRequest req, ISender sender) =>
+                async (
+                    [FromRoute] Guid invoiceId,
+                    [FromBody] SendInvoiceEmailRequest req,
+                    ISender sender
+                ) =>
                 {
                     var command = new SendInvoiceEmailCommand(invoiceId, req.CompanyId);
                     await sender.Send(command);

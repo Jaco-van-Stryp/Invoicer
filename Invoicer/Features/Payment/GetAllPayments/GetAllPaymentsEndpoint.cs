@@ -4,7 +4,9 @@ namespace Invoicer.Features.Payment.GetAllPayments
 {
     public static class GetAllPaymentsEndpoint
     {
-        public static IEndpointRouteBuilder MapGetAllPaymentsEndpoint(this IEndpointRouteBuilder app)
+        public static IEndpointRouteBuilder MapGetAllPaymentsEndpoint(
+            this IEndpointRouteBuilder app
+        )
         {
             app.MapGet(
                     "/all-payments",

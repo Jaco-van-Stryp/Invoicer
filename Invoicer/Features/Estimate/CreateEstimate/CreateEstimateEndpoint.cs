@@ -4,7 +4,9 @@ namespace Invoicer.Features.Estimate.CreateEstimate
 {
     public static class CreateEstimateEndpoint
     {
-        public static IEndpointRouteBuilder MapCreateEstimateEndpoint(this IEndpointRouteBuilder app)
+        public static IEndpointRouteBuilder MapCreateEstimateEndpoint(
+            this IEndpointRouteBuilder app
+        )
         {
             app.MapPost(
                     "create-estimate",

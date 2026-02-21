@@ -29,11 +29,10 @@ namespace Invoicer.Features.Estimate.GetAllEstimates
                 throw new CompanyNotFoundException();
 
             var estimates = await _dbContext
-                .Estimates
-                .Where(e => e.CompanyId == request.CompanyId)
+                .Estimates.Where(e => e.CompanyId == request.CompanyId)
                 .Include(e => e.Client)
                 .Include(e => e.ProductEstimates)
-                .ThenInclude(pe => pe.Product)
+                    .ThenInclude(pe => pe.Product)
                 .OrderByDescending(e => e.EstimateDate)
                 .Select(e => new GetAllEstimatesResponse(
                     e.Id,
@@ -45,8 +44,7 @@ namespace Invoicer.Features.Estimate.GetAllEstimates
                     e.Notes,
                     e.ClientId,
                     e.Client.Name,
-                    e.ProductEstimates
-                        .Select(pe => new EstimateProductItem(
+                    e.ProductEstimates.Select(pe => new EstimateProductItem(
                             pe.ProductId,
                             pe.Product.Name,
                             pe.Quantity,

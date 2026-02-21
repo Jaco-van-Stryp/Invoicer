@@ -26,11 +26,12 @@ namespace Invoicer.Features.Client.DeleteClient
             var client = company.Clients.FirstOrDefault(c => c.Id == request.ClientId);
             if (client == null)
                 throw new ClientNotFoundException();
-
+            // TODO  - might have to mark a client as deleted instead of actually deleting it, if there are invoices linked to it. For now, just prevent deletion if there are invoices.
             var hasInvoices = await _dbContext.Invoices.AnyAsync(
                 i => i.ClientId == client.Id,
                 cancellationToken
             );
+
             if (hasInvoices)
                 throw new ClientHasInvoicesException();
 

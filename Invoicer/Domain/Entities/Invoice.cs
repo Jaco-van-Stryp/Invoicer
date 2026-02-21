@@ -1,12 +1,7 @@
+using Invoicer.Domain.Enums;
+
 namespace Invoicer.Domain.Entities
 {
-    public enum InvoiceStatus
-    {
-        Unpaid = 0,
-        Partial = 1,
-        Paid = 2,
-    }
-
     public class Invoice
     {
         public Guid Id { get; init; }

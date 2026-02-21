@@ -17,7 +17,7 @@ public class GetPublicInvoiceHandler(AppDbContext dbContext)
             .Invoices.Include(i => i.Client)
             .Include(i => i.Company)
             .Include(i => i.Products)
-            .ThenInclude(pi => pi.Product)
+                .ThenInclude(pi => pi.Product)
             .Include(i => i.Payments)
             .FirstOrDefaultAsync(i => i.Id == request.InvoiceId, cancellationToken);
 

@@ -7,7 +7,8 @@ public static class GetPublicInvoiceEndpoint
 {
     public static RouteGroupBuilder MapGetPublicInvoiceEndpoint(this RouteGroupBuilder group)
     {
-        group.MapGet(
+        group
+            .MapGet(
                 "/public/{invoiceId:guid}",
                 async ([FromRoute] Guid invoiceId, ISender sender) =>
                 {

@@ -19,13 +19,15 @@ namespace Invoicer.Features.Estimate.DeleteEstimate
             var userId = currentUserService.UserId;
             var user = await _dbContext
                 .Users.Include(u => u.Companies)
+                    .ThenInclude(e => e.Estimates)
                 .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
 
             if (user == null)
                 throw new UserNotFoundException();
 
-            var estimate = await _dbContext
-                .Estimates.FirstOrDefaultAsync(e => e.Id == request.EstimateId, cancellationToken);
+            var estimate = user
+                .Companies.SelectMany(c => c.Estimates)
+                .FirstOrDefault(e => e.Id == request.EstimateId);
 
             if (estimate == null)
                 throw new EstimateNotFoundException();

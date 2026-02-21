@@ -3,7 +3,6 @@ using MediatR;
 
 namespace Invoicer.Features.Payment.GetAllPayments
 {
-    public readonly record struct GetAllPaymentsQuery(
-         Guid CompanyId
-    ) : IRequest<List<GetAllPaymentsResponse>>;
+    public readonly record struct GetAllPaymentsQuery(Guid CompanyId)
+        : IRequest<List<GetAllPaymentsResponse>>;
 }

@@ -29,10 +29,9 @@ namespace Invoicer.Features.Payment.GetAllPayments
                 throw new CompanyNotFoundException();
 
             var payments = await _dbContext
-                .Payments
-                .Where(p => p.CompanyId == request.CompanyId)
+                .Payments.Where(p => p.CompanyId == request.CompanyId)
                 .Include(p => p.Invoice)
-                .ThenInclude(i => i.Client)
+                    .ThenInclude(i => i.Client)
                 .OrderByDescending(p => p.PaidOn)
                 .Select(p => new GetAllPaymentsResponse(
                     p.Id,

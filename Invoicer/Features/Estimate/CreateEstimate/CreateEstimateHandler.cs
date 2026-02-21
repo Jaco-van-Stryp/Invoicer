@@ -20,6 +20,9 @@ namespace Invoicer.Features.Estimate.CreateEstimate
             var userId = currentUserService.UserId;
             var user = await _dbContext
                 .Users.Include(u => u.Companies)
+                    .ThenInclude(c => c.Clients)
+                .Include(u => u.Companies)
+                    .ThenInclude(c => c.Products)
                 .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
 
             if (user == null)
@@ -29,21 +32,13 @@ namespace Invoicer.Features.Estimate.CreateEstimate
             if (company == null)
                 throw new CompanyNotFoundException();
 
-            var client = await _dbContext
-                .Clients.FirstOrDefaultAsync(
-                    c => c.Id == request.ClientId && c.CompanyId == request.CompanyId,
-                    cancellationToken
-                );
+            var client = company.Clients.FirstOrDefault(c => c.Id == request.ClientId);
 
             if (client == null)
                 throw new ClientNotFoundException();
 
             var productIds = request.Products.Select(p => p.ProductId).ToList();
-            var products = await _dbContext
-                .Products.Where(p =>
-                    productIds.Contains(p.Id) && p.CompanyId == request.CompanyId
-                )
-                .ToListAsync(cancellationToken);
+            var products = company.Products.Where(p => productIds.Contains(p.Id)).ToList();
 
             if (products.Count != productIds.Count)
                 throw new ProductNotFoundException();
@@ -53,7 +48,6 @@ namespace Invoicer.Features.Estimate.CreateEstimate
 
             var estimate = new Domain.Entities.Estimate
             {
-                Id = Guid.NewGuid(),
                 EstimateNumber = estimateNumber,
                 EstimateDate = request.EstimateDate,
                 ExpiresOn = request.ExpiresOn,
@@ -70,9 +64,8 @@ namespace Invoicer.Features.Estimate.CreateEstimate
                 .Products.Select(p =>
                 {
                     var product = products.First(pr => pr.Id == p.ProductId);
-                    return new Domain.Entities.ProductEstimate
+                    return new ProductEstimate
                     {
-                        Id = Guid.NewGuid(),
                         EstimateId = estimate.Id,
                         Estimate = estimate,
                         ProductId = p.ProductId,

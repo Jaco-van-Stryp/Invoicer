@@ -4,6 +4,5 @@ using MediatR;
 
 namespace Invoicer.Features.Auth.Register
 {
-    public readonly record struct RegisterCommand([property: Required, EmailAddress] string Email)
-        : IRequest<RegisterResponse>;
+    public readonly record struct RegisterCommand(string Email) : IRequest<RegisterResponse>;
 }

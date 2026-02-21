@@ -21,16 +21,6 @@ public record CompanyInfo(
     string? LogoUrl
 );
 
-public record ClientInfo(
-    string Name,
-    string? Email,
-    string? Phone,
-    string? Address
-);
+public record ClientInfo(string Name, string? Email, string? Phone, string? Address);
 
-public record ProductInfo(
-    string Name,
-    int Quantity,
-    decimal UnitPrice,
-    decimal TotalPrice
-);
+public record ProductInfo(string Name, int Quantity, decimal UnitPrice, decimal TotalPrice);

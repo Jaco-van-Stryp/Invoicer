@@ -37,7 +37,7 @@ public class SendInvoiceEmailHandler(
             .Invoices.Include(i => i.Client)
             .Include(i => i.Company)
             .Include(i => i.Products)
-            .ThenInclude(pi => pi.Product)
+                .ThenInclude(pi => pi.Product)
             .FirstOrDefaultAsync(
                 i => i.Id == request.InvoiceId && i.CompanyId == request.CompanyId,
                 cancellationToken
@@ -60,7 +60,7 @@ public class SendInvoiceEmailHandler(
             { "InvoiceDate", invoice.InvoiceDate.ToString("MMMM dd, yyyy") },
             { "InvoiceDueDate", invoice.InvoiceDue.ToString("MMMM dd, yyyy") },
             { "TotalAmount", $"{totalAmount:C}" },
-            { "InvoiceLink", $"https://invoicer.co.nz/invoice/{invoice.Id}" }
+            { "InvoiceLink", $"https://invoicer.co.nz/invoice/{invoice.Id}" },
         };
 
         // Render the email template

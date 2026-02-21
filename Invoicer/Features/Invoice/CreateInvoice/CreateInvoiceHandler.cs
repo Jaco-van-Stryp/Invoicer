@@ -74,7 +74,10 @@ namespace Invoicer.Features.Invoice.CreateInvoice
 
             _dbContext.Invoices.Add(invoice);
             await _dbContext.SaveChangesAsync(cancellationToken);
-            var SendInvoiceEmailCommand = new SendInvoiceEmailCommand(invoice.Id, request.CompanyId);
+            var SendInvoiceEmailCommand = new SendInvoiceEmailCommand(
+                invoice.Id,
+                request.CompanyId
+            );
             await sender.Send(SendInvoiceEmailCommand, cancellationToken);
             return new CreateInvoiceResponse(invoice.Id, invoice.InvoiceNumber);
         }

@@ -4,7 +4,9 @@ namespace Invoicer.Features.Estimate.GetAllEstimates
 {
     public static class GetAllEstimatesEndpoint
     {
-        public static IEndpointRouteBuilder MapGetAllEstimatesEndpoint(this IEndpointRouteBuilder app)
+        public static IEndpointRouteBuilder MapGetAllEstimatesEndpoint(
+            this IEndpointRouteBuilder app
+        )
         {
             app.MapGet(
                     "all-estimates",

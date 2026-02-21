@@ -3,7 +3,4 @@ using MediatR;
 
 namespace Invoicer.Features.Invoice.SendInvoiceEmail;
 
-public readonly record struct SendInvoiceEmailCommand(
-     Guid InvoiceId,
-     Guid CompanyId
-) : IRequest;
+public readonly record struct SendInvoiceEmailCommand(Guid InvoiceId, Guid CompanyId) : IRequest;

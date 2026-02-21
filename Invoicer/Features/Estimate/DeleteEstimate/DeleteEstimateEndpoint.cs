@@ -4,7 +4,9 @@ namespace Invoicer.Features.Estimate.DeleteEstimate
 {
     public static class DeleteEstimateEndpoint
     {
-        public static IEndpointRouteBuilder MapDeleteEstimateEndpoint(this IEndpointRouteBuilder app)
+        public static IEndpointRouteBuilder MapDeleteEstimateEndpoint(
+            this IEndpointRouteBuilder app
+        )
         {
             app.MapDelete(
                     "delete-estimate",
