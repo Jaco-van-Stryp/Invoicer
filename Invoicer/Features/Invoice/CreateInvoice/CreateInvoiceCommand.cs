@@ -8,7 +8,7 @@ namespace Invoicer.Features.Invoice.CreateInvoice
         Guid ClientId,
         DateTime InvoiceDate,
         DateTime InvoiceDue,
-        [property: Required] [property: MinLength(1)] List<CreateInvoiceProductItem> Products
+        [property: Required][property: MinLength(1)] List<CreateInvoiceProductItem> Products
     ) : IRequest<CreateInvoiceResponse>;
 
     public readonly record struct CreateInvoiceProductItem(
