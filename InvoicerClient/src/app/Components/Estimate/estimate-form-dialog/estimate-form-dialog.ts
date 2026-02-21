@@ -49,12 +49,10 @@ export class EstimateFormDialog {
   products = signal<GetAllProductsResponse[]>([]);
   loading = signal(false);
 
-  statusOptions = [
-    { label: 'Draft', value: EstimateStatus.Draft },
-    { label: 'Sent', value: EstimateStatus.Sent },
-    { label: 'Accepted', value: EstimateStatus.Accepted },
-    { label: 'Declined', value: EstimateStatus.Declined },
-  ];
+  statusOptions = Object.values(EstimateStatus).map((status) => ({
+    label: status,
+    value: status,
+  }));
 
   form = new FormGroup({
     clientId: new FormControl<string | null>(null, Validators.required),
@@ -138,6 +136,13 @@ export class EstimateFormDialog {
     this.productsFormArray.removeAt(index);
   }
 
+  private formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
   onSubmit() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -153,8 +158,8 @@ export class EstimateFormDialog {
     const command: CreateEstimateCommand = {
       companyId,
       clientId: formValue.clientId!,
-      estimateDate: formValue.estimateDate!.toISOString(),
-      expiresOn: formValue.expiresOn!.toISOString(),
+      estimateDate: this.formatDate(formValue.estimateDate!),
+      expiresOn: this.formatDate(formValue.expiresOn!),
       status: formValue.status!,
       notes: formValue.notes || undefined,
       products: formValue.products!.map((p: any) => ({
