@@ -2,6 +2,7 @@ using Invoicer.Domain.Data;
 using Invoicer.Domain.Exceptions;
 using Invoicer.Infrastructure.CurrentUserService;
 using Invoicer.Infrastructure.EmailService;
+using Invoicer.Infrastructure.EmailTemplateService;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,7 +11,8 @@ namespace Invoicer.Features.Invoice.SendInvoiceEmail;
 public class SendInvoiceEmailHandler(
     AppDbContext dbContext,
     ICurrentUserService currentUserService,
-    IEmailService emailService
+    IEmailService emailService,
+    IEmailTemplateService emailTemplateService
 ) : IRequestHandler<SendInvoiceEmailCommand>
 {
     public async Task Handle(SendInvoiceEmailCommand request, CancellationToken cancellationToken)
@@ -34,6 +36,8 @@ public class SendInvoiceEmailHandler(
         var invoice = await dbContext
             .Invoices.Include(i => i.Client)
             .Include(i => i.Company)
+            .Include(i => i.Products)
+            .ThenInclude(pi => pi.Product)
             .FirstOrDefaultAsync(
                 i => i.Id == request.InvoiceId && i.CompanyId == request.CompanyId,
                 cancellationToken
@@ -44,26 +48,29 @@ public class SendInvoiceEmailHandler(
             throw new InvoiceNotFoundException();
         }
 
-        var invoiceUrl = $"https://localhost:4200/invoice/{invoice.Id}";
+        // Calculate total amount
+        var totalAmount = invoice.Products.Sum(pi => pi.Quantity * pi.Product.Price);
 
+        // Prepare placeholders for template
+        var placeholders = new Dictionary<string, string>
+        {
+            { "ClientName", invoice.Client.Name },
+            { "CompanyName", invoice.Company.Name },
+            { "InvoiceNumber", invoice.InvoiceNumber },
+            { "InvoiceDate", invoice.InvoiceDate.ToString("MMMM dd, yyyy") },
+            { "InvoiceDueDate", invoice.InvoiceDue.ToString("MMMM dd, yyyy") },
+            { "TotalAmount", $"{totalAmount:C}" },
+            { "InvoiceLink", $"https://invoicer.co.nz/invoice/{invoice.Id}" }
+        };
+
+        // Render the email template
+        var htmlBody = emailTemplateService.RenderTemplate(
+            EmailTemplateName.SendInvoiceEmail,
+            placeholders
+        );
+
+        // Send the email
         var subject = $"Invoice {invoice.InvoiceNumber} from {invoice.Company.Name}";
-        var body = $@"
-            <h2>New Invoice from {invoice.Company.Name}</h2>
-            <p>Hello {invoice.Client.Name},</p>
-            <p>You have received a new invoice.</p>
-            <p><strong>Invoice Number:</strong> {invoice.InvoiceNumber}</p>
-            <p><strong>Invoice Date:</strong> {invoice.InvoiceDate:MMMM dd, yyyy}</p>
-            <p><strong>Due Date:</strong> {invoice.InvoiceDue:MMMM dd, yyyy}</p>
-            <p>
-                <a href='{invoiceUrl}' style='display: inline-block; padding: 12px 24px; background-color: #6366f1; color: white; text-decoration: none; border-radius: 6px; font-weight: 600;'>
-                    View Invoice
-                </a>
-            </p>
-            <p>Thank you for your business!</p>
-            <hr>
-            <p style='color: #6b7280; font-size: 0.875rem;'>{invoice.Company.Name}<br>{invoice.Company.Address}<br>{invoice.Company.Email}</p>
-        ";
-
-        await emailService.SendEmailAsync(invoice.Client.Email, subject, body);
+        await emailService.SendEmailAsync(invoice.Client.Email, subject, htmlBody);
     }
 }
