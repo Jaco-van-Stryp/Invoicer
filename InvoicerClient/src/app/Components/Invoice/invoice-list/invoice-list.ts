@@ -78,15 +78,9 @@ export class InvoiceList implements OnInit {
   }
 
   statusSeverity(status: InvoiceStatus | undefined): 'success' | 'warn' | 'danger' {
-    if (status === InvoiceStatus.NUMBER_2) return 'success';
-    if (status === InvoiceStatus.NUMBER_1) return 'warn';
+    if (status === InvoiceStatus.Paid) return 'success';
+    if (status === InvoiceStatus.Partial) return 'warn';
     return 'danger';
-  }
-
-  statusLabel(status: InvoiceStatus | undefined): string {
-    if (status === InvoiceStatus.NUMBER_2) return 'Paid';
-    if (status === InvoiceStatus.NUMBER_1) return 'Partial';
-    return 'Unpaid';
   }
 
   openNew() {

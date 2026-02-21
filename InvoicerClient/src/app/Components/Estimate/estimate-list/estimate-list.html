@@ -22,7 +22,7 @@
         <div class="estimate-card-header">
           <div class="estimate-card-number">{{ estimate.estimateNumber }}</div>
           <p-tag
-            [value]="statusLabel(estimate.status)"
+            [value]="estimate.status || 'Unknown'"
             [severity]="statusSeverity(estimate.status)"
           />
         </div>
@@ -111,7 +111,7 @@
           <td>{{ estimate.expiresOn | date: 'mediumDate' }}</td>
           <td>
             <p-tag
-              [value]="statusLabel(estimate.status)"
+              [value]="estimate.status || 'Unknown'"
               [severity]="statusSeverity(estimate.status)"
             />
           </td>

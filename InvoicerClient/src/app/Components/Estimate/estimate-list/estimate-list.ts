@@ -116,24 +116,9 @@ export class EstimateList implements OnInit {
     }
   }
 
-  statusLabel(status: EstimateStatus): string {
-    switch (status) {
-      case EstimateStatus.Draft:
-        return 'Draft';
-      case EstimateStatus.Sent:
-        return 'Sent';
-      case EstimateStatus.Accepted:
-        return 'Accepted';
-      case EstimateStatus.Declined:
-        return 'Declined';
-      default:
-        return 'Unknown';
-    }
-  }
-
   statusSeverity(
-    status: EstimateStatus,
-  ): 'success' | 'secondary' | 'info' | 'warning' | 'danger' | 'contrast' | undefined {
+    status: EstimateStatus | undefined,
+  ): 'success' | 'secondary' | 'info' | 'warn' | 'danger' | 'contrast' | undefined {
     switch (status) {
       case EstimateStatus.Accepted:
         return 'success';

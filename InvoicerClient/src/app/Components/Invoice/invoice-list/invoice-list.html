@@ -22,7 +22,7 @@
         <div class="invoice-card-header">
           <div class="invoice-card-number">{{ invoice.invoiceNumber }}</div>
           <p-tag
-            [value]="statusLabel(invoice.status)"
+            [value]="invoice.status || 'Unpaid'"
             [severity]="statusSeverity(invoice.status)"
           />
         </div>
@@ -129,7 +129,7 @@
           <td>{{ invoice.invoiceDue | date: 'mediumDate' }}</td>
           <td>
             <p-tag
-              [value]="statusLabel(invoice.status)"
+              [value]="invoice.status || 'Unpaid'"
               [severity]="statusSeverity(invoice.status)"
             />
           </td>

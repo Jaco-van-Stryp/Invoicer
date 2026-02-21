@@ -14,7 +14,7 @@
     <div class="form-grid">
       <div class="form-field">
         <label for="client">Client *</label>
-        <p-dropdown
+        <p-select
           id="client"
           formControlName="clientId"
           [options]="clients()"
@@ -27,7 +27,7 @@
 
       <div class="form-field">
         <label for="status">Status *</label>
-        <p-dropdown
+        <p-select
           id="status"
           formControlName="status"
           [options]="statusOptions"
@@ -39,7 +39,7 @@
 
       <div class="form-field">
         <label for="estimateDate">Estimate Date *</label>
-        <p-calendar
+        <p-datepicker
           id="estimateDate"
           formControlName="estimateDate"
           dateFormat="yy-mm-dd"
@@ -50,7 +50,7 @@
 
       <div class="form-field">
         <label for="expiresOn">Expires On *</label>
-        <p-calendar
+        <p-datepicker
           id="expiresOn"
           formControlName="expiresOn"
           dateFormat="yy-mm-dd"
@@ -76,13 +76,13 @@
           (click)="addProduct()"
           [outlined]="true"
           size="small"
-        />
+        ></button>
       </div>
 
       <div formArrayName="products" class="flex flex-col gap-2">
         @for (productGroup of productsFormArray.controls; track $index) {
           <div [formGroupName]="$index" class="product-row">
-            <p-dropdown
+            <p-select
               formControlName="productId"
               [options]="products()"
               optionLabel="name"
@@ -104,7 +104,7 @@
               severity="danger"
               [text]="true"
               (click)="removeProduct($index)"
-            />
+            ></button>
           </div>
         }
       </div>
@@ -119,7 +119,7 @@
       [outlined]="true"
       (click)="onCancel()"
       [disabled]="loading()"
-    />
-    <button pButton label="Save" (click)="onSubmit()" [loading]="loading()" />
+    ></button>
+    <button pButton label="Save" (click)="onSubmit()" [loading]="loading()"></button>
   </ng-template>
 </p-dialog>

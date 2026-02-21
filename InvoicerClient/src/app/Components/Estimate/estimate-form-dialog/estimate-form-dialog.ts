@@ -102,8 +102,8 @@ export class EstimateFormDialog {
     if (est) {
       this.form.patchValue({
         clientId: est.clientId,
-        estimateDate: new Date(est.estimateDate),
-        expiresOn: new Date(est.expiresOn),
+        estimateDate: est.estimateDate ? new Date(est.estimateDate) : new Date(),
+        expiresOn: est.expiresOn ? new Date(est.expiresOn) : new Date(),
         status: est.status,
         notes: est.notes || '',
       });
@@ -153,8 +153,8 @@ export class EstimateFormDialog {
     const command: CreateEstimateCommand = {
       companyId,
       clientId: formValue.clientId!,
-      estimateDate: formValue.estimateDate!,
-      expiresOn: formValue.expiresOn!,
+      estimateDate: formValue.estimateDate!.toISOString(),
+      expiresOn: formValue.expiresOn!.toISOString(),
       status: formValue.status!,
       notes: formValue.notes || undefined,
       products: formValue.products!.map((p: any) => ({
