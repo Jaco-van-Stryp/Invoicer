@@ -1,5 +1,7 @@
 .gitignore
+.openapi-generator-ignore
 README.md
+api.base.service.ts
 api.module.ts
 api/aPI.service.ts
 api/api.ts
@@ -13,6 +15,7 @@ api/payment.service.ts
 api/product.service.ts
 configuration.ts
 encoder.ts
+git_push.sh
 index.ts
 model/clientIncomeItem.ts
 model/clientInfo.ts
@@ -61,4 +64,6 @@ model/updateInvoiceCommand.ts
 model/updateInvoiceProductItem.ts
 model/updateProductCommand.ts
 param.ts
+provide-api.ts
+query.params.ts
 variables.ts

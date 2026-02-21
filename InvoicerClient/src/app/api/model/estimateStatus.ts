@@ -8,11 +8,10 @@
  * Do not edit the class manually.
  */
 
-export type EstimateStatus = 0 | 1 | 2 | 3;
-
 export const EstimateStatus = {
-  NUMBER_0: 0 as EstimateStatus,
-  NUMBER_1: 1 as EstimateStatus,
-  NUMBER_2: 2 as EstimateStatus,
-  NUMBER_3: 3 as EstimateStatus,
-};
+  Draft: 'Draft',
+  Sent: 'Sent',
+  Accepted: 'Accepted',
+  Declined: 'Declined',
+} as const;
+export type EstimateStatus = (typeof EstimateStatus)[keyof typeof EstimateStatus];

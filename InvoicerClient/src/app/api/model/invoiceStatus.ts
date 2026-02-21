@@ -8,10 +8,9 @@
  * Do not edit the class manually.
  */
 
-export type InvoiceStatus = 0 | 1 | 2;
-
 export const InvoiceStatus = {
-  NUMBER_0: 0 as InvoiceStatus,
-  NUMBER_1: 1 as InvoiceStatus,
-  NUMBER_2: 2 as InvoiceStatus,
-};
+  Unpaid: 'Unpaid',
+  Partial: 'Partial',
+  Paid: 'Paid',
+} as const;
+export type InvoiceStatus = (typeof InvoiceStatus)[keyof typeof InvoiceStatus];
