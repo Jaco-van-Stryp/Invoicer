@@ -3,7 +3,9 @@ using Invoicer.Domain.Entities;
 using Invoicer.Domain.Exceptions;
 using Invoicer.Features.Invoice.CreateInvoice;
 using Invoicer.Tests.Infrastructure;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
+using NSubstitute;
 
 namespace Invoicer.Tests.Features.Invoice.CreateInvoice;
 
@@ -83,7 +85,7 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         // Arrange
         var (user, company, client, productA, productB) = await SeedFullScenarioAsync();
         SetCurrentUser(user.Id, user.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService);
+        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
 
         var invoiceDate = new DateTime(2026, 1, 15, 0, 0, 0, DateTimeKind.Utc);
         var invoiceDue = new DateTime(2026, 2, 15, 0, 0, 0, DateTimeKind.Utc);
@@ -134,7 +136,7 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         // Arrange
         var (user, company, client, productA, _) = await SeedFullScenarioAsync();
         SetCurrentUser(user.Id, user.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService);
+        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
 
         var command = new CreateInvoiceCommand(
             CompanyId: company.Id,
@@ -165,7 +167,7 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         // Arrange
         var (user, company, client, productA, _) = await SeedFullScenarioAsync();
         SetCurrentUser(user.Id, user.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService);
+        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
 
         var command = new CreateInvoiceCommand(
             CompanyId: company.Id,
@@ -189,7 +191,7 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
     {
         // Arrange
         SetCurrentUser(Guid.NewGuid());
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService);
+        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
 
         var command = new CreateInvoiceCommand(
             CompanyId: Guid.NewGuid(),
@@ -222,7 +224,7 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         await DbContext.SaveChangesAsync();
 
         SetCurrentUser(user.Id, user.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService);
+        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
 
         var command = new CreateInvoiceCommand(
             CompanyId: Guid.NewGuid(),
@@ -243,7 +245,7 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         // Arrange
         var (user, company, _, productA, _) = await SeedFullScenarioAsync();
         SetCurrentUser(user.Id, user.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService);
+        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
 
         var command = new CreateInvoiceCommand(
             CompanyId: company.Id,
@@ -264,7 +266,7 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         // Arrange
         var (user, company, client, _, _) = await SeedFullScenarioAsync();
         SetCurrentUser(user.Id, user.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService);
+        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
 
         var command = new CreateInvoiceCommand(
             CompanyId: company.Id,
@@ -298,7 +300,7 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         await DbContext.SaveChangesAsync();
 
         SetCurrentUser(user2.Id, user2.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService);
+        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
 
         var command = new CreateInvoiceCommand(
             CompanyId: company.Id,

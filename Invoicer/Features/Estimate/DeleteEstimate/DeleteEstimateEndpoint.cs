@@ -9,12 +9,12 @@ namespace Invoicer.Features.Estimate.DeleteEstimate
         )
         {
             app.MapDelete(
-                    "delete-estimate",
-                    async (Guid estimateId, ISender sender) =>
+                    "delete-estimate/{EstimateId}",
+                    async (Guid EstimateId, ISender sender) =>
                     {
-                        var command = new DeleteEstimateCommand(estimateId);
+                        var command = new DeleteEstimateCommand(EstimateId);
                         await sender.Send(command);
-                        return TypedResults.NoContent();
+                        return Results.NoContent();
                     }
                 )
                 .WithName("DeleteEstimate")

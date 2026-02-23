@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Invoicer.Domain.Entities;
+using Invoicer.Domain.Enums;
 using Invoicer.Domain.Exceptions;
 using Invoicer.Features.Invoice.GetDashboardStats;
 using Invoicer.Tests.Infrastructure;
@@ -12,8 +13,8 @@ public class GetDashboardStatsHandlerTests(DatabaseFixture db) : IntegrationTest
     private async Task<(
         User User,
         Domain.Entities.Company Company,
-        Client Client1,
-        Client Client2,
+        Domain.Entities.Client Client1,
+        Domain.Entities.Client Client2,
         Product Product
     )> SeedBaseScenarioAsync()
     {
@@ -40,7 +41,7 @@ public class GetDashboardStatsHandlerTests(DatabaseFixture db) : IntegrationTest
             UserId = user.Id,
             User = user,
         };
-        var client1 = new Client
+        var client1 = new Domain.Entities.Client
         {
             Id = Guid.NewGuid(),
             Name = "Client Alpha",
@@ -48,7 +49,7 @@ public class GetDashboardStatsHandlerTests(DatabaseFixture db) : IntegrationTest
             CompanyId = company.Id,
             Company = company,
         };
-        var client2 = new Client
+        var client2 = new Domain.Entities.Client
         {
             Id = Guid.NewGuid(),
             Name = "Client Beta",
@@ -78,7 +79,7 @@ public class GetDashboardStatsHandlerTests(DatabaseFixture db) : IntegrationTest
 
     private async Task<Domain.Entities.Invoice> CreateInvoiceAsync(
         Domain.Entities.Company company,
-        Client client,
+        Domain.Entities.Client client,
         Product product,
         InvoiceStatus status = InvoiceStatus.Unpaid
     )
@@ -273,7 +274,7 @@ public class GetDashboardStatsHandlerTests(DatabaseFixture db) : IntegrationTest
         };
         await DbContext.Companies.AddAsync(otherCompany);
 
-        var otherClient = new Client
+        var otherClient = new Domain.Entities.Client
         {
             Id = Guid.NewGuid(),
             Name = "Other Client",

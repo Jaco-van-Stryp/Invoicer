@@ -1,5 +1,6 @@
 using Invoicer.Domain.Data;
 using Invoicer.Domain.Entities;
+using Invoicer.Domain.Enums;
 using Invoicer.Domain.Exceptions;
 using Invoicer.Infrastructure.CurrentUserService;
 using MediatR;

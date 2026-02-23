@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Invoicer.Domain.Entities;
+using Invoicer.Domain.Enums;
 using Invoicer.Domain.Exceptions;
 using Invoicer.Features.Payment.DeletePayment;
 using Invoicer.Tests.Infrastructure;
@@ -44,7 +45,7 @@ public class DeletePaymentHandlerTests(DatabaseFixture db) : IntegrationTestBase
             UserId = user.Id,
             User = user,
         };
-        var client = new Client
+        var client = new Domain.Entities.Client
         {
             Id = Guid.NewGuid(),
             Name = "Test Client",

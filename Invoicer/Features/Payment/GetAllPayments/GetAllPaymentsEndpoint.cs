@@ -9,12 +9,12 @@ namespace Invoicer.Features.Payment.GetAllPayments
         )
         {
             app.MapGet(
-                    "/all-payments",
-                    async (Guid companyId, ISender sender, CancellationToken ct) =>
+                    "get-all-payments/{CompanyId}",
+                    async (Guid CompanyId, ISender sender) =>
                     {
-                        var query = new GetAllPaymentsQuery(companyId);
-                        var result = await sender.Send(query, ct);
-                        return Results.Ok(result);
+                        var query = new GetAllPaymentsQuery(CompanyId);
+                        var result = await sender.Send(query);
+                        return TypedResults.Ok(result);
                     }
                 )
                 .WithName("GetAllPayments")

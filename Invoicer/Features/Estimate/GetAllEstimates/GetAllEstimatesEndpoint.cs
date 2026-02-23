@@ -9,10 +9,10 @@ namespace Invoicer.Features.Estimate.GetAllEstimates
         )
         {
             app.MapGet(
-                    "all-estimates",
-                    async (Guid companyId, ISender sender) =>
+                    "get-all-estimates/{CompanyId}",
+                    async (Guid CompanyId, ISender sender) =>
                     {
-                        var query = new GetAllEstimatesQuery(companyId);
+                        var query = new GetAllEstimatesQuery(CompanyId);
                         var result = await sender.Send(query);
                         return TypedResults.Ok(result);
                     }

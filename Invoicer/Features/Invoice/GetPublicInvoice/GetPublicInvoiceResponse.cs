@@ -1,6 +1,6 @@
 namespace Invoicer.Features.Invoice.GetPublicInvoice;
 
-public record GetPublicInvoiceResponse(
+public record struct GetPublicInvoiceResponse(
     Guid Id,
     string InvoiceNumber,
     DateTime InvoiceDate,
@@ -13,7 +13,7 @@ public record GetPublicInvoiceResponse(
     List<ProductInfo> Products
 );
 
-public record CompanyInfo(
+public record struct CompanyInfo(
     string Name,
     string? Address,
     string? Phone,
@@ -21,6 +21,6 @@ public record CompanyInfo(
     string? LogoUrl
 );
 
-public record ClientInfo(string Name, string? Email, string? Phone, string? Address);
+public record struct ClientInfo(string Name, string? Email, string? Phone, string? Address);
 
-public record ProductInfo(string Name, int Quantity, decimal UnitPrice, decimal TotalPrice);
+public record struct ProductInfo(string Name, int Quantity, decimal UnitPrice, decimal TotalPrice);

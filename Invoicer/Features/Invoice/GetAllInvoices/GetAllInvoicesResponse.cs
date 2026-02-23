@@ -1,4 +1,4 @@
-using Invoicer.Domain.Entities;
+using Invoicer.Domain.Enums;
 
 namespace Invoicer.Features.Invoice.GetAllInvoices
 {

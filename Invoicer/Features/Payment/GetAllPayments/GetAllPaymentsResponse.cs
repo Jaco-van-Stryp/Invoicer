@@ -1,6 +1,6 @@
 namespace Invoicer.Features.Payment.GetAllPayments
 {
-    public record GetAllPaymentsResponse(
+    public record struct GetAllPaymentsResponse(
         Guid Id,
         decimal Amount,
         DateTime PaidOn,

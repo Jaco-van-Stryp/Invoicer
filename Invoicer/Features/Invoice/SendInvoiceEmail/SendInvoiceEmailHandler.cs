@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Invoicer.Features.Invoice.SendInvoiceEmail;
 
 public class SendInvoiceEmailHandler(
-    AppDbContext dbContext,
+    AppDbContext _dbContext,
     ICurrentUserService currentUserService,
     IEmailService emailService,
     IEmailTemplateService emailTemplateService
@@ -18,7 +18,7 @@ public class SendInvoiceEmailHandler(
     public async Task Handle(SendInvoiceEmailCommand request, CancellationToken cancellationToken)
     {
         var userId = currentUserService.UserId;
-        var user = await dbContext
+        var user = await _dbContext
             .Users.Include(u => u.Companies)
             .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
 
@@ -33,7 +33,7 @@ public class SendInvoiceEmailHandler(
             throw new CompanyNotFoundException();
         }
 
-        var invoice = await dbContext
+        var invoice = await _dbContext
             .Invoices.Include(i => i.Client)
             .Include(i => i.Company)
             .Include(i => i.Products)

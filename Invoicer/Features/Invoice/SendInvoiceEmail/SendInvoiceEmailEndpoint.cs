@@ -1,31 +1,24 @@
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Invoicer.Features.Invoice.SendInvoiceEmail;
 
 public static class SendInvoiceEmailEndpoint
 {
-    public static RouteGroupBuilder MapSendInvoiceEmailEndpoint(this RouteGroupBuilder group)
+    public static IEndpointRouteBuilder MapSendInvoiceEmailEndpoint(this IEndpointRouteBuilder app)
     {
-        group
-            .MapPost(
-                "/{invoiceId:guid}/send-email",
-                async (
-                    [FromRoute] Guid invoiceId,
-                    [FromBody] SendInvoiceEmailRequest req,
-                    ISender sender
-                ) =>
+        app.MapPost(
+                "{InvoiceId}/send-email",
+                async (Guid InvoiceId, SendInvoiceEmailRequest req, ISender sender) =>
                 {
-                    var command = new SendInvoiceEmailCommand(invoiceId, req.CompanyId);
+                    var command = new SendInvoiceEmailCommand(InvoiceId, req.CompanyId);
                     await sender.Send(command);
-                    return Results.Ok();
+                    return TypedResults.Ok();
                 }
             )
             .WithName("SendInvoiceEmail")
-            .WithTags("Invoice")
             .RequireAuthorization();
 
-        return group;
+        return app;
     }
 }
 

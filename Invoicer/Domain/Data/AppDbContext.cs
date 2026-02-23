@@ -26,8 +26,6 @@ namespace Invoicer.Domain.Data
 
             modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
 
-            modelBuilder.Entity<User>().Property(u => u.RowVersion).IsRowVersion();
-
             modelBuilder
                 .Entity<ProductInvoice>()
                 .HasIndex(pi => new { pi.ProductId, pi.InvoiceId })

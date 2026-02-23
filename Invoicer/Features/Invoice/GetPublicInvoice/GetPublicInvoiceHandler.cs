@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Invoicer.Features.Invoice.GetPublicInvoice;
 
-public class GetPublicInvoiceHandler(AppDbContext dbContext)
+public class GetPublicInvoiceHandler(AppDbContext _dbContext)
     : IRequestHandler<GetPublicInvoiceQuery, GetPublicInvoiceResponse>
 {
     public async Task<GetPublicInvoiceResponse> Handle(
@@ -13,7 +13,7 @@ public class GetPublicInvoiceHandler(AppDbContext dbContext)
         CancellationToken cancellationToken
     )
     {
-        var invoice = await dbContext
+        var invoice = await _dbContext
             .Invoices.Include(i => i.Client)
             .Include(i => i.Company)
             .Include(i => i.Products)

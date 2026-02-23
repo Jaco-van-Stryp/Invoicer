@@ -9,12 +9,9 @@ namespace Invoicer.Features.Estimate.DeleteEstimate
     public class DeleteEstimateHandler(
         AppDbContext _dbContext,
         ICurrentUserService currentUserService
-    ) : IRequestHandler<DeleteEstimateCommand, Unit>
+    ) : IRequestHandler<DeleteEstimateCommand>
     {
-        public async Task<Unit> Handle(
-            DeleteEstimateCommand request,
-            CancellationToken cancellationToken
-        )
+        public async Task Handle(DeleteEstimateCommand request, CancellationToken cancellationToken)
         {
             var userId = currentUserService.UserId;
             var user = await _dbContext
@@ -38,8 +35,6 @@ namespace Invoicer.Features.Estimate.DeleteEstimate
 
             _dbContext.Estimates.Remove(estimate);
             await _dbContext.SaveChangesAsync(cancellationToken);
-
-            return Unit.Value;
         }
     }
 }

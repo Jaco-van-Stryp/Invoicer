@@ -1,27 +1,23 @@
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Invoicer.Features.Invoice.GetPublicInvoice;
 
 public static class GetPublicInvoiceEndpoint
 {
-    public static RouteGroupBuilder MapGetPublicInvoiceEndpoint(this RouteGroupBuilder group)
+    public static IEndpointRouteBuilder MapGetPublicInvoiceEndpoint(this IEndpointRouteBuilder app)
     {
-        group
-            .MapGet(
-                "/public/{invoiceId:guid}",
-                async ([FromRoute] Guid invoiceId, ISender sender) =>
+        app.MapGet(
+                "public/{InvoiceId}",
+                async (Guid InvoiceId, ISender sender) =>
                 {
-                    var query = new GetPublicInvoiceQuery(invoiceId);
+                    var query = new GetPublicInvoiceQuery(InvoiceId);
                     var result = await sender.Send(query);
-                    return Results.Ok(result);
+                    return TypedResults.Ok(result);
                 }
             )
             .WithName("GetPublicInvoice")
-            .WithTags("Invoice")
-            .Produces<GetPublicInvoiceResponse>()
             .AllowAnonymous();
 
-        return group;
+        return app;
     }
 }

@@ -1,15 +1,15 @@
-using Invoicer.Domain.Entities;
+using Invoicer.Domain.Enums;
 
 namespace Invoicer.Features.Estimate.GetAllEstimates
 {
-    public record EstimateProductItem(
+    public record struct EstimateProductItem(
         Guid ProductId,
         string ProductName,
         int Quantity,
         decimal UnitPrice
     );
 
-    public record GetAllEstimatesResponse(
+    public record struct GetAllEstimatesResponse(
         Guid Id,
         string EstimateNumber,
         DateTime EstimateDate,

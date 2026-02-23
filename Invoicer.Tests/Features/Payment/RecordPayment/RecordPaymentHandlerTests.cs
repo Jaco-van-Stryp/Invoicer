@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Invoicer.Domain.Entities;
+using Invoicer.Domain.Enums;
 using Invoicer.Domain.Exceptions;
 using Invoicer.Features.Payment.RecordPayment;
 using Invoicer.Tests.Infrastructure;
@@ -13,7 +14,7 @@ public class RecordPaymentHandlerTests(DatabaseFixture db) : IntegrationTestBase
     private async Task<(
         User User,
         Domain.Entities.Company Company,
-        Client Client,
+        Domain.Entities.Client Client,
         Domain.Entities.Invoice Invoice
     )> SeedFullScenarioAsync(decimal productPrice = 100m, int quantity = 2)
     {
@@ -40,7 +41,7 @@ public class RecordPaymentHandlerTests(DatabaseFixture db) : IntegrationTestBase
             UserId = user.Id,
             User = user,
         };
-        var client = new Client
+        var client = new Domain.Entities.Client
         {
             Id = Guid.NewGuid(),
             Name = "Test Client",
