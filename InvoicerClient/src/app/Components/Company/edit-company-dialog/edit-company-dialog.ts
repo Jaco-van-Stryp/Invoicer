@@ -9,8 +9,10 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { CompanyService, FileService } from '../../../api';
 import { CompanyStore } from '../../../Services/company-store';
+import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-edit-company-dialog',
   imports: [
     FormsModule,

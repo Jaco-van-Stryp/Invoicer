@@ -40,6 +40,7 @@ model/getAllClientsResponse.ts
 model/getAllCompaniesResponse.ts
 model/getAllEstimatesResponse.ts
 model/getAllInvoicesResponse.ts
+model/getAllPaymentsResponse.ts
 model/getAllProductsResponse.ts
 model/getDashboardStatsResponse.ts
 model/getPublicInvoiceResponse.ts

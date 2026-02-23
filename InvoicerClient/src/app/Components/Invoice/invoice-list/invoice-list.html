@@ -21,10 +21,7 @@
       <div class="invoice-card">
         <div class="invoice-card-header">
           <div class="invoice-card-number">{{ invoice.invoiceNumber }}</div>
-          <p-tag
-            [value]="invoice.status || 'Unpaid'"
-            [severity]="statusSeverity(invoice.status)"
-          />
+          <p-tag [value]="invoice.status || 'Unpaid'" [severity]="statusSeverity(invoice.status)" />
         </div>
         <div class="invoice-card-client">{{ invoice.clientName }}</div>
         <div class="invoice-card-dates">

@@ -13,8 +13,10 @@ import { InvoiceService, GetAllInvoicesResponse, InvoiceStatus } from '../../../
 import { CompanyStore } from '../../../Services/company-store';
 import { InvoiceFormDialog } from '../invoice-form-dialog/invoice-form-dialog';
 import { RecordPaymentDialog } from '../record-payment-dialog/record-payment-dialog';
+import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-invoice-list',
   imports: [
     CurrencyPipe,

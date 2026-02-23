@@ -4,8 +4,10 @@ import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CompanyService, GetAllCompaniesResponse } from '../../../api';
 import { CompanyStore } from '../../../Services/company-store';
+import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-company-picker',
   imports: [RouterLink, ButtonModule],
   host: { class: 'block' },

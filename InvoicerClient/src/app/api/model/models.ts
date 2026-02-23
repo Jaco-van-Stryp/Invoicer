@@ -21,6 +21,7 @@ export * from './getAllClientsResponse';
 export * from './getAllCompaniesResponse';
 export * from './getAllEstimatesResponse';
 export * from './getAllInvoicesResponse';
+export * from './getAllPaymentsResponse';
 export * from './getAllProductsResponse';
 export * from './getDashboardStatsResponse';
 export * from './getPublicInvoiceResponse';

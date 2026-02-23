@@ -9,8 +9,10 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { GetAllInvoicesResponse, InvoicePaymentItem, PaymentService } from '../../../api';
 import { CompanyStore } from '../../../Services/company-store';
+import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-record-payment-dialog',
   imports: [
     CurrencyPipe,

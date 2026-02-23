@@ -195,7 +195,6 @@ Available generated services: `AuthService`, `ClientService`, `CompanyService`, 
 #### Frontend Conventions
 
 - **Standalone components only** — no NgModules (except the legacy auto-generated `api.module.ts`)
-- **No OnPush** — never use `changeDetection: ChangeDetectionStrategy.OnPush`; use Angular's default change detection
 - **File naming**: `component-name.ts`, `component-name.html`, `component-name.css` (no `.component` suffix)
 - **Component structure**: `Components/{Feature}/{component-name}/` — each with `.ts`, `.html`, `.css`, `.spec.ts`
 - **Styling**: Tailwind utility classes + PrimeNG component styles; plain CSS (no SCSS)

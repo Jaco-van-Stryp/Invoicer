@@ -3,8 +3,10 @@ import { ActivatedRoute } from '@angular/router';
 import { InvoiceService, GetPublicInvoiceResponse } from '../../../api';
 import { ButtonModule } from 'primeng/button';
 import { DatePipe, CurrencyPipe } from '@angular/common';
+import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-public-invoice-view',
   imports: [ButtonModule, DatePipe, CurrencyPipe],
   templateUrl: './public-invoice-view.html',

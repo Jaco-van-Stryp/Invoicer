@@ -5,8 +5,10 @@ import { CompanyStore } from '../../../Services/company-store';
 import { AuthStore } from '../../../Services/auth-store';
 import { CompanyPicker } from '../company-picker/company-picker';
 import { EditCompanyDialog } from '../../Company/edit-company-dialog/edit-company-dialog';
+import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-dashboard-layout',
   imports: [
     RouterOutlet,

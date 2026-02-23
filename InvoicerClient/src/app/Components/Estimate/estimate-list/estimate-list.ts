@@ -12,8 +12,10 @@ import { TooltipModule } from 'primeng/tooltip';
 import { EstimateService, GetAllEstimatesResponse, EstimateStatus } from '../../../api';
 import { CompanyStore } from '../../../Services/company-store';
 import { EstimateFormDialog } from '../estimate-form-dialog/estimate-form-dialog';
+import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-estimate-list',
   imports: [
     CurrencyPipe,

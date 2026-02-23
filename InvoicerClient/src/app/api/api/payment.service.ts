@@ -22,6 +22,8 @@ import { Observable } from 'rxjs';
 import { OpenApiHttpParams, QueryParamStyle } from '../query.params';
 
 // @ts-ignore
+import { GetAllPaymentsResponse } from '../model/getAllPaymentsResponse';
+// @ts-ignore
 import { RecordPaymentCommand } from '../model/recordPaymentCommand';
 // @ts-ignore
 import { RecordPaymentResponse } from '../model/recordPaymentResponse';
@@ -145,7 +147,7 @@ export class PaymentService extends BaseService {
   }
 
   /**
-   * @endpoint get /api/payment/all-payments
+   * @endpoint get /api/payment/get-all-payments/{CompanyId}
    * @param companyId
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
@@ -155,41 +157,47 @@ export class PaymentService extends BaseService {
     companyId: string,
     observe?: 'body',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<any>;
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<Array<GetAllPaymentsResponse>>;
   public getAllPayments(
     companyId: string,
     observe?: 'response',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpResponse<any>>;
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpResponse<Array<GetAllPaymentsResponse>>>;
   public getAllPayments(
     companyId: string,
     observe?: 'events',
     reportProgress?: boolean,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
-  ): Observable<HttpEvent<any>>;
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
+  ): Observable<HttpEvent<Array<GetAllPaymentsResponse>>>;
   public getAllPayments(
     companyId: string,
     observe: any = 'body',
     reportProgress: boolean = false,
-    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
+    options?: {
+      httpHeaderAccept?: 'application/json';
+      context?: HttpContext;
+      transferCache?: boolean;
+    },
   ): Observable<any> {
     if (companyId === null || companyId === undefined) {
       throw new Error(
         'Required parameter companyId was null or undefined when calling getAllPayments.',
       );
     }
-
-    let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
-
-    localVarQueryParameters = this.addToHttpParams(
-      localVarQueryParameters,
-      'companyId',
-      <any>companyId,
-      QueryParamStyle.Form,
-      true,
-    );
 
     let localVarHeaders = this.defaultHeaders;
 
@@ -202,7 +210,7 @@ export class PaymentService extends BaseService {
     );
 
     const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([]);
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
     if (localVarHttpHeaderAcceptSelected !== undefined) {
       localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
     }
@@ -222,18 +230,21 @@ export class PaymentService extends BaseService {
       }
     }
 
-    let localVarPath = `/api/payment/all-payments`;
+    let localVarPath = `/api/payment/get-all-payments/${this.configuration.encodeParam({ name: 'companyId', value: companyId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: 'uuid' })}`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<any>('get', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      params: localVarQueryParameters.toHttpParams(),
-      responseType: <any>responseType_,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
+    return this.httpClient.request<Array<GetAllPaymentsResponse>>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+        reportProgress: reportProgress,
+      },
+    );
   }
 
   /**

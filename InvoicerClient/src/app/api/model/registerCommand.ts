@@ -9,5 +9,5 @@
  */
 
 export interface RegisterCommand {
-  email: string;
+  email?: string | null;
 }

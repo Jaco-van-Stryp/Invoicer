@@ -1,7 +1,9 @@
 import { Component, input, computed } from '@angular/core';
 import { AnimationOptions, LottieComponent } from 'ngx-lottie';
+import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'animation',
   imports: [LottieComponent],
   templateUrl: './lottie-animation.html',

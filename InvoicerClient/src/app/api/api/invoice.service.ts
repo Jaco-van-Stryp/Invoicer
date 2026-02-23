@@ -449,7 +449,7 @@ export class InvoiceService extends BaseService {
   }
 
   /**
-   * @endpoint get /api/invoice/public/{invoiceId}
+   * @endpoint get /api/invoice/public/{InvoiceId}
    * @param invoiceId
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
@@ -546,7 +546,7 @@ export class InvoiceService extends BaseService {
   }
 
   /**
-   * @endpoint post /api/invoice/{invoiceId}/send-email
+   * @endpoint post /api/invoice/{InvoiceId}/send-email
    * @param invoiceId
    * @param sendInvoiceEmailRequest
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.

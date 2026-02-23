@@ -10,8 +10,10 @@ import { TextareaModule } from 'primeng/textarea';
 import { CompanyService, CreateCompanyCommand, FileService } from '../../../api';
 import { CompanyStore } from '../../../Services/company-store';
 import { Copyright } from '../../General/copyright/copyright';
+import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-create-company',
   imports: [
     FormsModule,

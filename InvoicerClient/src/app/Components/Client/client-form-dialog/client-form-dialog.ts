@@ -8,8 +8,10 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { ClientService, GetAllClientsResponse } from '../../../api';
 import { CompanyStore } from '../../../Services/company-store';
+import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-client-form-dialog',
   imports: [
     FormsModule,

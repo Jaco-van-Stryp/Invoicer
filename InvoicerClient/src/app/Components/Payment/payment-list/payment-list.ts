@@ -5,6 +5,7 @@ import { TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import { HttpClient } from '@angular/common/http';
 import { CompanyStore } from '../../../Services/company-store';
+import { ChangeDetectionStrategy } from '@angular/core';
 
 interface GetAllPaymentsResponse {
   id: string;
@@ -17,6 +18,7 @@ interface GetAllPaymentsResponse {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-payment-list',
   imports: [CommonModule, ButtonModule, TableModule, TooltipModule],
   host: { class: 'block' },

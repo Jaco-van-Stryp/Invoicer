@@ -10,8 +10,10 @@ import { Table, TableModule } from 'primeng/table';
 import { ProductService, GetAllProductsResponse } from '../../../api';
 import { CompanyStore } from '../../../Services/company-store';
 import { ProductFormDialog } from '../product-form-dialog/product-form-dialog';
+import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-product-list',
   imports: [
     CurrencyPipe,

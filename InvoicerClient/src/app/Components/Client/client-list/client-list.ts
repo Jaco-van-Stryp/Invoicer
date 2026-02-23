@@ -9,8 +9,10 @@ import { Table, TableModule } from 'primeng/table';
 import { ClientService, GetAllClientsResponse } from '../../../api';
 import { CompanyStore } from '../../../Services/company-store';
 import { ClientFormDialog } from '../client-form-dialog/client-form-dialog';
+import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-client-list',
   imports: [
     TableModule,

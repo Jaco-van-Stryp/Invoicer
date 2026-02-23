@@ -12,8 +12,10 @@ import {
   InvoiceService,
 } from '../../../api';
 import { CompanyStore } from '../../../Services/company-store';
+import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-dashboard-home',
   imports: [RouterLink, ButtonModule, ChartModule],
   host: { class: 'block' },

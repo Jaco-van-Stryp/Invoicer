@@ -14,5 +14,5 @@ export interface CreateInvoiceCommand {
   clientId?: string;
   invoiceDate?: string;
   invoiceDue?: string;
-  products: Array<CreateInvoiceProductItem>;
+  products?: Array<CreateInvoiceProductItem> | null;
 }

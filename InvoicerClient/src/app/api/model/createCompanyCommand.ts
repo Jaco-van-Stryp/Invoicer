@@ -9,7 +9,7 @@
  */
 
 export interface CreateCompanyCommand {
-  name: string;
+  name?: string | null;
   address?: string | null;
   taxNumber?: string | null;
   phoneNumber?: string | null;

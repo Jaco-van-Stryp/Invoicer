@@ -152,7 +152,7 @@ export class EstimateService extends BaseService {
   }
 
   /**
-   * @endpoint delete /api/estimate/delete-estimate
+   * @endpoint delete /api/estimate/delete-estimate/{EstimateId}
    * @param estimateId
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
@@ -188,16 +188,6 @@ export class EstimateService extends BaseService {
       );
     }
 
-    let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
-
-    localVarQueryParameters = this.addToHttpParams(
-      localVarQueryParameters,
-      'estimateId',
-      <any>estimateId,
-      QueryParamStyle.Form,
-      true,
-    );
-
     let localVarHeaders = this.defaultHeaders;
 
     // authentication (Bearer) required
@@ -229,11 +219,10 @@ export class EstimateService extends BaseService {
       }
     }
 
-    let localVarPath = `/api/estimate/delete-estimate`;
+    let localVarPath = `/api/estimate/delete-estimate/${this.configuration.encodeParam({ name: 'estimateId', value: estimateId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: 'uuid' })}`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      params: localVarQueryParameters.toHttpParams(),
       responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
@@ -244,7 +233,7 @@ export class EstimateService extends BaseService {
   }
 
   /**
-   * @endpoint get /api/estimate/all-estimates
+   * @endpoint get /api/estimate/get-all-estimates/{CompanyId}
    * @param companyId
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
@@ -296,16 +285,6 @@ export class EstimateService extends BaseService {
       );
     }
 
-    let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
-
-    localVarQueryParameters = this.addToHttpParams(
-      localVarQueryParameters,
-      'companyId',
-      <any>companyId,
-      QueryParamStyle.Form,
-      true,
-    );
-
     let localVarHeaders = this.defaultHeaders;
 
     // authentication (Bearer) required
@@ -337,14 +316,13 @@ export class EstimateService extends BaseService {
       }
     }
 
-    let localVarPath = `/api/estimate/all-estimates`;
+    let localVarPath = `/api/estimate/get-all-estimates/${this.configuration.encodeParam({ name: 'companyId', value: companyId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: 'uuid' })}`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<Array<GetAllEstimatesResponse>>(
       'get',
       `${basePath}${localVarPath}`,
       {
         context: localVarHttpContext,
-        params: localVarQueryParameters.toHttpParams(),
         responseType: <any>responseType_,
         ...(withCredentials ? { withCredentials } : {}),
         headers: localVarHeaders,

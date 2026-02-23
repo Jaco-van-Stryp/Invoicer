@@ -18,6 +18,7 @@ import {
   ProductService,
 } from '../../../api';
 import { CompanyStore } from '../../../Services/company-store';
+import { ChangeDetectionStrategy } from '@angular/core';
 
 interface ProductLine {
   productId: string;
@@ -25,6 +26,7 @@ interface ProductLine {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-invoice-form-dialog',
   imports: [
     CurrencyPipe,
