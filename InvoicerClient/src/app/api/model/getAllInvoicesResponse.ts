@@ -7,6 +7,8 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { InvoicePaymentItem } from './invoicePaymentItem';
+import { InvoiceStatus } from './invoiceStatus';
 import { InvoiceProductItem } from './invoiceProductItem';
 
 export interface GetAllInvoicesResponse {
@@ -16,5 +18,10 @@ export interface GetAllInvoicesResponse {
   invoiceDue?: string;
   clientId?: string;
   clientName?: string | null;
+  status?: InvoiceStatus;
+  totalDue?: number;
+  totalPaid?: number;
   products?: Array<InvoiceProductItem> | null;
+  payments?: Array<InvoicePaymentItem> | null;
 }
+export namespace GetAllInvoicesResponse {}

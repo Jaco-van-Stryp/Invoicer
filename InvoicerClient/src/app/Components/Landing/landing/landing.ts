@@ -9,8 +9,10 @@ import { APIService, JoinWaitingListCommand } from '../../../api';
 import { Copyright } from '../../General/copyright/copyright';
 import { Logo } from '../../General/logo/logo';
 import { LottieAnimation } from '../../General/lottie-animation/lottie-animation';
+import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-landing',
   imports: [
     FormsModule,

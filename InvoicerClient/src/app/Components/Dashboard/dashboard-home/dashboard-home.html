@@ -1,0 +1,98 @@
+<div class="home-header">
+  <h1 class="text-3xl font-bold m-0">Welcome back</h1>
+  <p class="text-muted-color mt-2 mb-0">Here's an overview of {{ company()?.name }}</p>
+</div>
+
+<!-- Stats cards -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon clients-icon" aria-hidden="true">
+      <i class="pi pi-users"></i>
+    </div>
+    <div class="stat-info">
+      <span class="stat-value">{{ clientCount() }}</span>
+      <span class="stat-label">Clients</span>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon products-icon" aria-hidden="true">
+      <i class="pi pi-box"></i>
+    </div>
+    <div class="stat-info">
+      <span class="stat-value">{{ productCount() }}</span>
+      <span class="stat-label">Products</span>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon invoices-icon" aria-hidden="true">
+      <i class="pi pi-file"></i>
+    </div>
+    <div class="stat-info">
+      <span class="stat-value">{{ invoiceCount() }}</span>
+      <span class="stat-label">Invoices</span>
+    </div>
+  </div>
+</div>
+
+<!-- Income chart -->
+@if (dashboardStats()) {
+  <div class="chart-section">
+    <div class="chart-card chart-card--full">
+      <h3 class="chart-title">Monthly Income</h3>
+      @if (monthlyChartData()) {
+        <div class="chart-container">
+          <p-chart type="line" [data]="monthlyChartData()" [options]="lineChartOptions" />
+        </div>
+      } @else {
+        <p class="chart-empty">No payment data yet.</p>
+      }
+    </div>
+  </div>
+}
+
+<!-- Company info card -->
+<div class="info-card">
+  <h2 class="text-xl font-semibold mb-4">Company Details</h2>
+  <div class="flex flex-col gap-3">
+    @if (company()?.email) {
+      <div class="flex items-center gap-2">
+        <i class="pi pi-envelope text-muted-color" aria-hidden="true"></i>
+        <span>{{ company()!.email }}</span>
+      </div>
+    }
+    @if (company()?.phoneNumber) {
+      <div class="flex items-center gap-2">
+        <i class="pi pi-phone text-muted-color" aria-hidden="true"></i>
+        <span>{{ company()!.phoneNumber }}</span>
+      </div>
+    }
+    @if (company()?.address) {
+      <div class="flex items-center gap-2">
+        <i class="pi pi-map-marker text-muted-color" aria-hidden="true"></i>
+        <span>{{ company()!.address }}</span>
+      </div>
+    }
+    @if (company()?.taxNumber) {
+      <div class="flex items-center gap-2">
+        <i class="pi pi-hashtag text-muted-color" aria-hidden="true"></i>
+        <span>{{ company()!.taxNumber }}</span>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Quick actions -->
+<div class="actions-grid">
+  <button class="action-card" routerLink="/dashboard/clients">
+    <i class="pi pi-user-plus" aria-hidden="true"></i>
+    <span>New Client</span>
+  </button>
+  <button class="action-card" routerLink="/dashboard/products">
+    <i class="pi pi-plus-circle" aria-hidden="true"></i>
+    <span>New Product</span>
+  </button>
+  <button class="action-card" routerLink="/dashboard/invoices">
+    <i class="pi pi-file-plus" aria-hidden="true"></i>
+    <span>New Invoice</span>
+  </button>
+</div>

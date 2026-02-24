@@ -28,7 +28,10 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.23.0" />
+    <PackageReference
+      Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets"
+      Version="1.23.0"
+    />
     <PackageReference Include="Minio" Version="7.0.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="10.0.0" />
@@ -41,6 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Domain\Enums\" />
     <Folder Include="Features\Client\" />
     <Folder Include="Features\Client\CreateClient\" />
     <Folder Include="Features\Client\DeleteClient\" />

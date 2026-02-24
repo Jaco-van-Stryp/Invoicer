@@ -7,8 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Invoicer.Features.Auth.Register
 {
-    public class RegisterHandler(AppDbContext _dbContext, ISender _sender, IEmailValidationService _emailValidationService)
-        : IRequestHandler<RegisterCommand, RegisterResponse>
+    public class RegisterHandler(
+        AppDbContext _dbContext,
+        ISender _sender,
+        IEmailValidationService _emailValidationService
+    ) : IRequestHandler<RegisterCommand, RegisterResponse>
     {
         public async Task<RegisterResponse> Handle(
             RegisterCommand request,

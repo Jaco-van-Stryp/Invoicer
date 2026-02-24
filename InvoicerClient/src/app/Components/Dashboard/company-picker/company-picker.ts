@@ -1,33 +1,30 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Component, inject, OnInit, output, signal, computed } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
 import { CompanyService, GetAllCompaniesResponse } from '../../../api';
 import { CompanyStore } from '../../../Services/company-store';
-import { Copyright } from '../../General/copyright/copyright';
-import { Logo } from '../../General/logo/logo';
+import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
-  selector: 'app-dashboard',
-  imports: [RouterLink, ButtonModule, CardModule, Copyright, Logo],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'app-company-picker',
+  imports: [RouterLink, ButtonModule],
   host: { class: 'block' },
-  styleUrl: './dashboard.css',
-  templateUrl: './dashboard.html',
+  styleUrl: './company-picker.css',
+  templateUrl: './company-picker.html',
 })
-export class Dashboard implements OnInit {
-  router = inject(Router);
+export class CompanyPicker implements OnInit {
   companyService = inject(CompanyService);
   companyStore = inject(CompanyStore);
   messageService = inject(MessageService);
 
+  saved = output<GetAllCompaniesResponse>();
+
   companies = signal<GetAllCompaniesResponse[]>([]);
   loading = signal(true);
 
-  selectedCompany = this.companyStore.company;
-  hasSelectedCompany = this.companyStore.hasCompany;
-
-  showCompanyList = computed(() => !this.hasSelectedCompany() && this.companies().length > 0);
+  showCompanyList = computed(() => !this.loading() && this.companies().length > 0);
   showEmptyState = computed(() => !this.loading() && this.companies().length === 0);
 
   ngOnInit() {
@@ -39,12 +36,6 @@ export class Dashboard implements OnInit {
     this.companyService.getAllCompanies().subscribe({
       next: (response) => {
         this.companies.set(response);
-        if (this.hasSelectedCompany()) {
-          const still = response.find((c) => c.id === this.selectedCompany()?.id);
-          if (!still) {
-            this.companyStore.clearCompany();
-          }
-        }
       },
       error: () => {
         this.messageService.add({
@@ -62,14 +53,11 @@ export class Dashboard implements OnInit {
 
   selectCompany(company: GetAllCompaniesResponse) {
     this.companyStore.selectCompany(company);
+    this.saved.emit(company);
     this.messageService.add({
       severity: 'success',
       summary: 'Company Selected',
       detail: `Now working with ${company.name ?? 'Unknown Company'}`,
     });
-  }
-
-  switchCompany() {
-    this.companyStore.clearCompany();
   }
 }

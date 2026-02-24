@@ -8,6 +8,9 @@
  * Do not edit the class manually.
  */
 
-export interface UploadFileCommand {
-  fileStream?: Blob | null;
+export interface ProductInfo {
+  name?: string | null;
+  quantity?: number;
+  unitPrice?: number;
+  totalPrice?: number;
 }

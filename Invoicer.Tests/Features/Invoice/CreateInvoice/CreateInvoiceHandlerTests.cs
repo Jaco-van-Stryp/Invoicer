@@ -3,7 +3,9 @@ using Invoicer.Domain.Entities;
 using Invoicer.Domain.Exceptions;
 using Invoicer.Features.Invoice.CreateInvoice;
 using Invoicer.Tests.Infrastructure;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
+using NSubstitute;
 
 namespace Invoicer.Tests.Features.Invoice.CreateInvoice;
 
@@ -83,7 +85,7 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         // Arrange
         var (user, company, client, productA, productB) = await SeedFullScenarioAsync();
         SetCurrentUser(user.Id, user.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService);
+        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
 
         var invoiceDate = new DateTime(2026, 1, 15, 0, 0, 0, DateTimeKind.Utc);
         var invoiceDue = new DateTime(2026, 2, 15, 0, 0, 0, DateTimeKind.Utc);
@@ -91,7 +93,6 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         var command = new CreateInvoiceCommand(
             CompanyId: company.Id,
             ClientId: client.Id,
-            InvoiceNumber: "INV-001",
             InvoiceDate: invoiceDate,
             InvoiceDue: invoiceDue,
             Products:
@@ -106,7 +107,7 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
 
         // Assert — verify response
         result.Id.Should().NotBeEmpty();
-        result.InvoiceNumber.Should().Be("INV-001");
+        result.InvoiceNumber.Should().Be("INV-0001");
 
         // Assert — verify persistence
         DbContext.ChangeTracker.Clear();
@@ -114,7 +115,7 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
             .Invoices.Include(i => i.Products)
             .FirstOrDefaultAsync(i => i.Id == result.Id);
         saved.Should().NotBeNull();
-        saved!.InvoiceNumber.Should().Be("INV-001");
+        saved!.InvoiceNumber.Should().Be("INV-0001");
         saved.InvoiceDate.Should().Be(invoiceDate);
         saved.InvoiceDue.Should().Be(invoiceDue);
         saved.ClientId.Should().Be(client.Id);
@@ -135,12 +136,11 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         // Arrange
         var (user, company, client, productA, _) = await SeedFullScenarioAsync();
         SetCurrentUser(user.Id, user.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService);
+        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
 
         var command = new CreateInvoiceCommand(
             CompanyId: company.Id,
             ClientId: client.Id,
-            InvoiceNumber: "INV-SINGLE",
             InvoiceDate: DateTime.UtcNow,
             InvoiceDue: DateTime.UtcNow.AddDays(30),
             Products: [new CreateInvoiceProductItem(productA.Id, 1)]
@@ -150,6 +150,7 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         var result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
+        result.InvoiceNumber.Should().Be("INV-0001");
         DbContext.ChangeTracker.Clear();
         var saved = await DbContext
             .Invoices.Include(i => i.Products)
@@ -161,16 +162,40 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
     }
 
     [Fact]
+    public async Task Handle_MultipleInvoices_IncrementsInvoiceNumber()
+    {
+        // Arrange
+        var (user, company, client, productA, _) = await SeedFullScenarioAsync();
+        SetCurrentUser(user.Id, user.Email);
+        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
+
+        var command = new CreateInvoiceCommand(
+            CompanyId: company.Id,
+            ClientId: client.Id,
+            InvoiceDate: DateTime.UtcNow,
+            InvoiceDue: DateTime.UtcNow.AddDays(30),
+            Products: [new CreateInvoiceProductItem(productA.Id, 1)]
+        );
+
+        // Act
+        var result1 = await handler.Handle(command, CancellationToken.None);
+        var result2 = await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result1.InvoiceNumber.Should().Be("INV-0001");
+        result2.InvoiceNumber.Should().Be("INV-0002");
+    }
+
+    [Fact]
     public async Task Handle_NonExistentUser_ThrowsUserNotFoundException()
     {
         // Arrange
         SetCurrentUser(Guid.NewGuid());
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService);
+        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
 
         var command = new CreateInvoiceCommand(
             CompanyId: Guid.NewGuid(),
             ClientId: Guid.NewGuid(),
-            InvoiceNumber: "INV-GHOST",
             InvoiceDate: DateTime.UtcNow,
             InvoiceDue: DateTime.UtcNow.AddDays(30),
             Products: [new CreateInvoiceProductItem(Guid.NewGuid(), 1)]
@@ -199,12 +224,11 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         await DbContext.SaveChangesAsync();
 
         SetCurrentUser(user.Id, user.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService);
+        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
 
         var command = new CreateInvoiceCommand(
             CompanyId: Guid.NewGuid(),
             ClientId: Guid.NewGuid(),
-            InvoiceNumber: "INV-ORPHAN",
             InvoiceDate: DateTime.UtcNow,
             InvoiceDue: DateTime.UtcNow.AddDays(30),
             Products: [new CreateInvoiceProductItem(Guid.NewGuid(), 1)]
@@ -221,12 +245,11 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         // Arrange
         var (user, company, _, productA, _) = await SeedFullScenarioAsync();
         SetCurrentUser(user.Id, user.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService);
+        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
 
         var command = new CreateInvoiceCommand(
             CompanyId: company.Id,
             ClientId: Guid.NewGuid(), // non-existent client
-            InvoiceNumber: "INV-NOCLIENT",
             InvoiceDate: DateTime.UtcNow,
             InvoiceDue: DateTime.UtcNow.AddDays(30),
             Products: [new CreateInvoiceProductItem(productA.Id, 1)]
@@ -243,12 +266,11 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         // Arrange
         var (user, company, client, _, _) = await SeedFullScenarioAsync();
         SetCurrentUser(user.Id, user.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService);
+        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
 
         var command = new CreateInvoiceCommand(
             CompanyId: company.Id,
             ClientId: client.Id,
-            InvoiceNumber: "INV-NOPROD",
             InvoiceDate: DateTime.UtcNow,
             InvoiceDue: DateTime.UtcNow.AddDays(30),
             Products: [new CreateInvoiceProductItem(Guid.NewGuid(), 1)] // non-existent product
@@ -278,12 +300,11 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         await DbContext.SaveChangesAsync();
 
         SetCurrentUser(user2.Id, user2.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService);
+        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
 
         var command = new CreateInvoiceCommand(
             CompanyId: company.Id,
             ClientId: client.Id,
-            InvoiceNumber: "INV-HIJACK",
             InvoiceDate: DateTime.UtcNow,
             InvoiceDue: DateTime.UtcNow.AddDays(30),
             Products: [new CreateInvoiceProductItem(productA.Id, 1)]

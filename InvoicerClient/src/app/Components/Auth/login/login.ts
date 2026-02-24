@@ -11,9 +11,10 @@ import { TooltipModule } from 'primeng/tooltip'; // Import TooltipModule
 import { AuthService, GetAccessTokenQuery, LoginResponse } from '../../../api';
 import { AuthStore } from '../../../Services/auth-store';
 import { Copyright } from '../../General/copyright/copyright';
-import { Logo } from '../../General/logo/logo';
+import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-login',
   imports: [
     FormsModule,
@@ -24,8 +25,7 @@ import { Logo } from '../../General/logo/logo';
     InputOtpModule,
     InputTextModule,
     Copyright,
-    Logo,
-    TooltipModule, // Add TooltipModule to imports
+    TooltipModule,
   ],
   host: { class: 'block' },
   styleUrl: './login.css',

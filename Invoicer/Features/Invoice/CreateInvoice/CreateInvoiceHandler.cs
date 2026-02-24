@@ -1,6 +1,7 @@
 using Invoicer.Domain.Data;
 using Invoicer.Domain.Entities;
 using Invoicer.Domain.Exceptions;
+using Invoicer.Features.Invoice.SendInvoiceEmail;
 using Invoicer.Infrastructure.CurrentUserService;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,8 @@ namespace Invoicer.Features.Invoice.CreateInvoice
 {
     public class CreateInvoiceHandler(
         AppDbContext _dbContext,
-        ICurrentUserService currentUserService
+        ICurrentUserService currentUserService,
+        ISender sender
     ) : IRequestHandler<CreateInvoiceCommand, CreateInvoiceResponse>
     {
         public async Task<CreateInvoiceResponse> Handle(
@@ -35,11 +37,14 @@ namespace Invoicer.Features.Invoice.CreateInvoice
             if (client == null)
                 throw new ClientNotFoundException();
 
+            var invoiceNumber = $"INV-{company.NextInvoiceNumber:D4}";
+            company.NextInvoiceNumber++;
+
             var invoice = new Domain.Entities.Invoice
             {
-                InvoiceNumber = request.InvoiceNumber,
-                InvoiceDate = request.InvoiceDate,
-                InvoiceDue = request.InvoiceDue,
+                InvoiceNumber = invoiceNumber,
+                InvoiceDate = DateTime.SpecifyKind(request.InvoiceDate, DateTimeKind.Utc),
+                InvoiceDue = DateTime.SpecifyKind(request.InvoiceDue, DateTimeKind.Utc),
                 ClientId = request.ClientId,
                 Client = client,
                 CompanyId = request.CompanyId,
@@ -69,7 +74,11 @@ namespace Invoicer.Features.Invoice.CreateInvoice
 
             _dbContext.Invoices.Add(invoice);
             await _dbContext.SaveChangesAsync(cancellationToken);
-
+            var SendInvoiceEmailCommand = new SendInvoiceEmailCommand(
+                invoice.Id,
+                request.CompanyId
+            );
+            await sender.Send(SendInvoiceEmailCommand, cancellationToken);
             return new CreateInvoiceResponse(invoice.Id, invoice.InvoiceNumber);
         }
     }

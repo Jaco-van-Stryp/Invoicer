@@ -1,0 +1,126 @@
+<p-dialog
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '50rem' }"
+  [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <ng-template #header>
+    <h2 class="text-xl font-semibold m-0">{{ estimate() ? 'Edit Estimate' : 'New Estimate' }}</h2>
+  </ng-template>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
+    <div class="form-grid">
+      <div class="form-field">
+        <label for="client">Client *</label>
+        <p-select
+          id="client"
+          formControlName="clientId"
+          [options]="clients()"
+          optionLabel="name"
+          optionValue="id"
+          placeholder="Select a client"
+          [style]="{ width: '100%' }"
+        />
+      </div>
+
+      <div class="form-field">
+        <label for="status">Status *</label>
+        <p-select
+          id="status"
+          formControlName="status"
+          [options]="statusOptions"
+          optionLabel="label"
+          optionValue="value"
+          [style]="{ width: '100%' }"
+        />
+      </div>
+
+      <div class="form-field">
+        <label for="estimateDate">Estimate Date *</label>
+        <p-datepicker
+          id="estimateDate"
+          formControlName="estimateDate"
+          dateFormat="yy-mm-dd"
+          [showIcon]="true"
+          [style]="{ width: '100%' }"
+        />
+      </div>
+
+      <div class="form-field">
+        <label for="expiresOn">Expires On *</label>
+        <p-datepicker
+          id="expiresOn"
+          formControlName="expiresOn"
+          dateFormat="yy-mm-dd"
+          [showIcon]="true"
+          [style]="{ width: '100%' }"
+        />
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="notes">Notes</label>
+      <input pInputText id="notes" formControlName="notes" />
+    </div>
+
+    <div class="products-section">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-semibold m-0">Products</h3>
+        <button
+          type="button"
+          pButton
+          icon="pi pi-plus"
+          label="Add Product"
+          (click)="addProduct()"
+          [outlined]="true"
+          size="small"
+        ></button>
+      </div>
+
+      <div formArrayName="products" class="flex flex-col gap-2">
+        @for (productGroup of productsFormArray.controls; track $index) {
+          <div [formGroupName]="$index" class="product-row">
+            <p-select
+              formControlName="productId"
+              [options]="products()"
+              optionLabel="name"
+              optionValue="id"
+              placeholder="Select product"
+              [style]="{ flex: '1' }"
+            />
+            <p-inputNumber
+              formControlName="quantity"
+              [min]="1"
+              [showButtons]="true"
+              placeholder="Quantity"
+              [style]="{ width: '150px' }"
+            />
+            <button
+              type="button"
+              pButton
+              icon="pi pi-trash"
+              severity="danger"
+              [text]="true"
+              (click)="removeProduct($index)"
+              aria-label="Remove product"
+            ></button>
+          </div>
+        }
+      </div>
+    </div>
+  </form>
+
+  <ng-template #footer>
+    <button
+      pButton
+      label="Cancel"
+      severity="secondary"
+      [outlined]="true"
+      (click)="onCancel()"
+      [disabled]="loading()"
+    ></button>
+    <button pButton label="Save" (click)="onSubmit()" [loading]="loading()"></button>
+  </ng-template>
+</p-dialog>

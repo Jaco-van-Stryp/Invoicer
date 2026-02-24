@@ -106,6 +106,12 @@ namespace Invoicer.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("NextEstimateNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("NextInvoiceNumber")
+                        .HasColumnType("integer");
+
                     b.Property<string>("PaymentDetails")
                         .IsRequired()
                         .HasColumnType("text");
@@ -126,6 +132,46 @@ namespace Invoicer.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Companies");
+                });
+
+            modelBuilder.Entity("Invoicer.Domain.Entities.Estimate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ClientId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("EstimateDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("EstimateNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ExpiresOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("CompanyId");
+
+                    b.ToTable("Estimates");
                 });
 
             modelBuilder.Entity("Invoicer.Domain.Entities.Invoice", b =>
@@ -150,6 +196,9 @@ namespace Invoicer.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ClientId");
@@ -157,6 +206,36 @@ namespace Invoicer.Migrations
                     b.HasIndex("CompanyId");
 
                     b.ToTable("Invoices");
+                });
+
+            modelBuilder.Entity("Invoicer.Domain.Entities.Payment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("InvoiceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("PaidOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.HasIndex("CompanyId", "PaidOn");
+
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("Invoicer.Domain.Entities.Product", b =>
@@ -187,6 +266,39 @@ namespace Invoicer.Migrations
                     b.HasIndex("CompanyId");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("Invoicer.Domain.Entities.ProductEstimate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CompanyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("EstimateId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("EstimateId");
+
+                    b.HasIndex("ProductId", "EstimateId")
+                        .IsUnique();
+
+                    b.ToTable("ProductEstimates");
                 });
 
             modelBuilder.Entity("Invoicer.Domain.Entities.ProductInvoice", b =>
@@ -237,12 +349,6 @@ namespace Invoicer.Migrations
 
                     b.Property<int>("LoginAttempts")
                         .HasColumnType("integer");
-
-                    b.Property<uint>("RowVersion")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
 
                     b.HasKey("Id");
 
@@ -315,6 +421,25 @@ namespace Invoicer.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Invoicer.Domain.Entities.Estimate", b =>
+                {
+                    b.HasOne("Invoicer.Domain.Entities.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Invoicer.Domain.Entities.Company", "Company")
+                        .WithMany("Estimates")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+
+                    b.Navigation("Company");
+                });
+
             modelBuilder.Entity("Invoicer.Domain.Entities.Invoice", b =>
                 {
                     b.HasOne("Invoicer.Domain.Entities.Client", "Client")
@@ -334,6 +459,25 @@ namespace Invoicer.Migrations
                     b.Navigation("Company");
                 });
 
+            modelBuilder.Entity("Invoicer.Domain.Entities.Payment", b =>
+                {
+                    b.HasOne("Invoicer.Domain.Entities.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Invoicer.Domain.Entities.Invoice", "Invoice")
+                        .WithMany("Payments")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+
+                    b.Navigation("Invoice");
+                });
+
             modelBuilder.Entity("Invoicer.Domain.Entities.Product", b =>
                 {
                     b.HasOne("Invoicer.Domain.Entities.Company", "Company")
@@ -343,6 +487,33 @@ namespace Invoicer.Migrations
                         .IsRequired();
 
                     b.Navigation("Company");
+                });
+
+            modelBuilder.Entity("Invoicer.Domain.Entities.ProductEstimate", b =>
+                {
+                    b.HasOne("Invoicer.Domain.Entities.Company", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Invoicer.Domain.Entities.Estimate", "Estimate")
+                        .WithMany("ProductEstimates")
+                        .HasForeignKey("EstimateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Invoicer.Domain.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+
+                    b.Navigation("Estimate");
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("Invoicer.Domain.Entities.ProductInvoice", b =>
@@ -376,13 +547,22 @@ namespace Invoicer.Migrations
                 {
                     b.Navigation("Clients");
 
+                    b.Navigation("Estimates");
+
                     b.Navigation("Invoices");
 
                     b.Navigation("Products");
                 });
 
+            modelBuilder.Entity("Invoicer.Domain.Entities.Estimate", b =>
+                {
+                    b.Navigation("ProductEstimates");
+                });
+
             modelBuilder.Entity("Invoicer.Domain.Entities.Invoice", b =>
                 {
+                    b.Navigation("Payments");
+
                     b.Navigation("Products");
                 });
 

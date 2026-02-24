@@ -1,0 +1,95 @@
+<p-dialog
+  [header]="dialogTitle()"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '32rem' }"
+  [closable]="true"
+>
+  <div class="flex flex-col gap-5 mt-4">
+    <p-floatLabel>
+      <input
+        pInputText
+        id="productName"
+        class="w-full"
+        [ngModel]="name()"
+        (ngModelChange)="name.set($event)"
+      />
+      <label for="productName">Name *</label>
+    </p-floatLabel>
+
+    <p-floatLabel>
+      <textarea
+        pTextarea
+        id="productDescription"
+        class="w-full"
+        rows="3"
+        [ngModel]="description()"
+        (ngModelChange)="description.set($event)"
+      ></textarea>
+      <label for="productDescription">Description *</label>
+    </p-floatLabel>
+
+    <p-floatLabel>
+      <p-inputNumber
+        id="productPrice"
+        [ngModel]="price()"
+        (ngModelChange)="price.set($event)"
+        mode="currency"
+        currency="USD"
+        styleClass="w-full"
+      />
+      <label for="productPrice">Price *</label>
+    </p-floatLabel>
+
+    <!-- Product Image Upload -->
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-medium">Product Image</label>
+      @if (imagePreview()) {
+        <div class="flex items-center gap-3">
+          <img
+            [src]="imagePreview()!"
+            alt="Product image preview"
+            class="image-preview"
+            style="width: 5rem; height: 5rem"
+          />
+          <p-button
+            icon="pi pi-times"
+            [rounded]="true"
+            [text]="true"
+            severity="danger"
+            size="small"
+            (click)="removeImage()"
+            pTooltip="Remove image"
+            aria-label="Remove image"
+          />
+        </div>
+      } @else {
+        <p-fileUpload
+          mode="basic"
+          accept="image/*"
+          [maxFileSize]="5000000"
+          chooseLabel="Upload Image"
+          chooseIcon="pi pi-upload"
+          [auto]="true"
+          [customUpload]="true"
+          (uploadHandler)="onImageSelected($event)"
+          styleClass="w-full"
+        />
+      }
+      @if (uploadingImage()) {
+        <small class="text-muted-color">Uploading...</small>
+      }
+    </div>
+  </div>
+
+  <ng-template #footer>
+    <p-button label="Cancel" [text]="true" (click)="visible.set(false)" />
+    <p-button
+      [label]="isEditing() ? 'Update' : 'Create'"
+      icon="pi pi-check"
+      [loading]="saving()"
+      [disabled]="!isFormValid()"
+      (click)="save()"
+    />
+  </ng-template>
+</p-dialog>

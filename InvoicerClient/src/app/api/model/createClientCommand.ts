@@ -9,8 +9,8 @@
  */
 
 export interface CreateClientCommand {
-  name: string;
-  email: string;
+  name?: string | null;
+  email?: string | null;
   address?: string | null;
   taxNumber?: string | null;
   phoneNumber?: string | null;

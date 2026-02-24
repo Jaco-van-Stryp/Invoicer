@@ -1,0 +1,135 @@
+<p-dialog
+  [header]="dialogTitle()"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '42rem' }"
+  [closable]="true"
+>
+  <div class="flex flex-col gap-5 mt-4">
+    <div class="flex flex-col gap-1">
+      <label class="text-sm font-medium">Client *</label>
+      <p-select
+        id="invoiceClient"
+        [options]="clients()"
+        [ngModel]="selectedClientId()"
+        (ngModelChange)="selectedClientId.set($event)"
+        optionLabel="name"
+        optionValue="id"
+        placeholder="Select a client"
+        styleClass="w-full"
+        [loading]="loadingData()"
+        [filter]="true"
+        filterPlaceholder="Search clients..."
+        appendTo="body"
+      />
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium">Invoice Date *</label>
+        <p-datepicker
+          id="invoiceDate"
+          [ngModel]="invoiceDate()"
+          (ngModelChange)="invoiceDate.set($event)"
+          dateFormat="yy-mm-dd"
+          styleClass="w-full"
+          appendTo="body"
+        />
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium">Due Date *</label>
+        <p-datepicker
+          id="invoiceDue"
+          [ngModel]="invoiceDue()"
+          (ngModelChange)="invoiceDue.set($event)"
+          dateFormat="yy-mm-dd"
+          styleClass="w-full"
+          appendTo="body"
+        />
+      </div>
+    </div>
+
+    <!-- Product line items -->
+    <div class="line-items-section">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-lg font-semibold m-0">Line Items</h3>
+        <p-button
+          label="Add Item"
+          icon="pi pi-plus"
+          [text]="true"
+          size="small"
+          (click)="addLine()"
+        />
+      </div>
+
+      @if (productLines().length === 0) {
+        <p class="text-muted-color text-sm text-center py-4">
+          No line items. Click "Add Item" to begin.
+        </p>
+      }
+
+      @for (line of productLines(); track $index) {
+        <div class="line-item">
+          <div class="line-product">
+            <p-select
+              [options]="products()"
+              [ngModel]="line.productId"
+              (ngModelChange)="updateLineProduct($index, $event)"
+              optionLabel="name"
+              optionValue="id"
+              placeholder="Select product"
+              styleClass="w-full"
+              [loading]="loadingData()"
+              [filter]="true"
+              filterPlaceholder="Search products..."
+              appendTo="body"
+            />
+          </div>
+          <div class="line-quantity">
+            <p-inputNumber
+              [ngModel]="line.quantity"
+              (ngModelChange)="updateLineQuantity($index, $event)"
+              [min]="1"
+              [showButtons]="true"
+              buttonLayout="horizontal"
+              incrementButtonIcon="pi pi-plus"
+              decrementButtonIcon="pi pi-minus"
+              styleClass="w-full"
+            />
+          </div>
+          <div class="line-total">
+            {{ getLineTotal(line) | currency }}
+          </div>
+          <p-button
+            icon="pi pi-times"
+            [rounded]="true"
+            [text]="true"
+            severity="danger"
+            size="small"
+            (click)="removeLine($index)"
+            pTooltip="Remove"
+          />
+        </div>
+      }
+
+      @if (productLines().length > 0) {
+        <div class="grand-total">
+          <span class="font-semibold">Total:</span>
+          <span class="font-bold text-lg">{{ grandTotal() | currency }}</span>
+        </div>
+      }
+    </div>
+  </div>
+
+  <ng-template #footer>
+    <p-button label="Cancel" [text]="true" (click)="visible.set(false)" />
+    <p-button
+      [label]="isEditing() ? 'Update' : 'Create'"
+      icon="pi pi-check"
+      [loading]="saving()"
+      [disabled]="!isFormValid()"
+      (click)="save()"
+    />
+  </ng-template>
+</p-dialog>

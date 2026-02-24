@@ -4,7 +4,7 @@ using MediatR;
 namespace Invoicer.Features.Company.CreateCompany
 {
     public readonly record struct CreateCompanyCommand(
-        [property: Required] string Name,
+        string Name,
         string? Address,
         string? TaxNumber,
         string? PhoneNumber,

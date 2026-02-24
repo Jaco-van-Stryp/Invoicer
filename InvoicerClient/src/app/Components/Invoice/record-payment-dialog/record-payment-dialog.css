@@ -1,0 +1,95 @@
+/* Record-payment-dialog — shared form/dialog styles in src/styles/shared.css */
+
+.payment-dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.balance-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background: var(--surface-ground);
+  border: 1px solid var(--surface-border);
+}
+
+.balance-label {
+  font-size: 0.875rem;
+  color: var(--text-color-secondary);
+}
+
+.balance-amount {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.balance-zero {
+  color: var(--green-500);
+}
+
+.balance-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8125rem;
+  color: var(--text-color-secondary);
+  padding: 0 0.25rem;
+}
+
+.payments-section,
+.new-payment-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.payments-heading {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.payments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.payment-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.5rem;
+  background: var(--surface-ground);
+  border: 1px solid var(--surface-border);
+}
+
+.payment-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+}
+
+.payment-amount {
+  font-weight: 600;
+  min-width: 5rem;
+}
+
+.payment-date {
+  font-size: 0.8125rem;
+  color: var(--text-color-secondary);
+}
+
+.payment-notes {
+  font-size: 0.8125rem;
+  color: var(--text-color-secondary);
+  font-style: italic;
+}

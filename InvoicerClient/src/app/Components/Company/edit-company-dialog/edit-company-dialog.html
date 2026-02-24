@@ -1,0 +1,132 @@
+<p-dialog
+  header="Edit Company"
+  [(visible)]="visible"
+  [modal]="true"
+  [style]="{ width: '36rem' }"
+  [closable]="true"
+>
+  <div class="flex flex-col gap-5 mt-4">
+    <p-floatLabel>
+      <input
+        pInputText
+        id="editCompanyName"
+        type="text"
+        class="w-full"
+        [ngModel]="name()"
+        (ngModelChange)="name.set($event)"
+      />
+      <label for="editCompanyName">Company Name *</label>
+    </p-floatLabel>
+
+    <p-floatLabel>
+      <input
+        pInputText
+        id="editCompanyEmail"
+        type="email"
+        class="w-full"
+        [ngModel]="email()"
+        (ngModelChange)="email.set($event)"
+      />
+      <label for="editCompanyEmail">Email</label>
+    </p-floatLabel>
+
+    <p-floatLabel>
+      <input
+        pInputText
+        id="editCompanyPhone"
+        type="tel"
+        class="w-full"
+        [ngModel]="phoneNumber()"
+        (ngModelChange)="phoneNumber.set($event)"
+      />
+      <label for="editCompanyPhone">Phone Number</label>
+    </p-floatLabel>
+
+    <p-floatLabel>
+      <input
+        pInputText
+        id="editCompanyTax"
+        type="text"
+        class="w-full"
+        [ngModel]="taxNumber()"
+        (ngModelChange)="taxNumber.set($event)"
+      />
+      <label for="editCompanyTax">Tax Number</label>
+    </p-floatLabel>
+
+    <p-floatLabel>
+      <textarea
+        pTextarea
+        id="editCompanyAddress"
+        class="w-full"
+        rows="2"
+        [ngModel]="address()"
+        (ngModelChange)="address.set($event)"
+      ></textarea>
+      <label for="editCompanyAddress">Address</label>
+    </p-floatLabel>
+
+    <p-floatLabel>
+      <textarea
+        pTextarea
+        id="editCompanyPayment"
+        class="w-full"
+        rows="2"
+        [ngModel]="paymentDetails()"
+        (ngModelChange)="paymentDetails.set($event)"
+      ></textarea>
+      <label for="editCompanyPayment">Payment Details</label>
+    </p-floatLabel>
+
+    <!-- Logo Upload -->
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-medium">Company Logo</label>
+      @if (logoPreview()) {
+        <div class="flex items-center gap-3">
+          <img
+            [src]="logoPreview()!"
+            alt="Logo preview"
+            class="image-preview"
+            style="width: 4rem; height: 4rem"
+          />
+          <p-button
+            icon="pi pi-times"
+            [rounded]="true"
+            [text]="true"
+            severity="danger"
+            size="small"
+            (click)="removeLogo()"
+            pTooltip="Remove logo"
+            aria-label="Remove logo"
+          />
+        </div>
+      } @else {
+        <p-fileUpload
+          mode="basic"
+          accept="image/*"
+          [maxFileSize]="5000000"
+          chooseLabel="Upload Logo"
+          chooseIcon="pi pi-upload"
+          [auto]="true"
+          [customUpload]="true"
+          (uploadHandler)="onLogoSelected($event)"
+          styleClass="w-full"
+        />
+      }
+      @if (uploadingLogo()) {
+        <small class="text-muted-color">Uploading...</small>
+      }
+    </div>
+  </div>
+
+  <ng-template #footer>
+    <p-button label="Cancel" [text]="true" (click)="visible.set(false)" />
+    <p-button
+      label="Save"
+      icon="pi pi-check"
+      [loading]="saving()"
+      [disabled]="!isFormValid()"
+      (click)="save()"
+    />
+  </ng-template>
+</p-dialog>

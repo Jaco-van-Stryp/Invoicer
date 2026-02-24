@@ -1,84 +1,118 @@
-<div class="login-container">
-  <div class="absolute top-8 left-8">
-    <logo />
+<div class="auth-container">
+  <!-- Animated blobs -->
+  <div class="blob blob-1" aria-hidden="true"></div>
+  <div class="blob blob-2" aria-hidden="true"></div>
+  <div class="blob blob-3" aria-hidden="true"></div>
+
+  <div class="auth-content">
+    <!-- Left: Branding -->
+    <div class="branding-side">
+      <div class="brand-badge">
+        <i class="pi pi-lock" aria-hidden="true"></i>
+        Passwordless Login
+      </div>
+      <h1 class="brand-title">Welcome back to <span class="gradient-text">Invoicer</span></h1>
+      <p class="brand-subtitle">
+        Sign in with just your email. No passwords to remember, no hassle.
+      </p>
+      <div class="brand-features">
+        <div class="brand-feature">
+          <i class="pi pi-shield" aria-hidden="true"></i>
+          <span>Secure passwordless authentication</span>
+        </div>
+        <div class="brand-feature">
+          <i class="pi pi-bolt" aria-hidden="true"></i>
+          <span>Sign in within seconds</span>
+        </div>
+        <div class="brand-feature">
+          <i class="pi pi-envelope" aria-hidden="true"></i>
+          <span>6-digit code sent to your email</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Form card -->
+    <div class="form-side">
+      <p-card class="auth-card glass-card">
+        @if (step() === 'email') {
+          <div class="flex flex-col gap-2 text-center mb-6">
+            <h2 class="text-2xl font-bold m-0">Sign In</h2>
+            <p class="text-muted-color">Enter your email to receive a code.</p>
+          </div>
+          <div class="flex flex-col gap-5">
+            <p-floatLabel>
+              <input
+                pInputText
+                id="email"
+                type="email"
+                class="w-full"
+                [ngModel]="email()"
+                (ngModelChange)="email.set($event)"
+                autocomplete="email"
+              />
+              <label for="email">Email</label>
+            </p-floatLabel>
+            <p-button
+              label="Send Code"
+              icon="pi pi-arrow-right"
+              iconPos="right"
+              [loading]="loading()"
+              [disabled]="!isEmailValid()"
+              styleClass="w-full"
+              (click)="requestOtp()"
+            />
+            <div class="mt-2 text-center text-sm">
+              Don't have an account?
+              <a routerLink="/register" class="underline"> Sign up </a>
+            </div>
+          </div>
+        } @else {
+          <div class="flex flex-col items-center gap-5">
+            <div class="text-center">
+              <h2 class="text-2xl font-bold m-0">Check your inbox</h2>
+              <p class="text-muted-color mt-1">
+                We sent a 6-digit code to
+                <br />
+                <strong>{{ email() }}</strong>
+              </p>
+            </div>
+
+            <p-inputOtp [ngModel]="otpCode()" (ngModelChange)="otpCode.set($event)" [length]="6" />
+
+            <p-button
+              label="Verify & Login"
+              icon="pi pi-check"
+              [loading]="loading()"
+              [disabled]="!isOtpComplete()"
+              styleClass="w-full"
+              (click)="login()"
+            />
+
+            <div class="flex items-center justify-between w-full">
+              <p-button
+                label="Back"
+                icon="pi pi-arrow-left"
+                [text]="true"
+                size="small"
+                (click)="backToEmail()"
+              />
+              <p-button
+                label="Resend code"
+                icon="pi pi-refresh"
+                [text]="true"
+                size="small"
+                [disabled]="resendTimer() > 0"
+                [pTooltip]="resendTimer() > 0 ? 'Resend code in ' + resendTimer() + 's' : undefined"
+                tooltipPosition="bottom"
+                (click)="requestOtp()"
+              />
+            </div>
+          </div>
+        }
+      </p-card>
+    </div>
   </div>
-  <p-card class="login-card">
-    @if (step() === 'email') {
-      <div class="flex flex-col gap-2 text-center mb-6">
-        <h1 class="text-3xl font-bold">Welcome Back!</h1>
-        <p class="text-lg text-muted-color">Sign in to continue to Invoicer.</p>
-      </div>
-      <div class="flex flex-col gap-5">
-        <p-floatLabel>
-          <input
-            pInputText
-            id="email"
-            type="email"
-            class="w-full"
-            [ngModel]="email()"
-            (ngModelChange)="email.set($event)"
-            autocomplete="email"
-          />
-          <label for="email">Email</label>
-        </p-floatLabel>
-        <p-button
-          label="Send Code"
-          icon="pi pi-arrow-right"
-          iconPos="right"
-          [loading]="loading()"
-          [disabled]="!isEmailValid()"
-          styleClass="w-full"
-          (click)="requestOtp()"
-        />
-        <div class="mt-4 text-center text-sm">
-          Don't have an account?
-          <a routerLink="/register" class="underline"> Sign up </a>
-        </div>
-      </div>
-    } @else {
-      <div class="flex flex-col items-center gap-5">
-        <div class="text-center">
-          <h2 class="text-2xl font-bold m-0">Check your inbox</h2>
-          <p class="text-muted-color mt-1">
-            We sent a 6-digit code to
-            <br />
-            <strong>{{ email() }}</strong>
-          </p>
-        </div>
 
-        <p-inputOtp [ngModel]="otpCode()" (ngModelChange)="otpCode.set($event)" [length]="6" />
-
-        <p-button
-          label="Verify & Login"
-          icon="pi pi-check"
-          [loading]="loading()"
-          [disabled]="!isOtpComplete()"
-          styleClass="w-full"
-          (click)="login()"
-        />
-
-        <div class="flex items-center justify-between w-full">
-          <p-button
-            label="Back"
-            icon="pi pi-arrow-left"
-            [text]="true"
-            size="small"
-            (click)="backToEmail()"
-          />
-          <p-button
-            label="Resend code"
-            icon="pi pi-refresh"
-            [text]="true"
-            size="small"
-            [disabled]="resendTimer() > 0"
-            [pTooltip]="resendTimer() > 0 ? 'Resend code in ' + resendTimer() + 's' : undefined"
-            tooltipPosition="bottom"
-            (click)="requestOtp()"
-          />
-        </div>
-      </div>
-    }
-  </p-card>
   <div class="absolute bottom-4 left-4">
     <copyright />
   </div>

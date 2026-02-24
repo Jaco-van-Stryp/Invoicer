@@ -9,7 +9,7 @@
  */
 
 export interface UpdateCompanyDetailsCommand {
-  companyId: string;
+  companyId?: string;
   name?: string | null;
   address?: string | null;
   taxNumber?: string | null;

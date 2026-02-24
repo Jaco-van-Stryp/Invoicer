@@ -1,0 +1,49 @@
+/* Company picker — design tokens in src/styles/shared.css */
+
+.picker-card {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: var(--glass-bg);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid var(--glass-border);
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  color: var(--text-color);
+}
+
+.company-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--surface-border);
+  background: var(--surface-card);
+  color: var(--text-color);
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    background-color 0.2s;
+}
+
+.company-item:hover {
+  border-color: var(--primary-color);
+  background: var(--surface-hover);
+}
+
+.company-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  background: var(--primary-color);
+  color: var(--primary-contrast-color);
+  font-size: 1.125rem;
+  flex-shrink: 0;
+}

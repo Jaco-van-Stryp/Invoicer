@@ -1,0 +1,6 @@
+/* Invoice-list-specific styles — shared list/card styles in src/styles/shared.css */
+
+.entity-card-amounts {
+  display: flex;
+  gap: 1.5rem;
+}

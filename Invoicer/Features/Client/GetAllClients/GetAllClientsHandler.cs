@@ -21,11 +21,15 @@ namespace Invoicer.Features.Client.GetAllClients
                 .Users.Include(c => c.Companies)
                     .ThenInclude(c => c.Clients)
                 .FirstOrDefaultAsync(x => x.Id == userId, cancellationToken);
+
             if (user == null)
                 throw new UserNotFoundException();
+
             var company = user.Companies.FirstOrDefault(c => c.Id == request.CompanyId);
+
             if (company == null)
                 throw new CompanyNotFoundException();
+
             var clients = company.Clients.ToList();
             var clientsResponse = clients
                 .Select(c => new GetAllClientsResponse

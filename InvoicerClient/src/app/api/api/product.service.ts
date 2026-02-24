@@ -16,11 +16,10 @@ import {
   HttpParams,
   HttpResponse,
   HttpEvent,
-  HttpParameterCodec,
   HttpContext,
 } from '@angular/common/http';
-import { CustomHttpParameterCodec } from '../encoder';
 import { Observable } from 'rxjs';
+import { OpenApiHttpParams, QueryParamStyle } from '../query.params';
 
 // @ts-ignore
 import { CreateProductCommand } from '../model/createProductCommand';
@@ -34,86 +33,26 @@ import { UpdateProductCommand } from '../model/updateProductCommand';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS } from '../variables';
 import { Configuration } from '../configuration';
+import { BaseService } from '../api.base.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ProductService {
-  protected basePath = 'https://localhost:7261';
-  public defaultHeaders = new HttpHeaders();
-  public configuration = new Configuration();
-  public encoder: HttpParameterCodec;
-
+export class ProductService extends BaseService {
   constructor(
     protected httpClient: HttpClient,
     @Optional() @Inject(BASE_PATH) basePath: string | string[],
-    @Optional() configuration: Configuration,
+    @Optional() configuration?: Configuration,
   ) {
-    if (configuration) {
-      this.configuration = configuration;
-    }
-    if (typeof this.configuration.basePath !== 'string') {
-      const firstBasePath = Array.isArray(basePath) ? basePath[0] : undefined;
-      if (firstBasePath != undefined) {
-        basePath = firstBasePath;
-      }
-
-      if (typeof basePath !== 'string') {
-        basePath = this.basePath;
-      }
-      this.configuration.basePath = basePath;
-    }
-    this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
-  }
-
-  // @ts-ignore
-  private addToHttpParams(httpParams: HttpParams, value: any, key?: string): HttpParams {
-    if (typeof value === 'object' && value instanceof Date === false) {
-      httpParams = this.addToHttpParamsRecursive(httpParams, value);
-    } else {
-      httpParams = this.addToHttpParamsRecursive(httpParams, value, key);
-    }
-    return httpParams;
-  }
-
-  private addToHttpParamsRecursive(httpParams: HttpParams, value?: any, key?: string): HttpParams {
-    if (value == null) {
-      return httpParams;
-    }
-
-    if (typeof value === 'object') {
-      if (Array.isArray(value)) {
-        (value as any[]).forEach(
-          (elem) => (httpParams = this.addToHttpParamsRecursive(httpParams, elem, key)),
-        );
-      } else if (value instanceof Date) {
-        if (key != null) {
-          httpParams = httpParams.append(key, (value as Date).toISOString().substring(0, 10));
-        } else {
-          throw Error('key may not be null if value is Date');
-        }
-      } else {
-        Object.keys(value).forEach(
-          (k) =>
-            (httpParams = this.addToHttpParamsRecursive(
-              httpParams,
-              value[k],
-              key != null ? `${key}.${k}` : k,
-            )),
-        );
-      }
-    } else if (key != null) {
-      httpParams = httpParams.append(key, value);
-    } else {
-      throw Error('key may not be null if value is not object or array');
-    }
-    return httpParams;
+    super(basePath, configuration);
   }
 
   /**
+   * @endpoint post /api/product/create-product
    * @param createProductCommand
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
+   * @param options additional options
    */
   public createProduct(
     createProductCommand: CreateProductCommand,
@@ -163,32 +102,23 @@ export class ProductService {
 
     let localVarHeaders = this.defaultHeaders;
 
-    let localVarCredential: string | undefined;
     // authentication (Bearer) required
-    localVarCredential = this.configuration.lookupCredential('Bearer');
-    if (localVarCredential) {
-      localVarHeaders = localVarHeaders.set('Authorization', 'Bearer ' + localVarCredential);
-    }
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'Bearer',
+      'Authorization',
+      localVarHeaders,
+      'Bearer ',
+    );
 
-    let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-    if (localVarHttpHeaderAcceptSelected === undefined) {
-      // to determine the Accept header
-      const httpHeaderAccepts: string[] = ['application/json'];
-      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-    }
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
     if (localVarHttpHeaderAcceptSelected !== undefined) {
       localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
     }
 
-    let localVarHttpContext: HttpContext | undefined = options && options.context;
-    if (localVarHttpContext === undefined) {
-      localVarHttpContext = new HttpContext();
-    }
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
 
-    let localVarTransferCache: boolean | undefined = options && options.transferCache;
-    if (localVarTransferCache === undefined) {
-      localVarTransferCache = true;
-    }
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
 
     // to determine the Content-Type header
     const consumes: string[] = ['application/json'];
@@ -210,27 +140,26 @@ export class ProductService {
     }
 
     let localVarPath = `/api/product/create-product`;
-    return this.httpClient.request<CreateProductResponse>(
-      'post',
-      `${this.configuration.basePath}${localVarPath}`,
-      {
-        context: localVarHttpContext,
-        body: createProductCommand,
-        responseType: <any>responseType_,
-        withCredentials: this.configuration.withCredentials,
-        headers: localVarHeaders,
-        observe: observe,
-        transferCache: localVarTransferCache,
-        reportProgress: reportProgress,
-      },
-    );
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<CreateProductResponse>('post', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: createProductCommand,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+      reportProgress: reportProgress,
+    });
   }
 
   /**
+   * @endpoint delete /api/product/delete-product/{CompanyId}/{ProductId}
    * @param companyId
    * @param productId
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
+   * @param options additional options
    */
   public deleteProduct(
     companyId: string,
@@ -273,32 +202,23 @@ export class ProductService {
 
     let localVarHeaders = this.defaultHeaders;
 
-    let localVarCredential: string | undefined;
     // authentication (Bearer) required
-    localVarCredential = this.configuration.lookupCredential('Bearer');
-    if (localVarCredential) {
-      localVarHeaders = localVarHeaders.set('Authorization', 'Bearer ' + localVarCredential);
-    }
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'Bearer',
+      'Authorization',
+      localVarHeaders,
+      'Bearer ',
+    );
 
-    let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-    if (localVarHttpHeaderAcceptSelected === undefined) {
-      // to determine the Accept header
-      const httpHeaderAccepts: string[] = [];
-      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-    }
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([]);
     if (localVarHttpHeaderAcceptSelected !== undefined) {
       localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
     }
 
-    let localVarHttpContext: HttpContext | undefined = options && options.context;
-    if (localVarHttpContext === undefined) {
-      localVarHttpContext = new HttpContext();
-    }
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
 
-    let localVarTransferCache: boolean | undefined = options && options.transferCache;
-    if (localVarTransferCache === undefined) {
-      localVarTransferCache = true;
-    }
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
 
     let responseType_: 'text' | 'json' | 'blob' = 'json';
     if (localVarHttpHeaderAcceptSelected) {
@@ -312,21 +232,24 @@ export class ProductService {
     }
 
     let localVarPath = `/api/product/delete-product/${this.configuration.encodeParam({ name: 'companyId', value: companyId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: 'uuid' })}/${this.configuration.encodeParam({ name: 'productId', value: productId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: 'uuid' })}`;
-    return this.httpClient.request<any>('delete', `${this.configuration.basePath}${localVarPath}`, {
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       responseType: <any>responseType_,
-      withCredentials: this.configuration.withCredentials,
+      ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
-      transferCache: localVarTransferCache,
+      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
       reportProgress: reportProgress,
     });
   }
 
   /**
+   * @endpoint get /api/product/get-all-products/{CompanyId}
    * @param companyId
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
+   * @param options additional options
    */
   public getAllProducts(
     companyId: string,
@@ -376,32 +299,23 @@ export class ProductService {
 
     let localVarHeaders = this.defaultHeaders;
 
-    let localVarCredential: string | undefined;
     // authentication (Bearer) required
-    localVarCredential = this.configuration.lookupCredential('Bearer');
-    if (localVarCredential) {
-      localVarHeaders = localVarHeaders.set('Authorization', 'Bearer ' + localVarCredential);
-    }
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'Bearer',
+      'Authorization',
+      localVarHeaders,
+      'Bearer ',
+    );
 
-    let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-    if (localVarHttpHeaderAcceptSelected === undefined) {
-      // to determine the Accept header
-      const httpHeaderAccepts: string[] = ['application/json'];
-      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-    }
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
     if (localVarHttpHeaderAcceptSelected !== undefined) {
       localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
     }
 
-    let localVarHttpContext: HttpContext | undefined = options && options.context;
-    if (localVarHttpContext === undefined) {
-      localVarHttpContext = new HttpContext();
-    }
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
 
-    let localVarTransferCache: boolean | undefined = options && options.transferCache;
-    if (localVarTransferCache === undefined) {
-      localVarTransferCache = true;
-    }
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
 
     let responseType_: 'text' | 'json' | 'blob' = 'json';
     if (localVarHttpHeaderAcceptSelected) {
@@ -415,25 +329,28 @@ export class ProductService {
     }
 
     let localVarPath = `/api/product/get-all-products/${this.configuration.encodeParam({ name: 'companyId', value: companyId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: 'uuid' })}`;
+    const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<Array<GetAllProductsResponse>>(
       'get',
-      `${this.configuration.basePath}${localVarPath}`,
+      `${basePath}${localVarPath}`,
       {
         context: localVarHttpContext,
         responseType: <any>responseType_,
-        withCredentials: this.configuration.withCredentials,
+        ...(withCredentials ? { withCredentials } : {}),
         headers: localVarHeaders,
         observe: observe,
-        transferCache: localVarTransferCache,
+        ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
         reportProgress: reportProgress,
       },
     );
   }
 
   /**
+   * @endpoint patch /api/product/update-product
    * @param updateProductCommand
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
+   * @param options additional options
    */
   public updateProduct(
     updateProductCommand: UpdateProductCommand,
@@ -467,32 +384,23 @@ export class ProductService {
 
     let localVarHeaders = this.defaultHeaders;
 
-    let localVarCredential: string | undefined;
     // authentication (Bearer) required
-    localVarCredential = this.configuration.lookupCredential('Bearer');
-    if (localVarCredential) {
-      localVarHeaders = localVarHeaders.set('Authorization', 'Bearer ' + localVarCredential);
-    }
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'Bearer',
+      'Authorization',
+      localVarHeaders,
+      'Bearer ',
+    );
 
-    let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-    if (localVarHttpHeaderAcceptSelected === undefined) {
-      // to determine the Accept header
-      const httpHeaderAccepts: string[] = [];
-      localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-    }
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([]);
     if (localVarHttpHeaderAcceptSelected !== undefined) {
       localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
     }
 
-    let localVarHttpContext: HttpContext | undefined = options && options.context;
-    if (localVarHttpContext === undefined) {
-      localVarHttpContext = new HttpContext();
-    }
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
 
-    let localVarTransferCache: boolean | undefined = options && options.transferCache;
-    if (localVarTransferCache === undefined) {
-      localVarTransferCache = true;
-    }
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
 
     // to determine the Content-Type header
     const consumes: string[] = ['application/json'];
@@ -514,14 +422,15 @@ export class ProductService {
     }
 
     let localVarPath = `/api/product/update-product`;
-    return this.httpClient.request<any>('patch', `${this.configuration.basePath}${localVarPath}`, {
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<any>('patch', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: updateProductCommand,
       responseType: <any>responseType_,
-      withCredentials: this.configuration.withCredentials,
+      ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
-      transferCache: localVarTransferCache,
+      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
       reportProgress: reportProgress,
     });
   }

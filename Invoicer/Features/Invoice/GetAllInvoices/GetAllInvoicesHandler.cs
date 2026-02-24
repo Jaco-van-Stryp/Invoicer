@@ -25,6 +25,9 @@ namespace Invoicer.Features.Invoice.GetAllInvoices
                     .ThenInclude(c => c.Invoices)
                         .ThenInclude(i => i.Products)
                             .ThenInclude(pi => pi.Product)
+                .Include(u => u.Companies)
+                    .ThenInclude(c => c.Invoices)
+                        .ThenInclude(i => i.Payments)
                 .FirstOrDefaultAsync(x => x.Id == userId, cancellationToken);
             if (user == null)
                 throw new UserNotFoundException();
@@ -42,6 +45,9 @@ namespace Invoicer.Features.Invoice.GetAllInvoices
                     InvoiceDue = i.InvoiceDue,
                     ClientId = i.ClientId,
                     ClientName = i.Client.Name,
+                    Status = i.Status,
+                    TotalDue = i.Products.Sum(pi => pi.Product.Price * pi.Quantity),
+                    TotalPaid = i.Payments.Sum(p => p.Amount),
                     Products = i
                         .Products.Select(pi => new InvoiceProductItem
                         {
@@ -49,6 +55,15 @@ namespace Invoicer.Features.Invoice.GetAllInvoices
                             ProductName = pi.Product.Name,
                             Price = pi.Product.Price,
                             Quantity = pi.Quantity,
+                        })
+                        .ToList(),
+                    Payments = i
+                        .Payments.Select(p => new InvoicePaymentItem
+                        {
+                            PaymentId = p.Id,
+                            Amount = p.Amount,
+                            PaidOn = p.PaidOn,
+                            Notes = p.Notes,
                         })
                         .ToList(),
                 })

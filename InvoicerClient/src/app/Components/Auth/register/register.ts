@@ -11,9 +11,10 @@ import { TooltipModule } from 'primeng/tooltip';
 import { AuthService, LoginResponse, RegisterCommand } from '../../../api';
 import { AuthStore } from '../../../Services/auth-store';
 import { Copyright } from '../../General/copyright/copyright';
-import { Logo } from '../../General/logo/logo';
+import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-register',
   imports: [
     FormsModule,
@@ -24,7 +25,6 @@ import { Logo } from '../../General/logo/logo';
     InputOtpModule,
     InputTextModule,
     Copyright,
-    Logo,
     TooltipModule,
   ],
   host: { class: 'block' },

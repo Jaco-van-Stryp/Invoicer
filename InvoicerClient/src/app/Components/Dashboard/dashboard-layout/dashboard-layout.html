@@ -1,0 +1,73 @@
+@if (!companyStore.hasCompany()) {
+  <div class="picker-container">
+    <app-company-picker />
+  </div>
+} @else {
+  <div class="layout">
+    <!-- Mobile hamburger -->
+    <button class="hamburger" (click)="toggleSidebar()" aria-label="Toggle navigation">
+      <i class="pi pi-bars"></i>
+    </button>
+
+    <!-- Sidebar overlay for mobile -->
+    @if (sidebarOpen()) {
+      <div class="sidebar-overlay" (click)="closeSidebar()"></div>
+    }
+
+    <!-- Sidebar -->
+    <aside class="sidebar" [class.open]="sidebarOpen()">
+      <div class="sidebar-header">
+        <logo />
+      </div>
+
+      <nav class="sidebar-nav" aria-label="Main navigation">
+        @for (item of navItems; track item.route) {
+          <a
+            class="nav-item"
+            [routerLink]="item.route"
+            [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
+            routerLinkActive="active"
+            (click)="closeSidebar()"
+          >
+            <i [class]="item.icon" aria-hidden="true"></i>
+            <span class="nav-label">{{ item.label }}</span>
+          </a>
+        }
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="company-info">
+          <div class="company-badge" aria-hidden="true">
+            <i class="pi pi-building"></i>
+          </div>
+          <span class="company-name">{{ companyStore.company()?.name }}</span>
+        </div>
+        <div class="sidebar-actions">
+          <button
+            class="sidebar-action-btn"
+            (click)="editCompanyVisible.set(true)"
+            aria-label="Edit Company"
+          >
+            <i class="pi pi-cog" aria-hidden="true"></i>
+            <span class="nav-label">Edit</span>
+          </button>
+          <button class="sidebar-action-btn" (click)="switchCompany()" aria-label="Switch Company">
+            <i class="pi pi-arrow-right-arrow-left" aria-hidden="true"></i>
+            <span class="nav-label">Switch</span>
+          </button>
+          <button class="sidebar-action-btn" (click)="logout()" aria-label="Logout">
+            <i class="pi pi-sign-out" aria-hidden="true"></i>
+            <span class="nav-label">Logout</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main-content">
+      <router-outlet />
+    </main>
+  </div>
+
+  <app-edit-company-dialog [(visible)]="editCompanyVisible" />
+}
