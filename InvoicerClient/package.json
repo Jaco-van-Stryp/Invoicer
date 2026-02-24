@@ -1,6 +1,7 @@
 {
   "name": "invoicer-client",
   "version": "0.0.0",
+  "main": "electron/main.js",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -8,7 +9,11 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "generate": "node generate.js",
-    "serve:ssr:InvoicerClient": "node dist/InvoicerClient/server/server.mjs"
+    "serve:ssr:InvoicerClient": "node dist/InvoicerClient/server/server.mjs",
+    "electron:serve": "concurrently -k \"cross-env BROWSER=none ng serve\" \"wait-on tcp:4200 && electron electron/main.js\"",
+    "electron:build": "ng build --configuration production && electron-builder",
+    "electron:build:prod": "ng build --configuration production --base-href ./ && electron-builder",
+    "postinstall": "electron-builder install-app-deps"
   },
   "prettier": {
     "printWidth": 100,
@@ -51,10 +56,47 @@
     "@tailwindcss/postcss": "^4.1.12",
     "@types/express": "^5.0.1",
     "@types/node": "^20.17.19",
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.1.0",
+    "electron": "^40.6.0",
+    "electron-builder": "^26.8.1",
     "jsdom": "^27.1.0",
     "postcss": "^8.5.3",
     "tailwindcss": "^4.1.12",
     "typescript": "~5.9.2",
-    "vitest": "^4.0.8"
+    "vitest": "^4.0.8",
+    "wait-on": "^9.0.4"
+  },
+  "build": {
+    "appId": "nz.co.jacovanstryp.invoicerclient",
+    "productName": "Invoicer",
+    "copyright": "Copyright © 2026 Jaco van Stryp",
+    "directories": {
+      "output": "dist-electron"
+    },
+    "files": [
+      "dist/InvoicerClient/browser/**/*",
+      "electron/**/*"
+    ],
+    "extraResources": [],
+    "asar": true,
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "electron/icon.ico"
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "icon": "electron/icon.icns"
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "icon": "electron/icon.png"
+    }
   }
 }
