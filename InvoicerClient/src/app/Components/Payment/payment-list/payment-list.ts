@@ -1,38 +1,29 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { CurrencyPipe, DatePipe } from '@angular/common';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
-import { HttpClient } from '@angular/common/http';
+import { GetAllPaymentsResponse, PaymentService } from '../../../api';
 import { CompanyStore } from '../../../Services/company-store';
-import { ChangeDetectionStrategy } from '@angular/core';
-
-interface GetAllPaymentsResponse {
-  id: string;
-  amount: number;
-  paidOn: string;
-  notes?: string;
-  invoiceId: string;
-  invoiceNumber: string;
-  clientName: string;
-}
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-payment-list',
-  imports: [CommonModule, ButtonModule, TableModule, TooltipModule],
+  imports: [CurrencyPipe, DatePipe, ButtonModule, ConfirmDialogModule, TableModule, TooltipModule],
   host: { class: 'block' },
   styleUrl: './payment-list.css',
   templateUrl: './payment-list.html',
 })
 export class PaymentList implements OnInit {
+  paymentService = inject(PaymentService);
   companyStore = inject(CompanyStore);
-  http = inject(HttpClient);
+  messageService = inject(MessageService);
+  confirmationService = inject(ConfirmationService);
 
   payments = signal<GetAllPaymentsResponse[]>([]);
   loading = signal(true);
-
-  private apiUrl = 'https://localhost:7261/api';
 
   ngOnInit() {
     this.loadPayments();
@@ -43,24 +34,48 @@ export class PaymentList implements OnInit {
     if (!companyId) return;
 
     this.loading.set(true);
-    this.http
-      .get<GetAllPaymentsResponse[]>(`${this.apiUrl}/payment/all-payments?companyId=${companyId}`)
-      .subscribe({
-        next: (r) => this.payments.set(r),
-        error: (err) => {
-          console.error('Failed to load payments', err);
-          this.loading.set(false);
-        },
-        complete: () => this.loading.set(false),
-      });
+    this.paymentService.getAllPayments(companyId).subscribe({
+      next: (r) => this.payments.set(r),
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to load payments.',
+        });
+        this.loading.set(false);
+      },
+      complete: () => this.loading.set(false),
+    });
   }
 
-  deletePayment(id: string) {
-    if (!confirm('Are you sure you want to delete this payment?')) return;
+  deletePayment(payment: GetAllPaymentsResponse) {
+    this.confirmationService.confirm({
+      message: `Are you sure you want to delete this payment?`,
+      header: 'Confirm Delete',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        if (!payment.id || !payment.invoiceId) return;
+        const companyId = this.companyStore.company()?.id;
+        if (!companyId) return;
 
-    this.http.delete(`${this.apiUrl}/payment/delete-payment?paymentId=${id}`).subscribe({
-      next: () => this.loadPayments(),
-      error: (err) => console.error('Failed to delete payment', err),
+        this.paymentService.deletePayment(companyId, payment.invoiceId, payment.id).subscribe({
+          next: () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Deleted',
+              detail: 'Payment deleted successfully.',
+            });
+            this.loadPayments();
+          },
+          error: () => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: 'Failed to delete payment.',
+            });
+          },
+        });
+      },
     });
   }
 }

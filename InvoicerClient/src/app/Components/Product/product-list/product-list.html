@@ -13,7 +13,13 @@
   <div class="table-toolbar">
     <p-iconfield>
       <p-inputicon styleClass="pi pi-search" />
-      <input pInputText type="text" placeholder="Search products..." (input)="onFilter($event)" />
+      <input
+        pInputText
+        type="text"
+        placeholder="Search products..."
+        (input)="onFilter($event)"
+        aria-label="Search products"
+      />
     </p-iconfield>
   </div>
 
@@ -49,6 +55,7 @@
               [text]="true"
               (click)="editProduct(product)"
               pTooltip="Edit"
+              aria-label="Edit product"
             />
             <p-button
               icon="pi pi-trash"
@@ -57,6 +64,7 @@
               severity="danger"
               (click)="deleteProduct(product)"
               pTooltip="Delete"
+              aria-label="Delete product"
             />
           </div>
         </td>

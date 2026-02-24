@@ -1,13 +1,4 @@
-:host {
-  --purple: #a855f7;
-  --pink: #ec4899;
-  --blue: #3b82f6;
-  --green: #22c55e;
-  --indigo: #6366f1;
-  --gradient: linear-gradient(135deg, var(--purple), var(--pink), var(--blue));
-  --glass-bg: rgba(255, 255, 255, 0.06);
-  --glass-border: rgba(255, 255, 255, 0.1);
-}
+/* Dashboard home — design tokens in src/styles/shared.css */
 
 .home-header {
   margin-bottom: 2.5rem;

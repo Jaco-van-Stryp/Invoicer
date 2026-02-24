@@ -80,11 +80,11 @@
         <tfoot>
           <tr class="subtotal-row">
             <td colspan="3" class="text-right"><strong>Subtotal:</strong></td>
-            <td class="text-right">{{ subtotal | currency }}</td>
+            <td class="text-right">{{ subtotal() | currency }}</td>
           </tr>
           <tr class="total-row">
             <td colspan="3" class="text-right"><strong>Total:</strong></td>
-            <td class="text-right">{{ total | currency }}</td>
+            <td class="text-right">{{ total() | currency }}</td>
           </tr>
         </tfoot>
       </table>

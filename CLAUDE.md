@@ -192,12 +192,40 @@ To regenerate after backend API changes:
 
 Available generated services: `AuthService`, `ClientService`, `CompanyService`, `InvoiceService`, `ProductService`, `FileService`
 
+#### Shared Styles (`InvoicerClient/src/styles/shared.css`)
+
+Global reusable CSS imported via `styles.css`. All design tokens and common patterns live here — **never redeclare them in component CSS**.
+
+| Category | Classes / Tokens | Used by |
+|---|---|---|
+| **Design tokens** | `--purple`, `--pink`, `--blue`, `--green`, `--indigo`, `--gradient`, `--glass-bg`, `--glass-border`, `--sidebar-width`, `--sidebar-rail-width` | All components (`:root`) |
+| **Gradient text** | `.gradient-text` | Branding, headings |
+| **Glass morphism** | `.glass-card` | Auth cards, modals |
+| **Blob backgrounds** | `.blob`, `.blob-1`, `.blob-2`, `.blob-3` | Auth pages, landing |
+| **Blob animations** | `blob-float-1/2/3`, `blob-move-1/2`, `pop-in` | Landing, auth, dashboard |
+| **Auth layout** | `.auth-container`, `.auth-content`, `.auth-card`, `.branding-side`, `.brand-badge`, `.brand-title`, `.brand-subtitle`, `.brand-features`, `.brand-feature`, `.form-side` | Login, register, create-company |
+| **Page header** | `.page-header` | All list pages |
+| **Gradient button** | `.btn-gradient` | List page toolbars |
+| **View toggle** | `.view-toggle` | Invoice/estimate list |
+| **Table card** | `.table-card`, `.table-toolbar` | All table views |
+| **Cards grid** | `.cards-grid` | Invoice/estimate card views |
+| **Entity card** | `.entity-card`, `.entity-card-header`, `.entity-card-number`, `.entity-card-title`, `.entity-card-dates`, `.entity-card-actions` | Invoice/estimate card views |
+| **Date/amount items** | `.date-item`, `.date-label`, `.date-value`, `.amount-item`, `.amount-label`, `.amount-value` | Cards |
+| **Empty state** | `.empty-state` | List pages |
+| **Form field** | `.form-grid`, `.form-field` | Dialogs |
+| **Dialog footer** | `.dialog-footer` | All dialogs |
+| **Image preview** | `.image-preview` | Logo/product image uploads |
+| **Logo text** | `.logo-text` | Logo component |
+| **Description cell** | `.description-cell` | Tables |
+
+When adding new components, check `shared.css` first before writing new styles.
+
 #### Frontend Conventions
 
 - **Standalone components only** — no NgModules (except the legacy auto-generated `api.module.ts`)
 - **File naming**: `component-name.ts`, `component-name.html`, `component-name.css` (no `.component` suffix)
 - **Component structure**: `Components/{Feature}/{component-name}/` — each with `.ts`, `.html`, `.css`, `.spec.ts`
-- **Styling**: Tailwind utility classes + PrimeNG component styles; plain CSS (no SCSS)
+- **Styling**: Shared CSS (`src/styles/shared.css`) + Tailwind utility classes + PrimeNG component styles; plain CSS (no SCSS). Component CSS files should only contain styles unique to that component.
 - **Routing**: Lazy-loaded routes preferred; SSR prerenders all routes
 - **State**: Angular signals for component state
 - **API base path**: `https://localhost:7261` (configured in generated `api/` code)

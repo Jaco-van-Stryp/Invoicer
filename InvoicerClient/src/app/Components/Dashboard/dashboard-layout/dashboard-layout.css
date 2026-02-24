@@ -1,15 +1,4 @@
-:host {
-  --sidebar-width: 260px;
-  --sidebar-rail-width: 60px;
-  --purple: #a855f7;
-  --pink: #ec4899;
-  --blue: #3b82f6;
-  --green: #22c55e;
-  --indigo: #6366f1;
-  --gradient: linear-gradient(135deg, var(--purple), var(--pink), var(--blue));
-  --glass-bg: rgba(255, 255, 255, 0.06);
-  --glass-border: rgba(255, 255, 255, 0.1);
-}
+/* Dashboard layout — design tokens & animations in src/styles/shared.css */
 
 .picker-container {
   min-height: 100vh;
@@ -37,14 +26,14 @@
   background-image: radial-gradient(circle, var(--purple), var(--pink));
   top: -100px;
   left: -100px;
-  animation: move-blob-1 15s infinite alternate;
+  animation: blob-move-1 15s infinite alternate;
 }
 
 .picker-container::after {
   background-image: radial-gradient(circle, var(--blue), var(--green));
   bottom: -100px;
   right: -100px;
-  animation: move-blob-2 15s infinite alternate;
+  animation: blob-move-2 15s infinite alternate;
 }
 
 .layout {
@@ -80,14 +69,7 @@
   min-height: 64px;
 }
 
-.sidebar-logo {
-  font-size: 1.25rem;
-  font-weight: 800;
-  background: var(--gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  white-space: nowrap;
+logo {
   overflow: hidden;
 }
 
@@ -241,7 +223,7 @@
     width: var(--sidebar-rail-width);
   }
 
-  .sidebar-logo,
+  logo,
   .nav-label,
   .company-name {
     display: none;
@@ -303,23 +285,5 @@
   .main-content {
     margin-left: 0;
     padding: 4rem 1rem 1rem;
-  }
-}
-
-@keyframes move-blob-1 {
-  from {
-    transform: translate(0, 0) scale(1);
-  }
-  to {
-    transform: translate(100px, 50px) scale(1.2);
-  }
-}
-
-@keyframes move-blob-2 {
-  from {
-    transform: translate(0, 0) scale(1);
-  }
-  to {
-    transform: translate(-100px, -50px) scale(1.2);
   }
 }

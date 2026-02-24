@@ -1,10 +1,10 @@
-<div class="create-company-container">
+<div class="auth-container">
   <!-- Animated blobs -->
   <div class="blob blob-1" aria-hidden="true"></div>
   <div class="blob blob-2" aria-hidden="true"></div>
   <div class="blob blob-3" aria-hidden="true"></div>
 
-  <div class="create-company-content">
+  <div class="auth-content auth-content--wide">
     <!-- Left: Branding -->
     <div class="branding-side">
       <div class="brand-badge">
@@ -33,7 +33,7 @@
 
     <!-- Right: Form card -->
     <div class="form-side">
-      <div class="form-card">
+      <div class="auth-card glass-card form-card">
         <div class="flex flex-col gap-2 text-center mb-6">
           <h2 class="text-2xl font-bold m-0">Company Details</h2>
           <p class="text-muted-color">Only the name is required. You can fill the rest later.</p>
@@ -116,7 +116,12 @@
             <label class="text-sm font-medium">Company Logo</label>
             @if (logoPreview()) {
               <div class="flex items-center gap-3">
-                <img [src]="logoPreview()" alt="Logo preview" class="logo-preview" />
+                <img
+                  [src]="logoPreview()"
+                  alt="Logo preview"
+                  class="image-preview"
+                  style="width: 64px; height: 64px; object-fit: contain"
+                />
                 <p-button
                   icon="pi pi-times"
                   [rounded]="true"

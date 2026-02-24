@@ -22,7 +22,7 @@
         <th pSortableColumn="paidOn">Date Paid <p-sortIcon field="paidOn" /></th>
         <th>Amount</th>
         <th>Notes</th>
-        <th style="width: 10rem">Actions</th>
+        <th style="width: 6rem">Actions</th>
       </tr>
     </ng-template>
     <ng-template #body let-payment>
@@ -38,8 +38,9 @@
             [rounded]="true"
             [text]="true"
             severity="danger"
-            (click)="deletePayment(payment.id)"
+            (click)="deletePayment(payment)"
             pTooltip="Delete"
+            aria-label="Delete payment"
           />
         </td>
       </tr>
@@ -51,3 +52,5 @@
     </ng-template>
   </p-table>
 </div>
+
+<p-confirmDialog />

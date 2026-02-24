@@ -4,7 +4,7 @@
     <p class="text-muted-color mt-1 mb-0">Manage your estimates</p>
   </div>
   <div class="flex items-center gap-2">
-    <button class="view-toggle" (click)="toggleView()" title="Toggle view">
+    <button class="view-toggle" (click)="toggleView()" aria-label="Toggle view">
       <i [class]="viewMode() === 'cards' ? 'pi pi-table' : 'pi pi-th-large'" aria-hidden="true"></i>
     </button>
     <button class="btn-gradient" (click)="openNew()">
@@ -18,16 +18,16 @@
 @if (viewMode() === 'cards') {
   <div class="cards-grid">
     @for (estimate of estimates(); track estimate.id) {
-      <div class="estimate-card">
-        <div class="estimate-card-header">
-          <div class="estimate-card-number">{{ estimate.estimateNumber }}</div>
+      <div class="entity-card">
+        <div class="entity-card-header">
+          <div class="entity-card-number">{{ estimate.estimateNumber }}</div>
           <p-tag
             [value]="estimate.status || 'Unknown'"
             [severity]="statusSeverity(estimate.status)"
           />
         </div>
-        <div class="estimate-card-client">{{ estimate.clientName }}</div>
-        <div class="estimate-card-dates">
+        <div class="entity-card-title">{{ estimate.clientName }}</div>
+        <div class="entity-card-dates">
           <div class="date-item">
             <span class="date-label">Date</span>
             <span class="date-value">{{ estimate.estimateDate | date: 'MMM d, y' }}</span>
@@ -37,17 +37,18 @@
             <span class="date-value">{{ estimate.expiresOn | date: 'MMM d, y' }}</span>
           </div>
         </div>
-        <div class="estimate-card-amount">
+        <div class="amount-item">
           <span class="amount-label">Total Amount</span>
           <span class="amount-value">{{ estimate.totalAmount | currency }}</span>
         </div>
-        <div class="estimate-card-actions">
+        <div class="entity-card-actions">
           <p-button
             icon="pi pi-pencil"
             [rounded]="true"
             [outlined]="true"
             (click)="editEstimate(estimate)"
             pTooltip="Edit"
+            aria-label="Edit estimate"
           />
           <p-button
             icon="pi pi-trash"
@@ -56,6 +57,7 @@
             severity="danger"
             (click)="deleteEstimate(estimate)"
             pTooltip="Delete"
+            aria-label="Delete estimate"
           />
         </div>
       </div>
@@ -77,6 +79,7 @@
           type="text"
           placeholder="Search estimates..."
           (input)="onFilter($event)"
+          aria-label="Search estimates"
         />
       </p-iconfield>
     </div>
@@ -124,6 +127,7 @@
                 [text]="true"
                 (click)="editEstimate(estimate)"
                 pTooltip="Edit"
+                aria-label="Edit estimate"
               />
               <p-button
                 icon="pi pi-trash"
@@ -132,6 +136,7 @@
                 severity="danger"
                 (click)="deleteEstimate(estimate)"
                 pTooltip="Delete"
+                aria-label="Delete estimate"
               />
             </div>
           </td>

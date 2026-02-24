@@ -1,22 +1,10 @@
+/* Landing page — design tokens & animations in src/styles/shared.css */
+
 :host {
-  --purple: #a855f7;
-  --pink: #ec4899;
-  --blue: #3b82f6;
-  --green: #22c55e;
-  --indigo: #6366f1;
-  --gradient: linear-gradient(135deg, var(--purple), var(--pink), var(--blue));
-  --glass-bg: rgba(255, 255, 255, 0.06);
-  --glass-border: rgba(255, 255, 255, 0.1);
   display: block;
   overflow-x: hidden;
   background-color: var(--surface-ground);
   color: var(--text-color);
-}
-.gradient-text {
-  background: var(--gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 /* NAV */
@@ -50,8 +38,8 @@
   height: 64px;
 }
 .nav-logo {
-  width: 48px;
-  height: 48px;
+  display: flex;
+  align-items: center;
 }
 .nav-links {
   display: flex;
@@ -104,7 +92,7 @@
   background: radial-gradient(circle, var(--purple), var(--pink));
   top: -200px;
   left: -150px;
-  animation: fb1 20s infinite alternate ease-in-out;
+  animation: blob-float-1 20s infinite alternate ease-in-out;
 }
 .hero-blob-2 {
   width: 500px;
@@ -112,7 +100,7 @@
   background: radial-gradient(circle, var(--blue), var(--indigo));
   bottom: -150px;
   right: -100px;
-  animation: fb2 18s infinite alternate ease-in-out;
+  animation: blob-float-2 18s infinite alternate ease-in-out;
 }
 .hero-blob-3 {
   width: 300px;
@@ -120,7 +108,7 @@
   background: radial-gradient(circle, var(--green), var(--blue));
   top: 40%;
   right: 30%;
-  animation: fb3 22s infinite alternate ease-in-out;
+  animation: blob-float-3 22s infinite alternate ease-in-out;
 }
 .hero-content {
   max-width: 1200px;
@@ -228,8 +216,8 @@
   gap: 0.5rem;
   padding: 2rem;
   text-align: center;
-  animation: popin 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  min-height: 250px; /* Reserve space to prevent CLS when form transitions to success */
+  animation: pop-in 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  min-height: 250px;
 }
 .success-icon-wrapper {
   width: 64px;
@@ -278,10 +266,6 @@
 .stat-value {
   font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 800;
-  background: var(--gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 .stat-label {
   font-size: 0.875rem;
@@ -456,7 +440,7 @@
   background: var(--purple);
   top: -100px;
   right: -100px;
-  animation: fb1 16s infinite alternate ease-in-out;
+  animation: blob-float-1 16s infinite alternate ease-in-out;
 }
 .waitlist-blob-2 {
   width: 350px;
@@ -464,7 +448,7 @@
   background: var(--blue);
   bottom: -100px;
   left: -100px;
-  animation: fb2 14s infinite alternate ease-in-out;
+  animation: blob-float-2 14s infinite alternate ease-in-out;
 }
 .waitlist-content {
   position: relative;
@@ -494,8 +478,6 @@
   max-width: 300px;
 }
 .footer-brand logo {
-  width: 48px;
-  height: 48px;
   display: block;
   margin-bottom: 0.75rem;
 }
@@ -534,51 +516,6 @@
 .footer-bottom {
   border-top: 1px solid var(--glass-border);
   padding: 1.5rem 0;
-}
-
-/* ANIMATIONS */
-@keyframes fb1 {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(80px, 40px) scale(1.15);
-  }
-  100% {
-    transform: translate(-30px, 80px) scale(1.05);
-  }
-}
-@keyframes fb2 {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(-60px, -30px) scale(1.1);
-  }
-  100% {
-    transform: translate(50px, -60px) scale(1.2);
-  }
-}
-@keyframes fb3 {
-  0% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(40px, -40px) scale(1.3);
-  }
-  100% {
-    transform: translate(-50px, 40px) scale(0.9);
-  }
-}
-@keyframes popin {
-  0% {
-    transform: scale(0.8);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
 }
 
 /* RESPONSIVE */

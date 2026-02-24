@@ -32,7 +32,7 @@ import { ChangeDetectionStrategy } from '@angular/core';
     SelectModule,
     InputNumberModule,
   ],
-  providers: [MessageService],
+  host: { class: 'block' },
   templateUrl: './estimate-form-dialog.html',
   styleUrl: './estimate-form-dialog.css',
 })
@@ -164,9 +164,9 @@ export class EstimateFormDialog {
       expiresOn: this.formatDate(formValue.expiresOn!),
       status: formValue.status!,
       notes: formValue.notes || undefined,
-      products: formValue.products!.map((p: any) => ({
-        productId: p.productId,
-        quantity: p.quantity,
+      products: formValue.products!.map((p) => ({
+        productId: p.productId!,
+        quantity: p.quantity!,
       })),
     };
 

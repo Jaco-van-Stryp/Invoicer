@@ -46,7 +46,12 @@
       <label class="text-sm font-medium">Product Image</label>
       @if (imagePreview()) {
         <div class="flex items-center gap-3">
-          <img [src]="imagePreview()!" alt="Product image preview" class="product-image-preview" />
+          <img
+            [src]="imagePreview()!"
+            alt="Product image preview"
+            class="image-preview"
+            style="width: 5rem; height: 5rem"
+          />
           <p-button
             icon="pi pi-times"
             [rounded]="true"

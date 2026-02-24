@@ -5,6 +5,7 @@ import { CompanyStore } from '../../../Services/company-store';
 import { AuthStore } from '../../../Services/auth-store';
 import { CompanyPicker } from '../company-picker/company-picker';
 import { EditCompanyDialog } from '../../Company/edit-company-dialog/edit-company-dialog';
+import { Logo } from '../../General/logo/logo';
 import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
@@ -17,6 +18,7 @@ import { ChangeDetectionStrategy } from '@angular/core';
     ButtonModule,
     CompanyPicker,
     EditCompanyDialog,
+    Logo,
   ],
   host: { class: 'block' },
   styleUrl: './dashboard-layout.css',

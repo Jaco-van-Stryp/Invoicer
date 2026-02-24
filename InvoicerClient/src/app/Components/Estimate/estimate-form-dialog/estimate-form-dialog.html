@@ -6,7 +6,7 @@
   [draggable]="false"
   [resizable]="false"
 >
-  <ng-template pTemplate="header">
+  <ng-template #header>
     <h2 class="text-xl font-semibold m-0">{{ estimate() ? 'Edit Estimate' : 'New Estimate' }}</h2>
   </ng-template>
 
@@ -104,6 +104,7 @@
               severity="danger"
               [text]="true"
               (click)="removeProduct($index)"
+              aria-label="Remove product"
             ></button>
           </div>
         }
@@ -111,7 +112,7 @@
     </div>
   </form>
 
-  <ng-template pTemplate="footer">
+  <ng-template #footer>
     <button
       pButton
       label="Cancel"

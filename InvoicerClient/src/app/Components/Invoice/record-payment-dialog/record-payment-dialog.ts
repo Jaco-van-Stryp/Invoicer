@@ -24,6 +24,7 @@ import { ChangeDetectionStrategy } from '@angular/core';
     DatePickerModule,
     InputTextModule,
   ],
+  host: { class: 'block' },
   styleUrl: './record-payment-dialog.css',
   templateUrl: './record-payment-dialog.html',
 })

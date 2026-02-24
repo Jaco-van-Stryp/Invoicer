@@ -4,7 +4,7 @@
     <p class="text-muted-color mt-1 mb-0">Manage your invoices</p>
   </div>
   <div class="flex items-center gap-2">
-    <button class="view-toggle" (click)="toggleView()" title="Toggle view">
+    <button class="view-toggle" (click)="toggleView()" aria-label="Toggle view">
       <i [class]="viewMode() === 'cards' ? 'pi pi-table' : 'pi pi-th-large'" aria-hidden="true"></i>
     </button>
     <button class="btn-gradient" (click)="openNew()">
@@ -18,13 +18,13 @@
 @if (viewMode() === 'cards') {
   <div class="cards-grid">
     @for (invoice of invoices(); track invoice.id) {
-      <div class="invoice-card">
-        <div class="invoice-card-header">
-          <div class="invoice-card-number">{{ invoice.invoiceNumber }}</div>
+      <div class="entity-card">
+        <div class="entity-card-header">
+          <div class="entity-card-number">{{ invoice.invoiceNumber }}</div>
           <p-tag [value]="invoice.status || 'Unpaid'" [severity]="statusSeverity(invoice.status)" />
         </div>
-        <div class="invoice-card-client">{{ invoice.clientName }}</div>
-        <div class="invoice-card-dates">
+        <div class="entity-card-title">{{ invoice.clientName }}</div>
+        <div class="entity-card-dates">
           <div class="date-item">
             <span class="date-label">Issued</span>
             <span class="date-value">{{ invoice.invoiceDate | date: 'MMM d, y' }}</span>
@@ -34,7 +34,7 @@
             <span class="date-value">{{ invoice.invoiceDue | date: 'MMM d, y' }}</span>
           </div>
         </div>
-        <div class="invoice-card-amounts">
+        <div class="entity-card-amounts">
           <div class="amount-item">
             <span class="amount-label">Total</span>
             <span class="amount-value">{{ invoice.totalDue ?? 0 | currency }}</span>
@@ -44,7 +44,7 @@
             <span class="amount-value paid">{{ invoice.totalPaid ?? 0 | currency }}</span>
           </div>
         </div>
-        <div class="invoice-card-actions">
+        <div class="entity-card-actions">
           <p-button
             icon="pi pi-envelope"
             [rounded]="true"
@@ -52,6 +52,7 @@
             severity="info"
             (click)="sendEmail(invoice)"
             pTooltip="Email Invoice"
+            aria-label="Email invoice"
           />
           <p-button
             icon="pi pi-dollar"
@@ -60,6 +61,7 @@
             severity="success"
             (click)="openPaymentDialog(invoice)"
             pTooltip="Record Payment"
+            aria-label="Record payment"
           />
           <p-button
             icon="pi pi-pencil"
@@ -67,6 +69,7 @@
             [outlined]="true"
             (click)="editInvoice(invoice)"
             pTooltip="Edit"
+            aria-label="Edit invoice"
           />
           <p-button
             icon="pi pi-trash"
@@ -75,6 +78,7 @@
             severity="danger"
             (click)="deleteInvoice(invoice)"
             pTooltip="Delete"
+            aria-label="Delete invoice"
           />
         </div>
       </div>
@@ -91,7 +95,13 @@
     <div class="table-toolbar">
       <p-iconfield>
         <p-inputicon styleClass="pi pi-search" />
-        <input pInputText type="text" placeholder="Search invoices..." (input)="onFilter($event)" />
+        <input
+          pInputText
+          type="text"
+          placeholder="Search invoices..."
+          (input)="onFilter($event)"
+          aria-label="Search invoices"
+        />
       </p-iconfield>
     </div>
 
@@ -141,6 +151,7 @@
                 severity="info"
                 (click)="sendEmail(invoice)"
                 pTooltip="Email Invoice"
+                aria-label="Email invoice"
               />
               <p-button
                 icon="pi pi-dollar"
@@ -149,6 +160,7 @@
                 severity="success"
                 (click)="openPaymentDialog(invoice)"
                 pTooltip="Record Payment"
+                aria-label="Record payment"
               />
               <p-button
                 icon="pi pi-pencil"
@@ -156,6 +168,7 @@
                 [text]="true"
                 (click)="editInvoice(invoice)"
                 pTooltip="Edit"
+                aria-label="Edit invoice"
               />
               <p-button
                 icon="pi pi-trash"
@@ -164,6 +177,7 @@
                 severity="danger"
                 (click)="deleteInvoice(invoice)"
                 pTooltip="Delete"
+                aria-label="Delete invoice"
               />
             </div>
           </td>

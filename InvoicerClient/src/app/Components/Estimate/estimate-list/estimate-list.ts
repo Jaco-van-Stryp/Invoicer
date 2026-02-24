@@ -30,7 +30,6 @@ import { ChangeDetectionStrategy } from '@angular/core';
     TooltipModule,
     EstimateFormDialog,
   ],
-  providers: [MessageService, ConfirmationService],
   host: { class: 'block' },
   styleUrl: './estimate-list.css',
   templateUrl: './estimate-list.html',

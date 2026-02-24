@@ -42,6 +42,7 @@
                   [loading]="deleting() === payment.paymentId"
                   (click)="deletePayment(payment)"
                   pTooltip="Remove payment"
+                  aria-label="Remove payment"
                 />
               </div>
             }
@@ -57,7 +58,8 @@
           <label for="amount">Amount</label>
           <p-inputnumber
             inputId="amount"
-            [(ngModel)]="amount"
+            [ngModel]="amount()"
+            (ngModelChange)="amount.set($event)"
             mode="currency"
             currency="USD"
             [min]="0.01"
@@ -70,7 +72,8 @@
           <label for="paidOn">Date Paid</label>
           <p-datepicker
             inputId="paidOn"
-            [(ngModel)]="paidOn"
+            [ngModel]="paidOn()"
+            (ngModelChange)="paidOn.set($event)"
             dateFormat="dd/mm/yy"
             [showIcon]="true"
             appendTo="body"
@@ -83,7 +86,8 @@
           <input
             pInputText
             id="notes"
-            [(ngModel)]="notes"
+            [ngModel]="notes()"
+            (ngModelChange)="notes.set($event)"
             placeholder="e.g. Wire transfer, Cheque #123"
             class="w-full"
           />

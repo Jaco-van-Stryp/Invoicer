@@ -17,7 +17,7 @@
     <!-- Sidebar -->
     <aside class="sidebar" [class.open]="sidebarOpen()">
       <div class="sidebar-header">
-        <span class="sidebar-logo">Invoicer</span>
+        <logo />
       </div>
 
       <nav class="sidebar-nav" aria-label="Main navigation">
@@ -46,16 +46,16 @@
           <button
             class="sidebar-action-btn"
             (click)="editCompanyVisible.set(true)"
-            title="Edit Company"
+            aria-label="Edit Company"
           >
             <i class="pi pi-cog" aria-hidden="true"></i>
             <span class="nav-label">Edit</span>
           </button>
-          <button class="sidebar-action-btn" (click)="switchCompany()" title="Switch Company">
+          <button class="sidebar-action-btn" (click)="switchCompany()" aria-label="Switch Company">
             <i class="pi pi-arrow-right-arrow-left" aria-hidden="true"></i>
             <span class="nav-label">Switch</span>
           </button>
-          <button class="sidebar-action-btn" (click)="logout()" title="Logout">
+          <button class="sidebar-action-btn" (click)="logout()" aria-label="Logout">
             <i class="pi pi-sign-out" aria-hidden="true"></i>
             <span class="nav-label">Logout</span>
           </button>

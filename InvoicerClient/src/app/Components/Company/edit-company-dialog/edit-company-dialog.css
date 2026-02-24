@@ -1,7 +1,1 @@
-.logo-preview {
-  width: 4rem;
-  height: 4rem;
-  object-fit: cover;
-  border-radius: 0.5rem;
-  border: 1px solid var(--surface-border);
-}
+/* Edit-company-dialog — shared image-preview in src/styles/shared.css */
