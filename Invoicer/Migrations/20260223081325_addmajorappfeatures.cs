@@ -10,9 +10,7 @@ namespace Invoicer.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "xmin",
-                table: "Users");
+            migrationBuilder.DropColumn(name: "xmin", table: "Users");
         }
 
         /// <inheritdoc />
@@ -24,7 +22,8 @@ namespace Invoicer.Migrations
                 type: "xid",
                 rowVersion: true,
                 nullable: false,
-                defaultValue: 0u);
+                defaultValue: 0u
+            );
         }
     }
 }
