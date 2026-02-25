@@ -35,8 +35,10 @@ npm start                                             # ng serve (dev server on 
 npm run build                                         # Production build with SSR
 npm test                                              # Run unit tests (Vitest)
 npm run generate                                      # Regenerate API client from Swagger spec
-                                                      # (requires .NET API running on localhost:5244)
+                                                      # (requires Docker + .NET API on http://localhost:5244)
 npm run serve:ssr:InvoicerClient                      # Serve SSR production build
+npm run electron:serve                                # Run app in Electron (dev)
+npm run electron:build                                # Build packaged Electron app → dist-electron/
 ```
 
 ## Architecture
@@ -53,15 +55,20 @@ Full-stack application: **.NET 10 Web API** backend + **Angular 21** frontend (S
 Invoicer/
 ├── Domain/
 │   ├── Data/          # AppDbContext (PostgreSQL via Npgsql)
-│   ├── Entities/      # User, Company, Client, Invoice, Product, ProductInvoice, AuthToken
+│   ├── Entities/      # User, Company, Client, Invoice, Estimate, Product, ProductInvoice,
+│   │                  # ProductEstimate, Payment, WaitingList, AuthToken
+│   ├── Enums/         # EstimateStatus, InvoiceStatus
 │   └── Exceptions/    # ApiException subclasses with HTTP status codes
 ├── Features/          # CQRS feature modules (one folder per domain aggregate)
 │   ├── Auth/          # Passwordless email auth (JWT + 6-digit codes via AWS SES)
 │   ├── Client/        # Client management
 │   ├── Company/       # Company management
+│   ├── Estimate/      # Estimate/quote management
 │   ├── File/          # File upload/download (MinIO)
 │   ├── Invoice/       # Invoice management
-│   └── Product/       # Product management
+│   ├── Payment/       # Payment recording against invoices
+│   ├── Products/      # Product management
+│   └── WaitingList/   # Pre-launch waiting list
 ├── Infrastructure/
 │   ├── CurrentUserService/     # Extracts UserId/Email from JWT claims
 │   ├── DependencyInjection/    # Extension methods for service registration
@@ -77,9 +84,12 @@ Invoicer/
 ### Entity Relationships
 
 - **User** (1) → (N) **Company** (the main aggregate root)
-- **Company** (1) → (N) **Product**, **Client**, **Invoice**
+- **Company** (1) → (N) **Product**, **Client**, **Invoice**, **Estimate**, **Payment**
 - **Invoice** (N) → (1) **Client**, (N) → (1) **Company**
 - **Invoice** (N) ↔ (N) **Product** via **ProductInvoice** join table (includes denormalized `CompanyId`)
+- **Estimate** (N) → (1) **Client**, (N) → (1) **Company**
+- **Estimate** (N) ↔ (N) **Product** via **ProductEstimate** join table
+- **Payment** (N) → (1) **Invoice**, (N) → (1) **Company**
 
 ### Endpoint Registration
 
@@ -87,12 +97,15 @@ Invoicer/
 
 ```
 EndpointExtensions.MapEndpoints()  →  /api
-  ├── ClientEndpoints              →  /api/client
+  ├── AuthEndpoints                →  /api/auth
   ├── CompanyEndpoints             →  /api/company
-  ├── InvoiceEndpoints             →  /api/invoice
   ├── ProductEndpoints             →  /api/product
   ├── FileEndpoints                →  /api/file
-  └── AuthEndpoints                →  /api/auth
+  ├── ClientEndpoints              →  /api/client
+  ├── InvoiceEndpoints             →  /api/invoice
+  ├── EstimateEndpoints            →  /api/estimate
+  ├── PaymentEndpoints             →  /api/payment
+  └── WaitingListEndpoints         →  /api/waiting-list
 ```
 
 Endpoints inject `ISender` (not `IMediator`) from MediatR. URL paths use kebab-case (`create-client`, `all-clients`).
@@ -223,11 +236,21 @@ When adding new components, check `shared.css` first before writing new styles.
 #### Frontend Conventions
 
 - **Standalone components only** — no NgModules (except the legacy auto-generated `api.module.ts`)
+- **Do NOT set `standalone: true`** — it is the default in Angular v20+ and must be omitted
 - **File naming**: `component-name.ts`, `component-name.html`, `component-name.css` (no `.component` suffix)
 - **Component structure**: `Components/{Feature}/{component-name}/` — each with `.ts`, `.html`, `.css`, `.spec.ts`
 - **Styling**: Shared CSS (`src/styles/shared.css`) + Tailwind utility classes + PrimeNG component styles; plain CSS (no SCSS). Component CSS files should only contain styles unique to that component.
 - **Routing**: Lazy-loaded routes preferred; SSR prerenders all routes
-- **State**: Angular signals for component state
+- **State**: `signal()` for mutable state, `computed()` for derived state; never plain properties
+- **DI**: Use `inject()` function — not constructor injection
+- **Inputs/outputs**: Use `input()` and `output()` functions — not `@Input()`/`@Output()` decorators
+- **Host bindings**: Put in the `host` object of `@Component`/`@Directive` — not `@HostBinding`/`@HostListener`
+- **Class/style bindings**: Use `[class.foo]` and `[style.bar]` — not `ngClass` or `ngStyle`
+- **Forms**: Prefer Reactive Forms over Template-driven forms
+- **Templates**: No arrow functions in templates; use native control flow (`@if`, `@for`, `@switch`)
+- **Images**: Use `NgOptimizedImage` for static images (not for inline base64)
+- **Accessibility**: Must pass all AXE checks and WCAG AA minimums (focus management, color contrast, ARIA)
+- **`changeDetection: ChangeDetectionStrategy.OnPush`** — required in every component's `@Component` decorator
 - **API base path**: `https://localhost:7261` (configured in generated `api/` code)
 
 #### Adding a New Frontend Component
@@ -277,3 +300,4 @@ Tests live in `Invoicer.Tests/` using **xUnit** + **FluentAssertions** + **NSubs
 - **Do not edit `InvoicerClient/src/app/api/`** — this directory is auto-generated by OpenAPI Generator; changes will be lost on next `npm run generate`
 - **Angular 21 SSR**: all routes prerender by default (`RenderMode.Prerender` in `app.routes.server.ts`) — browser-only APIs (`window`, `document`) must be guarded with `isPlatformBrowser` or `afterNextRender`
 - **PrimeNG 21 imports**: import component modules individually (e.g., `ButtonModule`, `InputOtpModule`), not the full PrimeNG package
+- **`npm run generate` requires Docker** — it runs the OpenAPI Generator via a Docker container (`openapitools/openapi-generator-cli`), pulling the spec from `http://host.docker.internal:5244` (on Linux, replace with the host IP)
