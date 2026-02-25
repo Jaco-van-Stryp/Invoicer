@@ -16,6 +16,7 @@ import {
   GetAllProductsResponse,
   EstimateStatus,
   CreateEstimateCommand,
+  UpdateEstimateCommand,
 } from '../../../api';
 import { CompanyStore } from '../../../Services/company-store';
 import { ChangeDetectionStrategy } from '@angular/core';
@@ -50,6 +51,8 @@ export class EstimateFormDialog {
   clients = signal<GetAllClientsResponse[]>([]);
   products = signal<GetAllProductsResponse[]>([]);
   loading = signal(false);
+
+  isEditing = computed(() => !!this.estimate()?.id);
 
   statusOptions = Object.values(EstimateStatus).map((status) => ({
     label: status,
@@ -157,39 +160,75 @@ export class EstimateFormDialog {
     this.loading.set(true);
 
     const formValue = this.form.value;
-    const command: CreateEstimateCommand = {
-      companyId,
-      clientId: formValue.clientId!,
-      estimateDate: this.formatDate(formValue.estimateDate!),
-      expiresOn: this.formatDate(formValue.expiresOn!),
-      status: formValue.status!,
-      notes: formValue.notes || undefined,
-      products: formValue.products!.map((p) => ({
-        productId: p.productId!,
-        quantity: p.quantity!,
-      })),
-    };
+    const products = formValue.products!.map((p) => ({
+      productId: p.productId!,
+      quantity: p.quantity!,
+    }));
 
-    this.estimateService.createEstimate(command).subscribe({
-      next: () => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Estimate created successfully',
-        });
-        this.visible.set(false);
-        this.saved.emit();
-        this.loading.set(false);
-      },
-      error: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to create estimate',
-        });
-        this.loading.set(false);
-      },
-    });
+    if (this.isEditing()) {
+      const command: UpdateEstimateCommand = {
+        companyId,
+        estimateId: this.estimate()!.id,
+        clientId: formValue.clientId!,
+        estimateDate: this.formatDate(formValue.estimateDate!),
+        expiresOn: this.formatDate(formValue.expiresOn!),
+        status: formValue.status!,
+        notes: formValue.notes || undefined,
+        products,
+      };
+
+      this.estimateService.updateEstimate(command).subscribe({
+        next: () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Updated',
+            detail: 'Estimate updated successfully',
+          });
+          this.visible.set(false);
+          this.saved.emit();
+          this.loading.set(false);
+        },
+        error: () => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to update estimate',
+          });
+          this.loading.set(false);
+        },
+      });
+    } else {
+      const command: CreateEstimateCommand = {
+        companyId,
+        clientId: formValue.clientId!,
+        estimateDate: this.formatDate(formValue.estimateDate!),
+        expiresOn: this.formatDate(formValue.expiresOn!),
+        status: formValue.status!,
+        notes: formValue.notes || undefined,
+        products,
+      };
+
+      this.estimateService.createEstimate(command).subscribe({
+        next: () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Created',
+            detail: 'Estimate created successfully',
+          });
+          this.visible.set(false);
+          this.saved.emit();
+          this.loading.set(false);
+        },
+        error: () => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to create estimate',
+          });
+          this.loading.set(false);
+        },
+      });
+    }
   }
 
   onCancel() {
