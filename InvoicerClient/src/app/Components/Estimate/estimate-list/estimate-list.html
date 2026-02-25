@@ -37,9 +37,11 @@
             <span class="date-value">{{ estimate.expiresOn | date: 'MMM d, y' }}</span>
           </div>
         </div>
-        <div class="amount-item">
-          <span class="amount-label">Total Amount</span>
-          <span class="amount-value">{{ estimate.totalAmount | currency }}</span>
+        <div class="entity-card-amounts">
+          <div class="amount-item">
+            <span class="amount-label">Total Amount</span>
+            <span class="amount-value">{{ estimate.totalAmount | currency }}</span>
+          </div>
         </div>
         <div class="entity-card-actions">
           <p-button

@@ -109,6 +109,7 @@ export class Register implements OnDestroy {
           }
         },
         error: () => {
+          this.loading.set(false);
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
@@ -135,6 +136,7 @@ export class Register implements OnDestroy {
         });
       },
       error: () => {
+        this.loading.set(false);
         this.messageService.add({
           severity: 'error',
           summary: 'Error',

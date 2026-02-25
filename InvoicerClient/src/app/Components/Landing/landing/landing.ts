@@ -35,7 +35,6 @@ export class Landing {
   email = signal('');
   loading = signal(false);
   submitted = signal(false);
-  activeFeature = signal(0);
   isVisible = signal(false);
 
   isEmailValid = computed(() => {
