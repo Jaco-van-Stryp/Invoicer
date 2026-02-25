@@ -397,6 +397,11 @@
 }
 
 /* ---------- Date / Amount Items (inside cards) ---------- */
+.entity-card-amounts {
+  display: flex;
+  gap: 1.5rem;
+}
+
 .date-item,
 .amount-item {
   display: flex;

@@ -61,6 +61,8 @@ model/registerResponse.ts
 model/sendInvoiceEmailRequest.ts
 model/updateClientCommand.ts
 model/updateCompanyDetailsCommand.ts
+model/updateEstimateCommand.ts
+model/updateEstimateProductItem.ts
 model/updateInvoiceCommand.ts
 model/updateInvoiceProductItem.ts
 model/updateProductCommand.ts

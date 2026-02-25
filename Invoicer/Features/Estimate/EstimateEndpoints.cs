@@ -1,6 +1,7 @@
 using Invoicer.Features.Estimate.CreateEstimate;
 using Invoicer.Features.Estimate.DeleteEstimate;
 using Invoicer.Features.Estimate.GetAllEstimates;
+using Invoicer.Features.Estimate.UpdateEstimate;
 
 namespace Invoicer.Features.Estimate
 {
@@ -12,6 +13,7 @@ namespace Invoicer.Features.Estimate
 
             group.MapGetAllEstimatesEndpoint();
             group.MapCreateEstimateEndpoint();
+            group.MapUpdateEstimateEndpoint();
             group.MapDeleteEstimateEndpoint();
 
             return app;

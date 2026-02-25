@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
@@ -8,5 +8,5 @@ import { ChangeDetectionStrategy } from '@angular/core';
   templateUrl: './copyright.html',
 })
 export class Copyright {
-  date = new Date().getFullYear();
+  readonly year = signal(new Date().getFullYear());
 }

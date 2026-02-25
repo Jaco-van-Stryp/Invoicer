@@ -41,6 +41,8 @@ export * from './registerResponse';
 export * from './sendInvoiceEmailRequest';
 export * from './updateClientCommand';
 export * from './updateCompanyDetailsCommand';
+export * from './updateEstimateCommand';
+export * from './updateEstimateProductItem';
 export * from './updateInvoiceCommand';
 export * from './updateInvoiceProductItem';
 export * from './updateProductCommand';

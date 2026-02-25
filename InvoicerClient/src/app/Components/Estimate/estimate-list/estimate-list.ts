@@ -63,7 +63,14 @@ export class EstimateList implements OnInit {
     this.loading.set(true);
     this.estimateService.getAllEstimates(companyId).subscribe({
       next: (r) => this.estimates.set(r),
-      error: () => this.loading.set(false),
+      error: () => {
+        this.loading.set(false);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to load estimates',
+        });
+      },
       complete: () => this.loading.set(false),
     });
   }

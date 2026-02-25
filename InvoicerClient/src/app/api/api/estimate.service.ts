@@ -27,6 +27,8 @@ import { CreateEstimateCommand } from '../model/createEstimateCommand';
 import { CreateEstimateResponse } from '../model/createEstimateResponse';
 // @ts-ignore
 import { GetAllEstimatesResponse } from '../model/getAllEstimatesResponse';
+// @ts-ignore
+import { UpdateEstimateCommand } from '../model/updateEstimateCommand';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS } from '../variables';
@@ -331,5 +333,95 @@ export class EstimateService extends BaseService {
         reportProgress: reportProgress,
       },
     );
+  }
+
+  /**
+   * @endpoint patch /api/estimate/update-estimate
+   * @param updateEstimateCommand
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   * @param options additional options
+   */
+  public updateEstimate(
+    updateEstimateCommand: UpdateEstimateCommand,
+    observe?: 'body',
+    reportProgress?: boolean,
+    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
+  ): Observable<any>;
+  public updateEstimate(
+    updateEstimateCommand: UpdateEstimateCommand,
+    observe?: 'response',
+    reportProgress?: boolean,
+    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
+  ): Observable<HttpResponse<any>>;
+  public updateEstimate(
+    updateEstimateCommand: UpdateEstimateCommand,
+    observe?: 'events',
+    reportProgress?: boolean,
+    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
+  ): Observable<HttpEvent<any>>;
+  public updateEstimate(
+    updateEstimateCommand: UpdateEstimateCommand,
+    observe: any = 'body',
+    reportProgress: boolean = false,
+    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
+  ): Observable<any> {
+    if (updateEstimateCommand === null || updateEstimateCommand === undefined) {
+      throw new Error(
+        'Required parameter updateEstimateCommand was null or undefined when calling updateEstimate.',
+      );
+    }
+
+    let localVarHeaders = this.defaultHeaders;
+
+    // authentication (Bearer) required
+    localVarHeaders = this.configuration.addCredentialToHeaders(
+      'Bearer',
+      'Authorization',
+      localVarHeaders,
+      'Bearer ',
+    );
+
+    const localVarHttpHeaderAcceptSelected: string | undefined =
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([]);
+    if (localVarHttpHeaderAcceptSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
+    }
+
+    const localVarHttpContext: HttpContext = options?.context ?? new HttpContext();
+
+    const localVarTransferCache: boolean = options?.transferCache ?? true;
+
+    // to determine the Content-Type header
+    const consumes: string[] = ['application/json'];
+    const httpContentTypeSelected: string | undefined =
+      this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType_: 'text' | 'json' | 'blob' = 'json';
+    if (localVarHttpHeaderAcceptSelected) {
+      if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
+        responseType_ = 'text';
+      } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
+        responseType_ = 'json';
+      } else {
+        responseType_ = 'blob';
+      }
+    }
+
+    let localVarPath = `/api/estimate/update-estimate`;
+    const { basePath, withCredentials } = this.configuration;
+    return this.httpClient.request<any>('patch', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      body: updateEstimateCommand,
+      responseType: <any>responseType_,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+      reportProgress: reportProgress,
+    });
   }
 }
