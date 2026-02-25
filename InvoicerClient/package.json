@@ -12,7 +12,6 @@
     "serve:ssr:InvoicerClient": "node dist/InvoicerClient/server/server.mjs",
     "electron:serve": "concurrently -k \"cross-env BROWSER=none ng serve\" \"wait-on tcp:4200 && electron electron/main.js\"",
     "electron:build": "ng build --configuration production && electron-builder",
-    "electron:build:prod": "ng build --configuration production --base-href ./ && electron-builder",
     "postinstall": "electron-builder install-app-deps"
   },
   "prettier": {
@@ -78,25 +77,21 @@
       "dist/InvoicerClient/browser/**/*",
       "electron/**/*"
     ],
-    "extraResources": [],
     "asar": true,
     "win": {
       "target": [
         "nsis"
-      ],
-      "icon": "electron/icon.ico"
+      ]
     },
     "mac": {
       "target": [
         "dmg"
-      ],
-      "icon": "electron/icon.icns"
+      ]
     },
     "linux": {
       "target": [
         "AppImage"
-      ],
-      "icon": "electron/icon.png"
+      ]
     }
   }
 }
