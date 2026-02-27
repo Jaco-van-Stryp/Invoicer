@@ -75,6 +75,8 @@ export class ProductFormDialog {
         this.price.set(null);
         this.imageUrl.set('');
         this.imagePreview.set(null);
+        this.uploadingImage.set(false);
+        this.saving.set(false);
       }
     });
   }

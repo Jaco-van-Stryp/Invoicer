@@ -9,6 +9,21 @@ export class AuthStore {
   readonly token = this.tokenSignal.asReadonly();
   readonly isLoggedIn = computed(() => !!this.tokenSignal());
 
+  readonly userEmail = computed<string | null>(() => {
+    const token = this.tokenSignal();
+    if (!token) return null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return (
+        (payload[
+          'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'
+        ] as string) ?? null
+      );
+    } catch {
+      return null;
+    }
+  });
+
   setToken(token: string): void {
     if (typeof localStorage !== 'undefined') {
       localStorage.setItem(TOKEN_KEY, token);

@@ -1,28 +1,29 @@
-import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CurrencyPipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
-import { Table, TableModule } from 'primeng/table';
+import { TooltipModule } from 'primeng/tooltip';
 import { ProductService, GetAllProductsResponse } from '../../../api';
 import { CompanyStore } from '../../../Services/company-store';
 import { ProductFormDialog } from '../product-form-dialog/product-form-dialog';
-import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-product-list',
   imports: [
     CurrencyPipe,
-    TableModule,
+    FormsModule,
     ButtonModule,
     IconFieldModule,
     InputIconModule,
     InputTextModule,
     ConfirmDialogModule,
+    TooltipModule,
     ProductFormDialog,
   ],
   host: { class: 'block' },
@@ -39,8 +40,17 @@ export class ProductList implements OnInit {
   loading = signal(true);
   dialogVisible = signal(false);
   selectedProduct = signal<GetAllProductsResponse | null>(null);
+  searchQuery = signal('');
 
-  dt = viewChild<Table>('dt');
+  filteredProducts = computed(() => {
+    const q = this.searchQuery().toLowerCase();
+    if (!q) return this.products();
+    return this.products().filter(
+      (p) =>
+        p.name?.toLowerCase().includes(q) ||
+        p.description?.toLowerCase().includes(q),
+    );
+  });
 
   ngOnInit() {
     this.loadProducts();
@@ -80,6 +90,8 @@ export class ProductList implements OnInit {
       message: `Are you sure you want to delete "${product.name}"?`,
       header: 'Confirm Delete',
       icon: 'pi pi-exclamation-triangle',
+      acceptButtonProps: { severity: 'danger', label: 'Yes, Delete' },
+      rejectButtonProps: { severity: 'secondary', outlined: true, label: 'Cancel' },
       accept: () => {
         const companyId = this.companyStore.company()?.id;
         if (!companyId || !product.id) return;
@@ -103,11 +115,6 @@ export class ProductList implements OnInit {
         });
       },
     });
-  }
-
-  onFilter(event: Event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.dt()?.filterGlobal(value, 'contains');
   }
 
   onSaved() {

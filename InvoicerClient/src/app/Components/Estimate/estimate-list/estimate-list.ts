@@ -1,12 +1,8 @@
-import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { IconFieldModule } from 'primeng/iconfield';
-import { InputIconModule } from 'primeng/inputicon';
-import { InputTextModule } from 'primeng/inputtext';
-import { Table, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { EstimateService, GetAllEstimatesResponse, EstimateStatus } from '../../../api';
@@ -20,11 +16,7 @@ import { ChangeDetectionStrategy } from '@angular/core';
   imports: [
     CurrencyPipe,
     DatePipe,
-    TableModule,
     ButtonModule,
-    IconFieldModule,
-    InputIconModule,
-    InputTextModule,
     ConfirmDialogModule,
     TagModule,
     TooltipModule,
@@ -44,16 +36,9 @@ export class EstimateList implements OnInit {
   loading = signal(true);
   dialogVisible = signal(false);
   selectedEstimate = signal<GetAllEstimatesResponse | null>(null);
-  viewMode = signal<'table' | 'cards'>('cards');
-
-  dt = viewChild<Table>('dt');
 
   ngOnInit() {
     this.loadEstimates();
-  }
-
-  toggleView() {
-    this.viewMode.update((mode) => (mode === 'table' ? 'cards' : 'table'));
   }
 
   loadEstimates() {
@@ -90,6 +75,8 @@ export class EstimateList implements OnInit {
       message: `Are you sure you want to delete estimate ${estimate.estimateNumber}?`,
       header: 'Delete Confirmation',
       icon: 'pi pi-exclamation-triangle',
+      acceptButtonProps: { severity: 'danger', label: 'Yes, Delete' },
+      rejectButtonProps: { severity: 'secondary', outlined: true, label: 'Cancel' },
       accept: () => {
         if (!estimate.id) return;
         this.estimateService.deleteEstimate(estimate.id).subscribe({
@@ -115,13 +102,6 @@ export class EstimateList implements OnInit {
 
   onSaved() {
     this.loadEstimates();
-  }
-
-  onFilter(event: Event) {
-    const table = this.dt();
-    if (table) {
-      table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
-    }
   }
 
   statusSeverity(

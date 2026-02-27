@@ -1,1 +1,154 @@
-/* Client-list-specific styles — shared list styles in src/styles/shared.css */
+/* Client list — shared styles in src/styles/shared.css */
+
+.search-bar {
+  margin-bottom: 1.5rem;
+}
+
+.search-bar .p-iconfield {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* ── Skeleton loading ──────────────────────────────────────── */
+.loading-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.client-card-skeleton {
+  height: 180px;
+  border-radius: 1rem;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* ── Cards Grid ────────────────────────────────────────────── */
+.clients-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+/* ── Client Card ───────────────────────────────────────────── */
+.client-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  border-radius: 1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.client-card:hover {
+  border-color: rgba(168, 85, 247, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.client-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.client-avatar {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  background: var(--gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  letter-spacing: 0.01em;
+}
+
+.client-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.client-name {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-color);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.client-email {
+  font-size: 0.8125rem;
+  color: var(--indigo);
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.client-email:hover {
+  text-decoration: underline;
+}
+
+/* ── Client Details ─────────────────────────────────────────── */
+.client-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  flex: 1;
+}
+
+.client-detail {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--text-color-secondary);
+}
+
+.client-detail .pi {
+  font-size: 0.75rem;
+  color: var(--purple);
+  flex-shrink: 0;
+}
+
+.client-detail span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Card Actions ───────────────────────────────────────────── */
+.client-card-actions {
+  display: flex;
+  gap: 0.25rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--surface-border);
+}
+
+/* ── Empty State (uses shared .empty-state) ─────────────────── */
+.empty-state {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 640px) {
+  .clients-grid,
+  .loading-grid {
+    grid-template-columns: 1fr;
+  }
+}

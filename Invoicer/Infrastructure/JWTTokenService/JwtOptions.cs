@@ -8,6 +8,6 @@
 
         public string Audience { get; set; } = "InvoicerClient";
 
-        public int ExpirationMinutes { get; set; } = 480;
+        public int ExpirationMinutes { get; set; } = 525600;
     }
 }

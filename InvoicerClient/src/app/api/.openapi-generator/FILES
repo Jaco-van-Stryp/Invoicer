@@ -56,8 +56,6 @@ model/monthlyIncomeItem.ts
 model/productInfo.ts
 model/recordPaymentCommand.ts
 model/recordPaymentResponse.ts
-model/registerCommand.ts
-model/registerResponse.ts
 model/sendInvoiceEmailRequest.ts
 model/updateClientCommand.ts
 model/updateCompanyDetailsCommand.ts

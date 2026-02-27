@@ -1,12 +1,8 @@
-import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { IconFieldModule } from 'primeng/iconfield';
-import { InputIconModule } from 'primeng/inputicon';
-import { InputTextModule } from 'primeng/inputtext';
-import { Table, TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { InvoiceService, GetAllInvoicesResponse, InvoiceStatus } from '../../../api';
@@ -21,11 +17,7 @@ import { ChangeDetectionStrategy } from '@angular/core';
   imports: [
     CurrencyPipe,
     DatePipe,
-    TableModule,
     ButtonModule,
-    IconFieldModule,
-    InputIconModule,
-    InputTextModule,
     ConfirmDialogModule,
     TagModule,
     TooltipModule,
@@ -48,13 +40,6 @@ export class InvoiceList implements OnInit {
   selectedInvoice = signal<GetAllInvoicesResponse | null>(null);
   paymentDialogVisible = signal(false);
   selectedInvoiceForPayment = signal<GetAllInvoicesResponse | null>(null);
-  viewMode = signal<'table' | 'cards'>('cards'); // Default to card view
-
-  dt = viewChild<Table>('dt');
-
-  toggleView() {
-    this.viewMode.update((mode) => (mode === 'table' ? 'cards' : 'table'));
-  }
 
   ngOnInit() {
     this.loadInvoices();
@@ -105,6 +90,8 @@ export class InvoiceList implements OnInit {
       message: `Are you sure you want to delete invoice "${invoice.invoiceNumber}"?`,
       header: 'Confirm Delete',
       icon: 'pi pi-exclamation-triangle',
+      acceptButtonProps: { severity: 'danger', label: 'Yes, Delete' },
+      rejectButtonProps: { severity: 'secondary', outlined: true, label: 'Cancel' },
       accept: () => {
         const companyId = this.companyStore.company()?.id;
         if (!companyId || !invoice.id) return;
@@ -128,11 +115,6 @@ export class InvoiceList implements OnInit {
         });
       },
     });
-  }
-
-  onFilter(event: Event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.dt()?.filterGlobal(value, 'contains');
   }
 
   sendEmail(invoice: GetAllInvoicesResponse) {
