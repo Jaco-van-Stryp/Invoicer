@@ -82,13 +82,21 @@
         />
       </div>
 
-      <div formArrayName="products" class="product-rows">
-        @for (productGroup of productsFormArray.controls; track $index) {
-          <div [formGroupName]="$index" class="product-row">
+      @if (productLines().length === 0) {
+        <p class="text-muted-color text-sm text-center py-4">
+          No products added. Click "Add Product" to begin.
+        </p>
+      }
+
+      <div class="product-rows">
+        @for (line of productLines(); track $index) {
+          <div class="product-row">
             <div class="product-row-select">
               <p-select
-                formControlName="productId"
                 [options]="products()"
+                [ngModel]="line.productId"
+                (ngModelChange)="updateLineProduct($index, $event)"
+                [ngModelOptions]="{ standalone: true }"
                 optionLabel="name"
                 optionValue="id"
                 placeholder="Select product"
@@ -100,7 +108,9 @@
             </div>
             <div class="product-row-qty">
               <p-inputNumber
-                formControlName="quantity"
+                [ngModel]="line.quantity"
+                (ngModelChange)="updateLineQuantity($index, $event)"
+                [ngModelOptions]="{ standalone: true }"
                 [min]="1"
                 [showButtons]="true"
                 buttonLayout="horizontal"
@@ -108,6 +118,9 @@
                 decrementButtonIcon="pi pi-minus"
                 styleClass="w-full"
               />
+            </div>
+            <div class="product-row-total">
+              {{ getLineTotal(line) | currency }}
             </div>
             <p-button
               type="button"
@@ -121,13 +134,14 @@
             />
           </div>
         }
-
-        @if (productsFormArray.length === 0) {
-          <p class="text-muted-color text-sm text-center py-4">
-            No products added. Click "Add Product" to begin.
-          </p>
-        }
       </div>
+
+      @if (productLines().length > 0) {
+        <div class="grand-total">
+          <span class="text-sm font-semibold text-muted-color">Grand Total</span>
+          <span class="grand-total-amount">{{ grandTotal() | currency }}</span>
+        </div>
+      }
     </div>
   </form>
 

@@ -34,17 +34,34 @@
 .product-card {
   display: flex;
   flex-direction: column;
-  background: var(--surface-card);
-  border: 1px solid var(--surface-border);
+  position: relative;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
   border-radius: 1rem;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.product-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--gradient);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
 .product-card:hover {
-  border-color: rgba(168, 85, 247, 0.3);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border-color: rgba(168, 85, 247, 0.35);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
   transform: translateY(-3px);
+}
+
+.product-card:hover::before {
+  opacity: 1;
 }
 
 /* ── Product Image ─────────────────────────────────────────── */
@@ -52,7 +69,7 @@
   width: 100%;
   aspect-ratio: 16 / 9;
   overflow: hidden;
-  background: var(--glass-bg);
+  background: rgba(0, 0, 0, 0.25);
   position: relative;
 }
 
@@ -128,7 +145,7 @@
   display: flex;
   gap: 0.25rem;
   padding: 0.75rem 1rem;
-  border-top: 1px solid var(--surface-border);
+  border-top: 1px solid var(--glass-border);
 }
 
 /* ── Empty State ───────────────────────────────────────────── */
