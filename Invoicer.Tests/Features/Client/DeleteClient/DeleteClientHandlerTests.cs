@@ -72,7 +72,8 @@ public class DeleteClientHandlerTests(DatabaseFixture db) : IntegrationTestBase(
         // Assert
         DbContext.ChangeTracker.Clear();
         var deleted = await DbContext.Clients.FindAsync(client.Id);
-        deleted.Should().BeNull("the client should have been removed from the database");
+        deleted.Should().NotBeNull("the client should still exist in the database");
+        deleted!.IsDeleted.Should().BeTrue("the client should be marked as deleted");
     }
 
     [Fact]
@@ -106,11 +107,13 @@ public class DeleteClientHandlerTests(DatabaseFixture db) : IntegrationTestBase(
         // Assert
         DbContext.ChangeTracker.Clear();
         var deleted = await DbContext.Clients.FindAsync(client1.Id);
-        deleted.Should().BeNull();
+        deleted.Should().NotBeNull("the client should still exist in the database");
+        deleted!.IsDeleted.Should().BeTrue("the client should be marked as deleted");
 
         var remaining = await DbContext.Clients.FindAsync(client2.Id);
         remaining.Should().NotBeNull();
         remaining!.Name.Should().Be("Survivor Client");
+        remaining.IsDeleted.Should().BeFalse("the second client should not be deleted");
     }
 
     [Fact]
