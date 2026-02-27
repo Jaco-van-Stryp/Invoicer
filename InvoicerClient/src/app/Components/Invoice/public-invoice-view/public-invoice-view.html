@@ -30,15 +30,32 @@
 
         <!-- Header: company branding + invoice meta -->
         <div class="invoice-header">
-          <div class="company-section">
-            @if (invoice()?.company?.logoUrl) {
-              <img
-                [src]="invoice()?.company?.logoUrl ?? ''"
-                alt="{{ invoice()?.company?.name }} logo"
-                class="company-logo"
-              />
-            }
-            <div class="company-name">{{ invoice()?.company?.name }}</div>
+          <!-- Top row: company name + INVOICE title -->
+          <div class="invoice-header-top">
+            <div class="invoice-header-left">
+              @if (invoice()?.company?.logoUrl) {
+                <img
+                  [src]="invoice()?.company?.logoUrl ?? ''"
+                  alt="{{ invoice()?.company?.name }} logo"
+                  class="company-logo"
+                />
+              }
+              <div class="company-name">{{ invoice()?.company?.name }}</div>
+            </div>
+            <div class="invoice-header-right">
+              <div class="invoice-label" aria-hidden="true">INVOICE</div>
+              <div
+                class="status-badge status-{{ invoice()?.status?.toLowerCase() }}"
+                role="status"
+                [attr.aria-label]="'Status: ' + invoice()?.status"
+              >
+                {{ invoice()?.status }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom row: company details + invoice meta -->
+          <div class="invoice-header-bottom">
             <div class="company-details" aria-label="Company contact details">
               @if (invoice()?.company?.address) {
                 <div class="company-detail-row">
@@ -59,18 +76,7 @@
                 </div>
               }
             </div>
-          </div>
-
-          <div class="invoice-meta" aria-label="Invoice details">
-            <div class="invoice-label" aria-hidden="true">INVOICE</div>
-            <div
-              class="status-badge status-{{ invoice()?.status?.toLowerCase() }}"
-              role="status"
-              [attr.aria-label]="'Status: ' + invoice()?.status"
-            >
-              {{ invoice()?.status }}
-            </div>
-            <dl class="meta-list">
+            <dl class="meta-list" aria-label="Invoice details">
               <dt>Invoice #</dt>
               <dd>{{ invoice()?.invoiceNumber }}</dd>
               <dt>Date</dt>
@@ -144,8 +150,17 @@
         <!-- Footer -->
         <footer class="invoice-footer">
           <div class="footer-message">Thank you for your business!</div>
-          <div class="footer-brand no-print">
-            Powered by <span class="gradient-text">Invoicer</span>
+          <div class="footer-right">
+            <!-- Screen: just the brand link -->
+            <div class="no-print footer-brand">
+              Powered by <a href="https://invoicer.co.nz" target="_blank" rel="noopener noreferrer" class="gradient-text">Invoicer</a>
+            </div>
+            <!-- Print: brand link + view online -->
+            <div class="print-only footer-brand">
+              Powered by <a href="https://invoicer.co.nz">Invoicer</a>
+              &nbsp;&middot;&nbsp;
+              <a [href]="printUrl()">[View Online]</a>
+            </div>
           </div>
         </footer>
       </div>

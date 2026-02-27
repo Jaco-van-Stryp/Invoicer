@@ -22,21 +22,22 @@ namespace Invoicer.Features.Auth.GetAccessToken
         )
         {
             var fakeResponse = new GetAccessTokenResponse(Guid.NewGuid());
+            var normalizedEmail = request.Email.Trim().ToLowerInvariant();
 
             var user = await _dbContext
                 .Users.Include(a => a.AuthTokens)
-                .FirstOrDefaultAsync(x => x.Email == request.Email, cancellationToken);
+                .FirstOrDefaultAsync(x => x.Email == normalizedEmail, cancellationToken);
 
             // Create user if not exists (unified login/register flow)
             if (user == null)
             {
-                var isValidEmail = await _emailValidationService.IsValidEmail(request.Email);
+                var isValidEmail = await _emailValidationService.IsValidEmail(normalizedEmail);
                 if (!isValidEmail)
                     return fakeResponse;
 
                 user = new User
                 {
-                    Email = request.Email,
+                    Email = normalizedEmail,
                     AuthTokens = new List<AuthToken>(),
                     Companies = new List<Domain.Entities.Company>(),
                     LoginAttempts = 0,
@@ -49,14 +50,18 @@ namespace Invoicer.Features.Auth.GetAccessToken
                     _dbContext.Users.Add(user);
                     await _dbContext.SaveChangesAsync(cancellationToken);
                 }
-                catch (DbUpdateException)
+                catch (DbUpdateException ex)
                 {
+                    // Only swallow unique-email constraint violations (PostgreSQL error code 23505)
+                    if (ex.InnerException is not Npgsql.PostgresException { SqlState: "23505" })
+                        throw;
+
                     _dbContext.Entry(user).State = EntityState.Detached;
                     user = await _dbContext
                         .Users.Include(a => a.AuthTokens)
-                        .FirstOrDefaultAsync(x => x.Email == request.Email, cancellationToken);
+                        .FirstOrDefaultAsync(x => x.Email == normalizedEmail, cancellationToken);
                     if (user == null)
-                        return fakeResponse;
+                        throw;
                 }
             }
 

@@ -31,11 +31,11 @@
   min-width: 0;
 }
 
-.product-row-qty :deep(.p-inputnumber) {
+.product-row-qty ::ng-deep .p-inputnumber {
   width: 100%;
 }
 
-.product-row-qty :deep(.p-inputnumber-input) {
+.product-row-qty ::ng-deep .p-inputnumber-input {
   text-align: center;
   width: 100%;
 }

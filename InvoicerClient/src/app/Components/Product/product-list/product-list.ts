@@ -58,7 +58,10 @@ export class ProductList implements OnInit {
 
   loadProducts() {
     const companyId = this.companyStore.company()?.id;
-    if (!companyId) return;
+    if (!companyId) {
+      this.loading.set(false);
+      return;
+    }
 
     this.loading.set(true);
     this.productService.getAllProducts(companyId).subscribe({

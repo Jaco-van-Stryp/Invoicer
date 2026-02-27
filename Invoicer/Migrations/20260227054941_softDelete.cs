@@ -17,11 +17,22 @@ namespace Invoicer.Migrations
                 nullable: false,
                 defaultValue: false
             );
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Clients_CompanyId_IsDeleted",
+                table: "Clients",
+                columns: new[] { "CompanyId", "IsDeleted" }
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropIndex(
+                name: "IX_Clients_CompanyId_IsDeleted",
+                table: "Clients"
+            );
+
             migrationBuilder.DropColumn(name: "IsDeleted", table: "Clients");
         }
     }

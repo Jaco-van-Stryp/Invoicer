@@ -58,7 +58,14 @@ export class PaymentList implements OnInit {
 
     this.invoiceService.getAllInvoices(companyId).subscribe({
       next: (r) => this.invoices.set(r),
-      error: () => {},
+      error: () => {
+        this.invoices.set([]);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to load invoices.',
+        });
+      },
     });
   }
 

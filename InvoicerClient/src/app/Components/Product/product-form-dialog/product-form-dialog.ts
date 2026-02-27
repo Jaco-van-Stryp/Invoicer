@@ -100,6 +100,7 @@ export class ProductFormDialog {
         });
       },
       error: () => {
+        this.uploadingImage.set(false);
         this.messageService.add({
           severity: 'error',
           summary: 'Upload Failed',
@@ -143,6 +144,7 @@ export class ProductFormDialog {
             this.saved.emit();
           },
           error: () => {
+            this.saving.set(false);
             this.messageService.add({
               severity: 'error',
               summary: 'Error',
@@ -171,6 +173,7 @@ export class ProductFormDialog {
             this.saved.emit();
           },
           error: () => {
+            this.saving.set(false);
             this.messageService.add({
               severity: 'error',
               summary: 'Error',

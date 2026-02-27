@@ -276,6 +276,12 @@
   }
 }
 
+/* ---------- Skeleton Animation ---------- */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
 /* ---------- Gradient Button ---------- */
 .btn-gradient {
   display: inline-flex;

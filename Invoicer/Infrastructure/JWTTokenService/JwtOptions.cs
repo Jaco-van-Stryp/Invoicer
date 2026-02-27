@@ -8,6 +8,6 @@
 
         public string Audience { get; set; } = "InvoicerClient";
 
-        public int ExpirationMinutes { get; set; } = 525600;
+        public int ExpirationMinutes { get; set; } = 480; // 8 hours; override via Jwt:ExpirationMinutes in appsettings
     }
 }

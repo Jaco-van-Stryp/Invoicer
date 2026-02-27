@@ -103,10 +103,26 @@ export class EstimateFormDialog {
 
     this.clientService.getAllClients(companyId).subscribe({
       next: (r) => this.clients.set(r),
+      error: () => {
+        this.clients.set([]);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to load clients.',
+        });
+      },
     });
 
     this.productService.getAllProducts(companyId).subscribe({
       next: (r) => this.products.set(r),
+      error: () => {
+        this.products.set([]);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to load products.',
+        });
+      },
     });
   }
 
@@ -182,7 +198,17 @@ export class EstimateFormDialog {
     this.loading.set(true);
 
     const formValue = this.form.value;
-    const products = this.productLines().map((p) => ({
+    const validLines = this.productLines().filter((p) => !!p.productId);
+    if (validLines.length < this.productLines().length) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Incomplete Products',
+        detail: 'Please select a product for every row, or remove empty rows.',
+      });
+      this.loading.set(false);
+      return;
+    }
+    const products = validLines.map((p) => ({
       productId: p.productId,
       quantity: p.quantity,
     }));

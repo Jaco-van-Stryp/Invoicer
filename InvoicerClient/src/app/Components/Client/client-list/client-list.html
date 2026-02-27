@@ -82,7 +82,7 @@
             size="small"
             (click)="editClient(client)"
             pTooltip="Edit client"
-            aria-label="Edit client"
+            [attr.aria-label]="'Edit ' + client.name"
           />
           <p-button
             label="Delete"
@@ -92,7 +92,7 @@
             size="small"
             (click)="deleteClient(client)"
             pTooltip="Delete client"
-            aria-label="Delete client"
+            [attr.aria-label]="'Delete ' + client.name"
           />
         </div>
       </div>

@@ -145,7 +145,10 @@ export class Login implements OnInit, OnDestroy {
 
   backToEmail() {
     this.step.set('email');
-    if (this.resendInterval !== null) clearInterval(this.resendInterval);
+    if (this.resendInterval !== null) {
+      clearInterval(this.resendInterval);
+      this.resendInterval = null;
+    }
     this.resendTimer.set(0);
   }
 

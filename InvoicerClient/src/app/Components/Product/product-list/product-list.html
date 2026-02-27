@@ -29,7 +29,8 @@
 
 <!-- Loading State -->
 @if (loading()) {
-  <div class="products-grid">
+  <p role="status" aria-live="polite" class="sr-only">Loading products…</p>
+  <div class="products-grid" aria-busy="true">
     @for (i of [1, 2, 3, 4, 5, 6]; track i) {
       <div class="product-card-skeleton" aria-hidden="true"></div>
     }

@@ -18,11 +18,6 @@
   animation: skeleton-pulse 1.5s ease-in-out infinite;
 }
 
-@keyframes skeleton-pulse {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
-}
-
 /* ── Products Grid ─────────────────────────────────────────── */
 .products-grid {
   display: grid;
