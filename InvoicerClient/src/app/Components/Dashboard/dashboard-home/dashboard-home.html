@@ -18,19 +18,19 @@
       @if (company()?.email) {
         <span class="company-detail-item">
           <i class="pi pi-envelope" aria-hidden="true"></i>
-          {{ company()!.email }}
+          {{ company()?.email }}
         </span>
       }
       @if (company()?.phoneNumber) {
         <span class="company-detail-item">
           <i class="pi pi-phone" aria-hidden="true"></i>
-          {{ company()!.phoneNumber }}
+          {{ company()?.phoneNumber }}
         </span>
       }
       @if (company()?.address) {
         <span class="company-detail-item">
           <i class="pi pi-map-marker" aria-hidden="true"></i>
-          {{ company()!.address }}
+          {{ company()?.address }}
         </span>
       }
     </div>
@@ -38,7 +38,7 @@
 
   @if (company()?.logoUrl) {
     <div class="hero-logo">
-      <img [src]="company()!.logoUrl" alt="Company logo" class="company-logo" />
+      <img [src]="company()?.logoUrl" alt="Company logo" class="company-logo" />
     </div>
   }
 </div>

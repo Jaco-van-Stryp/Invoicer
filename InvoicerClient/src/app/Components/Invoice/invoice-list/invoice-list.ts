@@ -1,6 +1,6 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TagModule } from 'primeng/tag';
@@ -9,7 +9,6 @@ import { InvoiceService, GetAllInvoicesResponse, InvoiceStatus } from '../../../
 import { CompanyStore } from '../../../Services/company-store';
 import { InvoiceFormDialog } from '../invoice-form-dialog/invoice-form-dialog';
 import { RecordPaymentDialog } from '../record-payment-dialog/record-payment-dialog';
-import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

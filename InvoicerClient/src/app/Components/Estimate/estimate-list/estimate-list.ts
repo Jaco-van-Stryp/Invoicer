@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -8,7 +8,6 @@ import { TooltipModule } from 'primeng/tooltip';
 import { EstimateService, GetAllEstimatesResponse, EstimateStatus } from '../../../api';
 import { CompanyStore } from '../../../Services/company-store';
 import { EstimateFormDialog } from '../estimate-form-dialog/estimate-form-dialog';
-import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,

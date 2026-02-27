@@ -9,8 +9,9 @@ import {
   GetAllProductsResponse,
   GetAllInvoicesResponse,
   GetDashboardStatsResponse,
-  ProductService,
   InvoiceService,
+  InvoiceStatus,
+  ProductService,
 } from '../../../api';
 import { CompanyStore } from '../../../Services/company-store';
 import { AuthStore } from '../../../Services/auth-store';
@@ -48,7 +49,7 @@ export class DashboardHome implements OnInit {
   });
 
   pendingInvoices = computed(() =>
-    this.invoices().filter((inv) => inv.status !== 'Paid').length,
+    this.invoices().filter((inv) => inv.status !== InvoiceStatus.Paid).length,
   );
 
   userInitials = computed(() => {
