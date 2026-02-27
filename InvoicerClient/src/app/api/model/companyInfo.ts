@@ -14,4 +14,5 @@ export interface CompanyInfo {
   phone?: string | null;
   email?: string | null;
   logoUrl?: string | null;
+  paymentDetails?: string | null;
 }

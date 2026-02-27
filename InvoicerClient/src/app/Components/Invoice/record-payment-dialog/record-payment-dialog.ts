@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, model, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, model, output, signal } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
@@ -9,7 +9,6 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { GetAllInvoicesResponse, InvoicePaymentItem, PaymentService } from '../../../api';
 import { CompanyStore } from '../../../Services/company-store';
-import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -51,6 +50,16 @@ export class RecordPaymentDialog {
     return (inv.totalDue ?? 0) - (inv.totalPaid ?? 0);
   });
 
+  constructor() {
+    effect(() => {
+      if (!this.visible()) {
+        this.amount.set(null);
+        this.paidOn.set(new Date());
+        this.notes.set('');
+      }
+    });
+  }
+
   save() {
     const inv = this.invoice();
     const companyId = this.companyStore.company()?.id;
@@ -74,9 +83,6 @@ export class RecordPaymentDialog {
             summary: 'Payment Recorded',
             detail: 'Payment has been recorded successfully.',
           });
-          this.amount.set(null);
-          this.paidOn.set(new Date());
-          this.notes.set('');
           this.saved.emit();
           this.visible.set(false);
         },
@@ -120,9 +126,6 @@ export class RecordPaymentDialog {
   }
 
   cancel() {
-    this.amount.set(null);
-    this.paidOn.set(new Date());
-    this.notes.set('');
     this.visible.set(false);
   }
 }

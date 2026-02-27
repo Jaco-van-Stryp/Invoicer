@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   input,
   model,
@@ -73,6 +74,14 @@ export class PaymentFormDialog {
     () =>
       this.selectedInvoiceId() !== null && (this.amount() ?? 0) > 0 && this.paidOn() !== null,
   );
+
+  constructor() {
+    effect(() => {
+      if (!this.visible()) {
+        this.reset();
+      }
+    });
+  }
 
   save() {
     const inv = this.selectedInvoice();

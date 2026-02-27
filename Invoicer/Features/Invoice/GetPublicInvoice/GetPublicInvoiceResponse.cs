@@ -18,7 +18,8 @@ public record struct CompanyInfo(
     string? Address,
     string? Phone,
     string? Email,
-    string? LogoUrl
+    string? LogoUrl,
+    string? PaymentDetails
 );
 
 public record struct ClientInfo(string Name, string? Email, string? Phone, string? Address);

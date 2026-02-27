@@ -9,6 +9,80 @@
   </button>
 </div>
 
+<!-- Filter Bar -->
+@if (!loading()) {
+  <div class="filter-bar" role="search" aria-label="Filter invoices">
+    <div class="filter-search">
+      <i class="pi pi-search filter-search-icon" aria-hidden="true"></i>
+      <input
+        type="search"
+        class="filter-search-input"
+        placeholder="Search by client or number..."
+        [value]="searchText()"
+        (input)="searchText.set($any($event.target).value)"
+        aria-label="Search invoices"
+      />
+    </div>
+
+    <div class="filter-divider" aria-hidden="true"></div>
+
+    <div class="filter-group" role="group" aria-label="Filter by status">
+      @for (opt of statusOptions; track opt.value) {
+        <button
+          type="button"
+          class="filter-chip"
+          [class.active]="selectedStatuses().includes(opt.value)"
+          (click)="toggleStatus(opt.value)"
+          [attr.aria-pressed]="selectedStatuses().includes(opt.value)"
+        >
+          {{ opt.label }}
+        </button>
+      }
+    </div>
+
+    <div class="filter-divider" aria-hidden="true"></div>
+
+    <div class="filter-selects">
+      <p-select
+        [options]="availableYears()"
+        [ngModel]="filterYear()"
+        (ngModelChange)="onYearChange($event)"
+        placeholder="Year"
+        [showClear]="true"
+        aria-label="Filter by year"
+      />
+      <p-select
+        [options]="availableMonths()"
+        [ngModel]="filterMonth()"
+        (ngModelChange)="filterMonth.set($event)"
+        placeholder="Month"
+        [showClear]="true"
+        aria-label="Filter by month"
+      />
+    </div>
+
+    <div class="filter-spacer"></div>
+
+    @if (hasActiveFilters()) {
+      <button
+        type="button"
+        class="filter-clear"
+        (click)="clearFilters()"
+        aria-label="Clear all filters"
+      >
+        <i class="pi pi-times" aria-hidden="true"></i>
+        Clear
+      </button>
+    }
+  </div>
+
+  @if (hasActiveFilters()) {
+    <p class="filter-results">
+      Showing {{ filteredInvoices().length }} of {{ invoices().length }} invoices
+    </p>
+  }
+}
+
 <!-- Invoice Cards -->
 @if (loading()) {
   <div class="cards-grid">
@@ -18,7 +92,7 @@
   </div>
 } @else {
   <div class="cards-grid">
-    @for (invoice of invoices(); track invoice.id) {
+    @for (invoice of filteredInvoices(); track invoice.id) {
       <div class="entity-card">
         <div class="entity-card-header">
           <span class="entity-card-number">{{ invoice.invoiceNumber }}</span>
@@ -101,8 +175,17 @@
       </div>
     } @empty {
       <div class="empty-state">
-        <i class="pi pi-file-o" aria-hidden="true"></i>
-        <p>No invoices yet. Click "New Invoice" to create one.</p>
+        @if (hasActiveFilters()) {
+          <i class="pi pi-filter-slash" aria-hidden="true"></i>
+          <p>No invoices match your filters.</p>
+          <button type="button" class="filter-clear" (click)="clearFilters()" style="margin-top: 0.75rem">
+            <i class="pi pi-times" aria-hidden="true"></i>
+            Clear filters
+          </button>
+        } @else {
+          <i class="pi pi-file-o" aria-hidden="true"></i>
+          <p>No invoices yet. Click "New Invoice" to create one.</p>
+        }
       </div>
     }
   </div>

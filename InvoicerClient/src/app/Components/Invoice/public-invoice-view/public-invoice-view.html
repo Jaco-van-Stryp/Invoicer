@@ -139,6 +139,14 @@
           </div>
         </div>
 
+        <!-- Payment Details -->
+        @if (invoice()?.company?.paymentDetails) {
+          <section class="payment-details-section" aria-label="Payment details">
+            <div class="section-label">Payment Details</div>
+            <p class="payment-details-text">{{ invoice()!.company!.paymentDetails }}</p>
+          </section>
+        }
+
         <!-- Notes -->
         @if (invoice()?.notes) {
           <section class="notes-section" aria-label="Invoice notes">
