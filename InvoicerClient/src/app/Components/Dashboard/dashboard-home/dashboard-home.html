@@ -1,98 +1,135 @@
-<div class="home-header">
-  <h1 class="text-3xl font-bold m-0">Welcome back</h1>
-  <p class="text-muted-color mt-2 mb-0">Here's an overview of {{ company()?.name }}</p>
+<!-- Hero Section -->
+<div class="hero-section">
+  <div class="hero-left">
+    <div class="hero-greeting">
+      <div class="user-avatar" aria-hidden="true">{{ userInitials() }}</div>
+      <div class="hero-text">
+        <h1 class="hero-title">
+          Welcome back, <span class="gradient-text">{{ company()?.name }}</span>
+        </h1>
+      </div>
+    </div>
+
+    <div class="company-details">
+      @if (company()?.email) {
+        <span class="company-detail-item">
+          <i class="pi pi-envelope" aria-hidden="true"></i>
+          {{ company()?.email }}
+        </span>
+      }
+      @if (company()?.phoneNumber) {
+        <span class="company-detail-item">
+          <i class="pi pi-phone" aria-hidden="true"></i>
+          {{ company()?.phoneNumber }}
+        </span>
+      }
+      @if (company()?.address) {
+        <span class="company-detail-item">
+          <i class="pi pi-map-marker" aria-hidden="true"></i>
+          {{ company()?.address }}
+        </span>
+      }
+    </div>
+  </div>
+
+  @if (company()?.logoUrl) {
+    <div class="hero-logo">
+      <img [src]="company()?.logoUrl" [attr.alt]="company()?.name ? company()!.name + ' logo' : ''" class="company-logo" />
+    </div>
+  }
 </div>
 
-<!-- Stats cards -->
-<div class="stats-grid">
-  <div class="stat-card">
-    <div class="stat-icon clients-icon" aria-hidden="true">
+<!-- Overview Cards -->
+<div class="overview-grid">
+  <!-- Clients card -->
+  <a class="overview-card" routerLink="/dashboard/clients" aria-label="Go to clients">
+    <div class="overview-card-icon clients-icon" aria-hidden="true">
       <i class="pi pi-users"></i>
     </div>
-    <div class="stat-info">
-      <span class="stat-value">{{ clientCount() }}</span>
-      <span class="stat-label">Clients</span>
+    <div class="overview-card-body">
+      <div class="overview-card-count">{{ clientCount() }}</div>
+      <div class="overview-card-label">Clients</div>
     </div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-icon products-icon" aria-hidden="true">
+    <div class="overview-card-footer">
+      <span class="overview-card-action">
+        <i class="pi pi-plus" aria-hidden="true"></i>
+        New Client
+      </span>
+      <i class="pi pi-arrow-right overview-arrow" aria-hidden="true"></i>
+    </div>
+  </a>
+
+  <!-- Products card -->
+  <a class="overview-card" routerLink="/dashboard/products" aria-label="Go to products">
+    <div class="overview-card-icon products-icon" aria-hidden="true">
       <i class="pi pi-box"></i>
     </div>
-    <div class="stat-info">
-      <span class="stat-value">{{ productCount() }}</span>
-      <span class="stat-label">Products</span>
+    <div class="overview-card-body">
+      <div class="overview-card-count">{{ productCount() }}</div>
+      <div class="overview-card-label">Products</div>
     </div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-icon invoices-icon" aria-hidden="true">
+    <div class="overview-card-footer">
+      <span class="overview-card-action">
+        <i class="pi pi-plus" aria-hidden="true"></i>
+        New Product
+      </span>
+      <i class="pi pi-arrow-right overview-arrow" aria-hidden="true"></i>
+    </div>
+  </a>
+
+  <!-- Invoices card -->
+  <a class="overview-card" routerLink="/dashboard/invoices" aria-label="Go to invoices">
+    <div class="overview-card-icon invoices-icon" aria-hidden="true">
       <i class="pi pi-file"></i>
     </div>
-    <div class="stat-info">
-      <span class="stat-value">{{ invoiceCount() }}</span>
-      <span class="stat-label">Invoices</span>
+    <div class="overview-card-body">
+      <div class="overview-card-count">{{ invoiceCount() }}</div>
+      <div class="overview-card-label">Invoices</div>
     </div>
+    <div class="overview-card-footer">
+      <span class="overview-card-action">
+        <i class="pi pi-plus" aria-hidden="true"></i>
+        New Invoice
+      </span>
+      <i class="pi pi-arrow-right overview-arrow" aria-hidden="true"></i>
+    </div>
+  </a>
+</div>
+
+<!-- Summary Stats -->
+<div class="summary-row">
+  <div class="summary-stat">
+    <span class="summary-label">Total Revenue (YTD)</span>
+    <span class="summary-value gradient-text">{{ totalRevenue() | currency }}</span>
+  </div>
+  <div class="summary-divider" aria-hidden="true"></div>
+  <div class="summary-stat">
+    <span class="summary-label">Pending Invoices</span>
+    <span class="summary-value" [class.warn]="pendingInvoices() > 0">
+      {{ pendingInvoices() }}
+    </span>
+  </div>
+  <div class="summary-divider" aria-hidden="true"></div>
+  <div class="summary-stat">
+    <span class="summary-label">Tax Number</span>
+    <span class="summary-value">{{ company()?.taxNumber || '—' }}</span>
   </div>
 </div>
 
 <!-- Income chart -->
-@if (dashboardStats()) {
-  <div class="chart-section">
-    <div class="chart-card chart-card--full">
-      <h3 class="chart-title">Monthly Income</h3>
-      @if (monthlyChartData()) {
-        <div class="chart-container">
-          <p-chart type="line" [data]="monthlyChartData()" [options]="lineChartOptions" />
-        </div>
-      } @else {
-        <p class="chart-empty">No payment data yet.</p>
-      }
+<div class="chart-card">
+  <div class="chart-header">
+    <h2 class="chart-title">Monthly Revenue</h2>
+    <p class="chart-subtitle">Last 12 months</p>
+  </div>
+  @if (monthlyChartData()) {
+    <div class="chart-container">
+      <p-chart type="line" [data]="monthlyChartData()" [options]="lineChartOptions" />
     </div>
-  </div>
-}
-
-<!-- Company info card -->
-<div class="info-card">
-  <h2 class="text-xl font-semibold mb-4">Company Details</h2>
-  <div class="flex flex-col gap-3">
-    @if (company()?.email) {
-      <div class="flex items-center gap-2">
-        <i class="pi pi-envelope text-muted-color" aria-hidden="true"></i>
-        <span>{{ company()!.email }}</span>
-      </div>
-    }
-    @if (company()?.phoneNumber) {
-      <div class="flex items-center gap-2">
-        <i class="pi pi-phone text-muted-color" aria-hidden="true"></i>
-        <span>{{ company()!.phoneNumber }}</span>
-      </div>
-    }
-    @if (company()?.address) {
-      <div class="flex items-center gap-2">
-        <i class="pi pi-map-marker text-muted-color" aria-hidden="true"></i>
-        <span>{{ company()!.address }}</span>
-      </div>
-    }
-    @if (company()?.taxNumber) {
-      <div class="flex items-center gap-2">
-        <i class="pi pi-hashtag text-muted-color" aria-hidden="true"></i>
-        <span>{{ company()!.taxNumber }}</span>
-      </div>
-    }
-  </div>
-</div>
-
-<!-- Quick actions -->
-<div class="actions-grid">
-  <button class="action-card" routerLink="/dashboard/clients">
-    <i class="pi pi-user-plus" aria-hidden="true"></i>
-    <span>New Client</span>
-  </button>
-  <button class="action-card" routerLink="/dashboard/products">
-    <i class="pi pi-plus-circle" aria-hidden="true"></i>
-    <span>New Product</span>
-  </button>
-  <button class="action-card" routerLink="/dashboard/invoices">
-    <i class="pi pi-file-plus" aria-hidden="true"></i>
-    <span>New Invoice</span>
-  </button>
+  } @else {
+    <div class="chart-empty">
+      <i class="pi pi-chart-line" aria-hidden="true"></i>
+      <p>No revenue data yet. Create and record payments on invoices to see your income chart.</p>
+    </div>
+  }
 </div>

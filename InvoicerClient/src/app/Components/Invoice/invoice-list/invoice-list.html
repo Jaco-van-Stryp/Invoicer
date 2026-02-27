@@ -1,29 +1,106 @@
 <div class="page-header">
   <div>
     <h1 class="text-3xl font-bold m-0">Invoices</h1>
-    <p class="text-muted-color mt-1 mb-0">Manage your invoices</p>
+    <p class="text-muted-color mt-1 mb-0">Manage and track your invoices</p>
   </div>
-  <div class="flex items-center gap-2">
-    <button class="view-toggle" (click)="toggleView()" aria-label="Toggle view">
-      <i [class]="viewMode() === 'cards' ? 'pi pi-table' : 'pi pi-th-large'" aria-hidden="true"></i>
-    </button>
-    <button class="btn-gradient" (click)="openNew()">
-      <i class="pi pi-plus" aria-hidden="true"></i>
-      New Invoice
-    </button>
-  </div>
+  <button class="btn-gradient" (click)="openNew()">
+    <i class="pi pi-plus" aria-hidden="true"></i>
+    New Invoice
+  </button>
 </div>
 
-<!-- Card View -->
-@if (viewMode() === 'cards') {
+<!-- Filter Bar -->
+@if (!loading()) {
+  <div class="filter-bar" role="search" aria-label="Filter invoices">
+    <div class="filter-search">
+      <i class="pi pi-search filter-search-icon" aria-hidden="true"></i>
+      <input
+        type="search"
+        class="filter-search-input"
+        placeholder="Search by client or number..."
+        [value]="searchText()"
+        (input)="searchText.set($any($event.target).value)"
+        aria-label="Search invoices"
+      />
+    </div>
+
+    <div class="filter-divider" aria-hidden="true"></div>
+
+    <div class="filter-group" role="group" aria-label="Filter by status">
+      @for (opt of statusOptions; track opt.value) {
+        <button
+          type="button"
+          class="filter-chip"
+          [class.active]="selectedStatuses().includes(opt.value)"
+          (click)="toggleStatus(opt.value)"
+          [attr.aria-pressed]="selectedStatuses().includes(opt.value)"
+        >
+          {{ opt.label }}
+        </button>
+      }
+    </div>
+
+    <div class="filter-divider" aria-hidden="true"></div>
+
+    <div class="filter-selects">
+      <p-select
+        [options]="availableYears()"
+        [ngModel]="filterYear()"
+        (ngModelChange)="onYearChange($event)"
+        placeholder="Year"
+        [showClear]="true"
+        aria-label="Filter by year"
+      />
+      <p-select
+        [options]="availableMonths()"
+        [ngModel]="filterMonth()"
+        (ngModelChange)="filterMonth.set($event)"
+        placeholder="Month"
+        [showClear]="true"
+        aria-label="Filter by month"
+      />
+    </div>
+
+    <div class="filter-spacer"></div>
+
+    @if (hasActiveFilters()) {
+      <button
+        type="button"
+        class="filter-clear"
+        (click)="clearFilters()"
+        aria-label="Clear all filters"
+      >
+        <i class="pi pi-times" aria-hidden="true"></i>
+        Clear
+      </button>
+    }
+  </div>
+
+  @if (hasActiveFilters()) {
+    <p class="filter-results">
+      Showing {{ filteredInvoices().length }} of {{ invoices().length }} invoices
+    </p>
+  }
+}
+
+<!-- Invoice Cards -->
+@if (loading()) {
   <div class="cards-grid">
-    @for (invoice of invoices(); track invoice.id) {
+    @for (i of [1, 2, 3, 4]; track i) {
+      <div class="invoice-card-skeleton" aria-hidden="true"></div>
+    }
+  </div>
+} @else {
+  <div class="cards-grid">
+    @for (invoice of filteredInvoices(); track invoice.id) {
       <div class="entity-card">
         <div class="entity-card-header">
-          <div class="entity-card-number">{{ invoice.invoiceNumber }}</div>
+          <span class="entity-card-number">{{ invoice.invoiceNumber }}</span>
           <p-tag [value]="invoice.status || 'Unpaid'" [severity]="statusSeverity(invoice.status)" />
         </div>
+
         <div class="entity-card-title">{{ invoice.clientName }}</div>
+
         <div class="entity-card-dates">
           <div class="date-item">
             <span class="date-label">Issued</span>
@@ -34,7 +111,8 @@
             <span class="date-value">{{ invoice.invoiceDue | date: 'MMM d, y' }}</span>
           </div>
         </div>
-        <div class="entity-card-amounts">
+
+        <div class="invoice-amounts">
           <div class="amount-item">
             <span class="amount-label">Total</span>
             <span class="amount-value">{{ invoice.totalDue ?? 0 | currency }}</span>
@@ -43,13 +121,23 @@
             <span class="amount-label">Paid</span>
             <span class="amount-value paid">{{ invoice.totalPaid ?? 0 | currency }}</span>
           </div>
+          @if ((invoice.totalDue ?? 0) - (invoice.totalPaid ?? 0) > 0) {
+            <div class="amount-item">
+              <span class="amount-label">Balance</span>
+              <span class="amount-value balance">
+                {{ ((invoice.totalDue ?? 0) - (invoice.totalPaid ?? 0)) | currency }}
+              </span>
+            </div>
+          }
         </div>
+
         <div class="entity-card-actions">
           <p-button
             icon="pi pi-envelope"
             [rounded]="true"
             [outlined]="true"
             severity="info"
+            size="small"
             (click)="sendEmail(invoice)"
             pTooltip="Email Invoice"
             aria-label="Email invoice"
@@ -59,6 +147,7 @@
             [rounded]="true"
             [outlined]="true"
             severity="success"
+            size="small"
             (click)="openPaymentDialog(invoice)"
             pTooltip="Record Payment"
             aria-label="Record payment"
@@ -67,6 +156,7 @@
             icon="pi pi-pencil"
             [rounded]="true"
             [outlined]="true"
+            size="small"
             (click)="editInvoice(invoice)"
             pTooltip="Edit"
             aria-label="Edit invoice"
@@ -76,6 +166,7 @@
             [rounded]="true"
             [outlined]="true"
             severity="danger"
+            size="small"
             (click)="deleteInvoice(invoice)"
             pTooltip="Delete"
             aria-label="Delete invoice"
@@ -84,113 +175,19 @@
       </div>
     } @empty {
       <div class="empty-state">
-        <i class="pi pi-file-o" aria-hidden="true"></i>
-        <p>No invoices found. Click "New Invoice" to create one.</p>
+        @if (hasActiveFilters()) {
+          <i class="pi pi-filter-slash" aria-hidden="true"></i>
+          <p>No invoices match your filters.</p>
+          <button type="button" class="filter-clear" (click)="clearFilters()" style="margin-top: 0.75rem">
+            <i class="pi pi-times" aria-hidden="true"></i>
+            Clear filters
+          </button>
+        } @else {
+          <i class="pi pi-file-o" aria-hidden="true"></i>
+          <p>No invoices yet. Click "New Invoice" to create one.</p>
+        }
       </div>
     }
-  </div>
-} @else {
-  <!-- Table View -->
-  <div class="table-card">
-    <div class="table-toolbar">
-      <p-iconfield>
-        <p-inputicon styleClass="pi pi-search" />
-        <input
-          pInputText
-          type="text"
-          placeholder="Search invoices..."
-          (input)="onFilter($event)"
-          aria-label="Search invoices"
-        />
-      </p-iconfield>
-    </div>
-
-    <p-table
-      #dt
-      [value]="invoices()"
-      [loading]="loading()"
-      [paginator]="true"
-      [rows]="10"
-      [rowsPerPageOptions]="[5, 10, 25]"
-      [globalFilterFields]="['invoiceNumber', 'clientName']"
-      [scrollable]="true"
-      dataKey="id"
-    >
-      <ng-template #header>
-        <tr>
-          <th pSortableColumn="invoiceNumber">Invoice # <p-sortIcon field="invoiceNumber" /></th>
-          <th pSortableColumn="clientName">Client <p-sortIcon field="clientName" /></th>
-          <th pSortableColumn="invoiceDate">Date <p-sortIcon field="invoiceDate" /></th>
-          <th pSortableColumn="invoiceDue">Due Date <p-sortIcon field="invoiceDue" /></th>
-          <th>Status</th>
-          <th>Total</th>
-          <th>Paid</th>
-          <th style="width: 12rem">Actions</th>
-        </tr>
-      </ng-template>
-      <ng-template #body let-invoice>
-        <tr>
-          <td>{{ invoice.invoiceNumber }}</td>
-          <td>{{ invoice.clientName }}</td>
-          <td>{{ invoice.invoiceDate | date: 'mediumDate' }}</td>
-          <td>{{ invoice.invoiceDue | date: 'mediumDate' }}</td>
-          <td>
-            <p-tag
-              [value]="invoice.status || 'Unpaid'"
-              [severity]="statusSeverity(invoice.status)"
-            />
-          </td>
-          <td>{{ invoice.totalDue ?? 0 | currency }}</td>
-          <td>{{ invoice.totalPaid ?? 0 | currency }}</td>
-          <td>
-            <div class="flex gap-2">
-              <p-button
-                icon="pi pi-envelope"
-                [rounded]="true"
-                [text]="true"
-                severity="info"
-                (click)="sendEmail(invoice)"
-                pTooltip="Email Invoice"
-                aria-label="Email invoice"
-              />
-              <p-button
-                icon="pi pi-dollar"
-                [rounded]="true"
-                [text]="true"
-                severity="success"
-                (click)="openPaymentDialog(invoice)"
-                pTooltip="Record Payment"
-                aria-label="Record payment"
-              />
-              <p-button
-                icon="pi pi-pencil"
-                [rounded]="true"
-                [text]="true"
-                (click)="editInvoice(invoice)"
-                pTooltip="Edit"
-                aria-label="Edit invoice"
-              />
-              <p-button
-                icon="pi pi-trash"
-                [rounded]="true"
-                [text]="true"
-                severity="danger"
-                (click)="deleteInvoice(invoice)"
-                pTooltip="Delete"
-                aria-label="Delete invoice"
-              />
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-      <ng-template #emptymessage>
-        <tr>
-          <td colspan="8" class="text-center py-6 text-muted-color">
-            No invoices found. Click "New Invoice" to create one.
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
   </div>
 }
 

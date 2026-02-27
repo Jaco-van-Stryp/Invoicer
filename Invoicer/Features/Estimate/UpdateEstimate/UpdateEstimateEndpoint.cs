@@ -4,7 +4,9 @@ namespace Invoicer.Features.Estimate.UpdateEstimate
 {
     public static class UpdateEstimateEndpoint
     {
-        public static IEndpointRouteBuilder MapUpdateEstimateEndpoint(this IEndpointRouteBuilder app)
+        public static IEndpointRouteBuilder MapUpdateEstimateEndpoint(
+            this IEndpointRouteBuilder app
+        )
         {
             app.MapPatch(
                     "update-estimate",

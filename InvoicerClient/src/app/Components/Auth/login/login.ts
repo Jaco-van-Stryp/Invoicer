@@ -1,13 +1,13 @@
-import { Component, computed, inject, OnDestroy, signal } from '@angular/core';
+import { Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { AbstractControl, FormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputOtpModule } from 'primeng/inputotp';
 import { InputTextModule } from 'primeng/inputtext';
-import { TooltipModule } from 'primeng/tooltip'; // Import TooltipModule
+import { TooltipModule } from 'primeng/tooltip';
 import { AuthService, GetAccessTokenQuery, LoginResponse } from '../../../api';
 import { AuthStore } from '../../../Services/auth-store';
 import { Copyright } from '../../General/copyright/copyright';
@@ -18,7 +18,6 @@ import { ChangeDetectionStrategy } from '@angular/core';
   selector: 'app-login',
   imports: [
     FormsModule,
-    RouterLink,
     ButtonModule,
     CardModule,
     FloatLabelModule,
@@ -31,7 +30,7 @@ import { ChangeDetectionStrategy } from '@angular/core';
   styleUrl: './login.css',
   templateUrl: './login.html',
 })
-export class Login implements OnDestroy {
+export class Login implements OnInit, OnDestroy {
   router = inject(Router);
   authService = inject(AuthService);
   authStore = inject(AuthStore);
@@ -44,7 +43,13 @@ export class Login implements OnDestroy {
   accessTokenKey = signal('');
 
   resendTimer = signal(0);
-  private resendInterval: any;
+  private resendInterval: ReturnType<typeof setInterval> | null = null;
+
+  ngOnInit() {
+    if (this.authStore.isLoggedIn()) {
+      this.router.navigate(['/dashboard']);
+    }
+  }
 
   isEmailValid = computed(() => {
     const email = this.email();
@@ -123,27 +128,31 @@ export class Login implements OnDestroy {
   }
 
   startResendTimer() {
-    if (this.resendInterval) {
+    if (this.resendInterval !== null) {
       clearInterval(this.resendInterval);
       this.resendInterval = null;
     }
     this.resendTimer.set(120);
-    this.resendInterval = setInterval(() => {
+    const intervalId = setInterval(() => {
       this.resendTimer.update((value) => value - 1);
       if (this.resendTimer() === 0) {
-        clearInterval(this.resendInterval);
+        clearInterval(intervalId);
         this.resendInterval = null;
       }
     }, 1000);
+    this.resendInterval = intervalId;
   }
 
   backToEmail() {
     this.step.set('email');
-    clearInterval(this.resendInterval);
+    if (this.resendInterval !== null) {
+      clearInterval(this.resendInterval);
+      this.resendInterval = null;
+    }
     this.resendTimer.set(0);
   }
 
   ngOnDestroy() {
-    clearInterval(this.resendInterval);
+    if (this.resendInterval !== null) clearInterval(this.resendInterval);
   }
 }

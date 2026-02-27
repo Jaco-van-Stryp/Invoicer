@@ -1,5 +1,7 @@
-import { Component, input, model, output, inject, signal, effect, computed } from '@angular/core';
-import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, input, model, output, inject, signal, effect, computed, ChangeDetectionStrategy } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { CurrencyPipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
@@ -19,13 +21,19 @@ import {
   UpdateEstimateCommand,
 } from '../../../api';
 import { CompanyStore } from '../../../Services/company-store';
-import { ChangeDetectionStrategy } from '@angular/core';
+
+interface ProductLine {
+  productId: string;
+  quantity: number;
+}
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-estimate-form-dialog',
   imports: [
     ReactiveFormsModule,
+    FormsModule,
+    CurrencyPipe,
     DialogModule,
     ButtonModule,
     InputTextModule,
@@ -50,9 +58,19 @@ export class EstimateFormDialog {
 
   clients = signal<GetAllClientsResponse[]>([]);
   products = signal<GetAllProductsResponse[]>([]);
+  productLines = signal<ProductLine[]>([]);
   loading = signal(false);
 
   isEditing = computed(() => !!this.estimate()?.id);
+
+  grandTotal = computed(() => {
+    const lines = this.productLines();
+    const prods = this.products();
+    return lines.reduce((sum, line) => {
+      const product = prods.find((p) => p.id === line.productId);
+      return sum + (product?.price ?? 0) * line.quantity;
+    }, 0);
+  });
 
   statusOptions = Object.values(EstimateStatus).map((status) => ({
     label: status,
@@ -68,7 +86,6 @@ export class EstimateFormDialog {
     ),
     status: new FormControl<EstimateStatus>(EstimateStatus.Draft, Validators.required),
     notes: new FormControl<string>(''),
-    products: new FormArray<FormGroup>([]),
   });
 
   constructor() {
@@ -80,27 +97,38 @@ export class EstimateFormDialog {
     });
   }
 
-  get productsFormArray() {
-    return this.form.get('products') as FormArray;
-  }
-
   loadData() {
     const companyId = this.companyStore.company()?.id;
     if (!companyId) return;
 
     this.clientService.getAllClients(companyId).subscribe({
       next: (r) => this.clients.set(r),
+      error: () => {
+        this.clients.set([]);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to load clients.',
+        });
+      },
     });
 
     this.productService.getAllProducts(companyId).subscribe({
       next: (r) => this.products.set(r),
+      error: () => {
+        this.products.set([]);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to load products.',
+        });
+      },
     });
   }
 
   resetForm() {
     const est = this.estimate();
-
-    this.productsFormArray.clear();
+    this.productLines.set([]);
 
     if (est) {
       this.form.patchValue({
@@ -111,14 +139,12 @@ export class EstimateFormDialog {
         notes: est.notes || '',
       });
 
-      est.products?.forEach((p) => {
-        this.productsFormArray.push(
-          new FormGroup({
-            productId: new FormControl(p.productId, Validators.required),
-            quantity: new FormControl(p.quantity, [Validators.required, Validators.min(1)]),
-          }),
-        );
-      });
+      this.productLines.set(
+        (est.products ?? []).map((p) => ({
+          productId: p.productId ?? '',
+          quantity: p.quantity ?? 1,
+        })),
+      );
     } else {
       this.form.reset({
         estimateDate: new Date(),
@@ -129,16 +155,28 @@ export class EstimateFormDialog {
   }
 
   addProduct() {
-    this.productsFormArray.push(
-      new FormGroup({
-        productId: new FormControl<string | null>(null, Validators.required),
-        quantity: new FormControl<number>(1, [Validators.required, Validators.min(1)]),
-      }),
-    );
+    this.productLines.update((lines) => [...lines, { productId: '', quantity: 1 }]);
   }
 
   removeProduct(index: number) {
-    this.productsFormArray.removeAt(index);
+    this.productLines.update((lines) => lines.filter((_, i) => i !== index));
+  }
+
+  updateLineProduct(index: number, productId: string) {
+    this.productLines.update((lines) =>
+      lines.map((l, i) => (i === index ? { ...l, productId } : l)),
+    );
+  }
+
+  updateLineQuantity(index: number, quantity: number) {
+    this.productLines.update((lines) =>
+      lines.map((l, i) => (i === index ? { ...l, quantity } : l)),
+    );
+  }
+
+  getLineTotal(line: ProductLine): number {
+    const product = this.products().find((p) => p.id === line.productId);
+    return (product?.price ?? 0) * line.quantity;
   }
 
   private formatDate(date: Date): string {
@@ -160,9 +198,19 @@ export class EstimateFormDialog {
     this.loading.set(true);
 
     const formValue = this.form.value;
-    const products = formValue.products!.map((p) => ({
-      productId: p.productId!,
-      quantity: p.quantity!,
+    const validLines = this.productLines().filter((p) => !!p.productId);
+    if (validLines.length < this.productLines().length) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Incomplete Products',
+        detail: 'Please select a product for every row, or remove empty rows.',
+      });
+      this.loading.set(false);
+      return;
+    }
+    const products = validLines.map((p) => ({
+      productId: p.productId,
+      quantity: p.quantity,
     }));
 
     if (this.isEditing()) {

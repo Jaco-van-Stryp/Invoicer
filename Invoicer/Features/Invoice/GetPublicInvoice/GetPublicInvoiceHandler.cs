@@ -42,7 +42,8 @@ public class GetPublicInvoiceHandler(AppDbContext _dbContext)
                 invoice.Company.Address,
                 invoice.Company.PhoneNumber,
                 invoice.Company.Email,
-                invoice.Company.LogoUrl
+                invoice.Company.LogoUrl,
+                invoice.Company.PaymentDetails
             ),
             new ClientInfo(
                 invoice.Client.Name,

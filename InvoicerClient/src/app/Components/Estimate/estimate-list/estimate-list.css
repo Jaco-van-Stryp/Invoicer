@@ -1,5 +1,10 @@
-/* Estimate-list-specific styles — shared list/card styles in src/styles/shared.css */
+/* Estimate list — shared styles in src/styles/shared.css */
 
-.amount-value {
-  font-size: 1.5rem;
+.estimate-card-skeleton {
+  height: 240px;
+  border-radius: 1rem;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
 }
+

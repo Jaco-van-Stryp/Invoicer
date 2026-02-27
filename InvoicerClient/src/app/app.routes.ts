@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { Landing } from './Components/Landing/landing/landing';
+import { authGuard } from './Guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -11,11 +12,6 @@ export const routes: Routes = [
     path: 'login',
     loadComponent: () => import('./Components/Auth/login/login').then((m) => m.Login),
     title: 'Sign In — Invoicer',
-  },
-  {
-    path: 'register',
-    loadComponent: () => import('./Components/Auth/register/register').then((m) => m.Register),
-    title: 'Register — Invoicer',
   },
   {
     path: 'create-company',
@@ -38,6 +34,7 @@ export const routes: Routes = [
         (m) => m.DashboardLayout,
       ),
     title: 'Dashboard — Invoicer',
+    canActivate: [authGuard],
     children: [
       {
         path: '',

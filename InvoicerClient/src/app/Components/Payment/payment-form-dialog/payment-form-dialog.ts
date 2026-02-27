@@ -1,5 +1,15 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input, model, output, signal } from '@angular/core';
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  model,
+  output,
+  signal,
+} from '@angular/core';
+import { CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
@@ -7,61 +17,74 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
-import { GetAllInvoicesResponse, InvoicePaymentItem, PaymentService } from '../../../api';
+import { SelectModule } from 'primeng/select';
+import { GetAllInvoicesResponse, PaymentService } from '../../../api';
 import { CompanyStore } from '../../../Services/company-store';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'app-record-payment-dialog',
+  selector: 'app-payment-form-dialog',
   imports: [
     CurrencyPipe,
-    DatePipe,
     FormsModule,
     DialogModule,
     ButtonModule,
     InputNumberModule,
     DatePickerModule,
     InputTextModule,
+    SelectModule,
   ],
   host: { class: 'block' },
-  styleUrl: './record-payment-dialog.css',
-  templateUrl: './record-payment-dialog.html',
+  styleUrl: './payment-form-dialog.css',
+  templateUrl: './payment-form-dialog.html',
 })
-export class RecordPaymentDialog {
+export class PaymentFormDialog {
   paymentService = inject(PaymentService);
   companyStore = inject(CompanyStore);
   messageService = inject(MessageService);
 
   visible = model(false);
-  invoice = input<GetAllInvoicesResponse | null>(null);
+  invoices = input<GetAllInvoicesResponse[]>([]);
   saved = output<void>();
 
+  selectedInvoiceId = signal<string | null>(null);
   amount = signal<number | null>(null);
   paidOn = signal<Date | null>(new Date());
   notes = signal('');
   saving = signal(false);
-  deleting = signal<string | null>(null);
 
-  isFormValid = computed(() => (this.amount() ?? 0) > 0 && this.paidOn() !== null);
+  invoiceOptions = computed(() =>
+    this.invoices().map((inv) => ({
+      label: `${inv.invoiceNumber} — ${inv.clientName ?? ''}`,
+      value: inv.id,
+    })),
+  );
+
+  selectedInvoice = computed(
+    () => this.invoices().find((inv) => inv.id === this.selectedInvoiceId()) ?? null,
+  );
 
   outstanding = computed(() => {
-    const inv = this.invoice();
-    if (!inv) return 0;
+    const inv = this.selectedInvoice();
+    if (!inv) return null;
     return (inv.totalDue ?? 0) - (inv.totalPaid ?? 0);
   });
+
+  isFormValid = computed(
+    () =>
+      this.selectedInvoiceId() !== null && (this.amount() ?? 0) > 0 && this.paidOn() !== null,
+  );
 
   constructor() {
     effect(() => {
       if (!this.visible()) {
-        this.amount.set(null);
-        this.paidOn.set(new Date());
-        this.notes.set('');
+        this.reset();
       }
     });
   }
 
   save() {
-    const inv = this.invoice();
+    const inv = this.selectedInvoice();
     const companyId = this.companyStore.company()?.id;
     const amt = this.amount();
     const date = this.paidOn();
@@ -73,7 +96,7 @@ export class RecordPaymentDialog {
         companyId,
         invoiceId: inv.id,
         amount: amt,
-        paidOn: date.toISOString(),
+        paidOn: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`,
         notes: this.notes() || undefined,
       })
       .subscribe({
@@ -81,8 +104,9 @@ export class RecordPaymentDialog {
           this.messageService.add({
             severity: 'success',
             summary: 'Payment Recorded',
-            detail: 'Payment has been recorded successfully.',
+            detail: 'Payment recorded successfully.',
           });
+          this.reset();
           this.saved.emit();
           this.visible.set(false);
         },
@@ -98,34 +122,15 @@ export class RecordPaymentDialog {
       });
   }
 
-  deletePayment(payment: InvoicePaymentItem) {
-    const inv = this.invoice();
-    const companyId = this.companyStore.company()?.id;
-    if (!inv?.id || !companyId || !payment.paymentId) return;
-
-    this.deleting.set(payment.paymentId);
-    this.paymentService.deletePayment(companyId, inv.id, payment.paymentId).subscribe({
-      next: () => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Payment Removed',
-          detail: 'Payment has been removed.',
-        });
-        this.saved.emit();
-      },
-      error: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to remove payment.',
-        });
-        this.deleting.set(null);
-      },
-      complete: () => this.deleting.set(null),
-    });
+  cancel() {
+    this.reset();
+    this.visible.set(false);
   }
 
-  cancel() {
-    this.visible.set(false);
+  private reset() {
+    this.selectedInvoiceId.set(null);
+    this.amount.set(null);
+    this.paidOn.set(new Date());
+    this.notes.set('');
   }
 }

@@ -1,104 +1,177 @@
 @if (loading()) {
-  <div class="loading-container">
-    <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+  <div class="loading-state">
+    <div class="loading-spinner" aria-hidden="true"></div>
     <p>Loading invoice...</p>
   </div>
 } @else if (error()) {
-  <div class="error-container">
-    <i class="pi pi-exclamation-circle" style="font-size: 3rem; color: var(--red-500)"></i>
+  <div class="error-state" role="alert">
+    <i class="pi pi-exclamation-circle" aria-hidden="true"></i>
     <h2>{{ error() }}</h2>
     <p>The invoice you're looking for could not be found or has been removed.</p>
   </div>
 } @else if (invoice()) {
-  <div class="invoice-container">
-    <div class="print-actions no-print">
-      <button pButton icon="pi pi-print" label="Print Invoice" (click)="print()"></button>
+  <div class="invoice-page">
+    <!-- Toolbar (hidden on print) -->
+    <div class="invoice-toolbar no-print" role="banner">
+      <span class="toolbar-brand gradient-text">Invoicer</span>
+      <p-button
+        label="Print / Save PDF"
+        icon="pi pi-print"
+        (click)="print()"
+        aria-label="Print or save invoice as PDF"
+      />
     </div>
 
-    <div class="invoice-document">
-      <div class="invoice-header">
-        <div class="company-info">
-          @if (invoice()?.company?.logoUrl) {
-            <img
-              [src]="invoice()?.company?.logoUrl ?? ''"
-              alt="Company Logo"
-              class="company-logo"
-            />
+    <!-- Invoice document -->
+    <main class="invoice-wrapper">
+      <div class="invoice-document">
+        <!-- Gradient accent bar -->
+        <div class="accent-bar" aria-hidden="true"></div>
+
+        <!-- Header: company branding + invoice meta -->
+        <div class="invoice-header">
+          <!-- Top row: company name + INVOICE title -->
+          <div class="invoice-header-top">
+            <div class="invoice-header-left">
+              @if (invoice()?.company?.logoUrl) {
+                <img
+                  [src]="invoice()?.company?.logoUrl ?? ''"
+                  alt="{{ invoice()?.company?.name }} logo"
+                  class="company-logo"
+                />
+              }
+              <div class="company-name">{{ invoice()?.company?.name }}</div>
+            </div>
+            <div class="invoice-header-right">
+              <div class="invoice-label" aria-hidden="true">INVOICE</div>
+              <div
+                class="status-badge status-{{ invoice()?.status?.toLowerCase() }}"
+                role="status"
+                [attr.aria-label]="'Status: ' + invoice()?.status"
+              >
+                {{ invoice()?.status }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom row: company details + invoice meta -->
+          <div class="invoice-header-bottom">
+            <div class="company-details" aria-label="Company contact details">
+              @if (invoice()?.company?.address) {
+                <div class="company-detail-row">
+                  <i class="pi pi-map-marker" aria-hidden="true"></i>
+                  <span>{{ invoice()?.company?.address }}</span>
+                </div>
+              }
+              @if (invoice()?.company?.email) {
+                <div class="company-detail-row">
+                  <i class="pi pi-envelope" aria-hidden="true"></i>
+                  <span>{{ invoice()?.company?.email }}</span>
+                </div>
+              }
+              @if (invoice()?.company?.phone) {
+                <div class="company-detail-row">
+                  <i class="pi pi-phone" aria-hidden="true"></i>
+                  <span>{{ invoice()?.company?.phone }}</span>
+                </div>
+              }
+            </div>
+            <dl class="meta-list" aria-label="Invoice details">
+              <dt>Invoice #</dt>
+              <dd>{{ invoice()?.invoiceNumber }}</dd>
+              <dt>Date</dt>
+              <dd>{{ invoice()?.invoiceDate | date: 'mediumDate' }}</dd>
+              <dt>Due Date</dt>
+              <dd>{{ invoice()?.dueDate | date: 'mediumDate' }}</dd>
+            </dl>
+          </div>
+        </div>
+
+        <!-- Bill To -->
+        <section class="bill-to-section" aria-label="Billing information">
+          <div class="section-label">Bill To</div>
+          <div class="client-name">{{ invoice()?.client?.name }}</div>
+          @if (invoice()?.client?.email) {
+            <div class="client-detail">{{ invoice()?.client?.email }}</div>
           }
-          <h1>{{ invoice()?.company?.name }}</h1>
-          <p>{{ invoice()?.company?.address }}</p>
-          <p>{{ invoice()?.company?.email }}</p>
-          <p>{{ invoice()?.company?.phone }}</p>
-        </div>
-        <div class="invoice-meta">
-          <h2>INVOICE</h2>
-          <p><strong>Invoice #:</strong> {{ invoice()?.invoiceNumber }}</p>
-          <p><strong>Date:</strong> {{ invoice()?.invoiceDate | date: 'mediumDate' }}</p>
-          <p><strong>Due Date:</strong> {{ invoice()?.dueDate | date: 'mediumDate' }}</p>
-          <p>
-            <strong>Status:</strong>
-            <span class="status-badge status-{{ invoice()?.status?.toLowerCase() }}">{{
-              invoice()?.status
-            }}</span>
-          </p>
-        </div>
-      </div>
-
-      <div class="invoice-client">
-        <h3>Bill To:</h3>
-        <p class="client-name">{{ invoice()?.client?.name }}</p>
-        @if (invoice()?.client?.address) {
-          <p>{{ invoice()?.client?.address }}</p>
-        }
-        @if (invoice()?.client?.email) {
-          <p>{{ invoice()?.client?.email }}</p>
-        }
-        @if (invoice()?.client?.phone) {
-          <p>{{ invoice()?.client?.phone }}</p>
-        }
-      </div>
-
-      <table class="invoice-items">
-        <thead>
-          <tr>
-            <th>Product</th>
-            <th class="text-center">Quantity</th>
-            <th class="text-right">Unit Price</th>
-            <th class="text-right">Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (product of invoice()?.products ?? []; track product.name) {
-            <tr>
-              <td>{{ product.name }}</td>
-              <td class="text-center">{{ product.quantity }}</td>
-              <td class="text-right">{{ product.unitPrice | currency }}</td>
-              <td class="text-right">{{ product.totalPrice | currency }}</td>
-            </tr>
+          @if (invoice()?.client?.phone) {
+            <div class="client-detail">{{ invoice()?.client?.phone }}</div>
           }
-        </tbody>
-        <tfoot>
-          <tr class="subtotal-row">
-            <td colspan="3" class="text-right"><strong>Subtotal:</strong></td>
-            <td class="text-right">{{ subtotal() | currency }}</td>
-          </tr>
-          <tr class="total-row">
-            <td colspan="3" class="text-right"><strong>Total:</strong></td>
-            <td class="text-right">{{ total() | currency }}</td>
-          </tr>
-        </tfoot>
-      </table>
+          @if (invoice()?.client?.address) {
+            <div class="client-detail">{{ invoice()?.client?.address }}</div>
+          }
+        </section>
 
-      @if (invoice()?.notes) {
-        <div class="invoice-notes">
-          <h3>Notes:</h3>
-          <p>{{ invoice()!.notes }}</p>
+        <!-- Products table -->
+        <section aria-label="Invoice items">
+          <table class="invoice-table">
+            <thead>
+              <tr>
+                <th scope="col">Product</th>
+                <th scope="col" class="col-center">Qty</th>
+                <th scope="col" class="col-right">Unit Price</th>
+                <th scope="col" class="col-right">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (product of invoice()?.products ?? []; track product.name) {
+                <tr>
+                  <td>{{ product.name }}</td>
+                  <td class="col-center">{{ product.quantity }}</td>
+                  <td class="col-right">{{ product.unitPrice | currency }}</td>
+                  <td class="col-right">{{ product.totalPrice | currency }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Totals -->
+        <div class="totals-section" aria-label="Invoice totals">
+          <div class="totals-row">
+            <span class="totals-label">Subtotal</span>
+            <span class="totals-value">{{ subtotal() | currency }}</span>
+          </div>
+          <div class="totals-divider" aria-hidden="true"></div>
+          <div class="totals-row">
+            <span class="totals-label grand-total-label">Total</span>
+            <span class="totals-value grand-total-value">{{ total() | currency }}</span>
+          </div>
         </div>
-      }
 
-      <div class="invoice-footer">
-        <p>Thank you for your business!</p>
+        <!-- Payment Details -->
+        @if (invoice()?.company?.paymentDetails) {
+          <section class="payment-details-section" aria-label="Payment details">
+            <div class="section-label">Payment Details</div>
+            <p class="payment-details-text">{{ invoice()!.company!.paymentDetails }}</p>
+          </section>
+        }
+
+        <!-- Notes -->
+        @if (invoice()?.notes) {
+          <section class="notes-section" aria-label="Invoice notes">
+            <div class="section-label">Notes</div>
+            <p class="notes-text">{{ invoice()!.notes }}</p>
+          </section>
+        }
+
+        <!-- Footer -->
+        <footer class="invoice-footer">
+          <div class="footer-message">Thank you for your business!</div>
+          <div class="footer-right">
+            <!-- Screen: just the brand link -->
+            <div class="no-print footer-brand">
+              Powered by <a href="https://invoicer.co.nz" target="_blank" rel="noopener noreferrer" class="gradient-text">Invoicer</a>
+            </div>
+            <!-- Print: brand link + view online -->
+            <div class="print-only footer-brand">
+              Powered by <a href="https://invoicer.co.nz">Invoicer</a>
+              &nbsp;&middot;&nbsp;
+              <a [href]="printUrl()">[View Online]</a>
+            </div>
+          </div>
+        </footer>
       </div>
-    </div>
+    </main>
   </div>
 }

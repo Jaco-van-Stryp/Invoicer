@@ -1,56 +1,144 @@
 <div class="page-header">
   <div>
     <h1 class="text-3xl font-bold m-0">Payments</h1>
-    <p class="text-muted-color mt-1 mb-0">View and manage all payments across invoices</p>
+    <p class="text-muted-color mt-1 mb-0">View and manage all recorded payments</p>
   </div>
+  <button class="btn-gradient" (click)="openRecordPayment()">
+    <i class="pi pi-plus" aria-hidden="true"></i>
+    Record Payment
+  </button>
 </div>
 
-<div class="table-card">
-  <p-table
-    [value]="payments()"
-    [loading]="loading()"
-    [paginator]="true"
-    [rows]="10"
-    [rowsPerPageOptions]="[5, 10, 25]"
-    [scrollable]="true"
-    dataKey="id"
-  >
-    <ng-template #header>
-      <tr>
-        <th pSortableColumn="invoiceNumber">Invoice # <p-sortIcon field="invoiceNumber" /></th>
-        <th pSortableColumn="clientName">Client <p-sortIcon field="clientName" /></th>
-        <th pSortableColumn="paidOn">Date Paid <p-sortIcon field="paidOn" /></th>
-        <th>Amount</th>
-        <th>Notes</th>
-        <th style="width: 6rem">Actions</th>
-      </tr>
-    </ng-template>
-    <ng-template #body let-payment>
-      <tr>
-        <td>{{ payment.invoiceNumber }}</td>
-        <td>{{ payment.clientName }}</td>
-        <td>{{ payment.paidOn | date: 'mediumDate' }}</td>
-        <td>{{ payment.amount | currency }}</td>
-        <td>{{ payment.notes || '—' }}</td>
-        <td>
+<!-- Filter Bar -->
+@if (!loading()) {
+  <div class="filter-bar" role="search" aria-label="Filter payments">
+    <div class="filter-search">
+      <i class="pi pi-search filter-search-icon" aria-hidden="true"></i>
+      <input
+        type="search"
+        class="filter-search-input"
+        placeholder="Search by client or invoice..."
+        [value]="searchText()"
+        (input)="searchText.set($any($event.target).value)"
+        aria-label="Search payments"
+      />
+    </div>
+
+    <div class="filter-divider" aria-hidden="true"></div>
+
+    <div class="filter-selects">
+      <p-select
+        [options]="availableYears()"
+        [ngModel]="filterYear()"
+        (ngModelChange)="onYearChange($event)"
+        placeholder="Year"
+        [showClear]="true"
+        aria-label="Filter by year"
+      />
+      <p-select
+        [options]="availableMonths()"
+        [ngModel]="filterMonth()"
+        (ngModelChange)="filterMonth.set($event)"
+        placeholder="Month"
+        [showClear]="true"
+        aria-label="Filter by month"
+      />
+    </div>
+
+    <div class="filter-spacer"></div>
+
+    @if (hasActiveFilters()) {
+      <button
+        type="button"
+        class="filter-clear"
+        (click)="clearFilters()"
+        aria-label="Clear all filters"
+      >
+        <i class="pi pi-times" aria-hidden="true"></i>
+        Clear
+      </button>
+    }
+  </div>
+
+  @if (hasActiveFilters()) {
+    <p class="filter-results">
+      Showing {{ filteredPayments().length }} of {{ payments().length }} payments
+    </p>
+  }
+}
+
+<!-- Payment Cards -->
+@if (loading()) {
+  <div class="cards-grid">
+    @for (i of [1, 2, 3, 4]; track i) {
+      <div class="payment-card-skeleton" aria-hidden="true"></div>
+    }
+  </div>
+} @else {
+  <div class="cards-grid">
+    @for (payment of filteredPayments(); track payment.id) {
+      <div class="entity-card">
+        <!-- Header: Invoice number + Amount -->
+        <div class="entity-card-header">
+          <span class="entity-card-number">{{ payment.invoiceNumber }}</span>
+          <span class="payment-amount">{{ payment.amount | currency }}</span>
+        </div>
+
+        <!-- Client name -->
+        <div class="entity-card-title">{{ payment.clientName }}</div>
+
+        <!-- Date -->
+        <div class="entity-card-dates">
+          <div class="date-item">
+            <span class="date-label">Date Paid</span>
+            <span class="date-value">{{ payment.paidOn | date: 'MMM d, y' }}</span>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        @if (payment.notes) {
+          <div class="payment-notes">
+            <i class="pi pi-comment" aria-hidden="true"></i>
+            <span>{{ payment.notes }}</span>
+          </div>
+        }
+
+        <!-- Actions -->
+        <div class="entity-card-actions">
           <p-button
             icon="pi pi-trash"
             [rounded]="true"
-            [text]="true"
+            [outlined]="true"
             severity="danger"
+            size="small"
             (click)="deletePayment(payment)"
             pTooltip="Delete"
             aria-label="Delete payment"
           />
-        </td>
-      </tr>
-    </ng-template>
-    <ng-template #emptymessage>
-      <tr>
-        <td colspan="6" class="text-center py-6 text-muted-color">No payments recorded yet.</td>
-      </tr>
-    </ng-template>
-  </p-table>
-</div>
+        </div>
+      </div>
+    } @empty {
+      <div class="empty-state">
+        @if (hasActiveFilters()) {
+          <i class="pi pi-filter-slash" aria-hidden="true"></i>
+          <p>No payments match your filters.</p>
+          <button type="button" class="filter-clear" (click)="clearFilters()" style="margin-top: 0.75rem">
+            <i class="pi pi-times" aria-hidden="true"></i>
+            Clear filters
+          </button>
+        } @else {
+          <i class="pi pi-credit-card" aria-hidden="true"></i>
+          <p>No payments recorded yet. Click "Record Payment" to add one.</p>
+        }
+      </div>
+    }
+  </div>
+}
+
+<app-payment-form-dialog
+  [(visible)]="recordDialogVisible"
+  [invoices]="invoices()"
+  (saved)="onPaymentSaved()"
+/>
 
 <p-confirmDialog />

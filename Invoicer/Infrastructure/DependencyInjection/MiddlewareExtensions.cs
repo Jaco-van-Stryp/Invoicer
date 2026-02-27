@@ -18,9 +18,11 @@ public static class MiddlewareExtensions
         {
             app.UseHttpsRedirection();
         }
-
-        app.UseDefaultFiles();
-        app.UseStaticFiles();
+        else
+        {
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+        }
 
         app.UseCors("AllowAll");
 

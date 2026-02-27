@@ -2,12 +2,12 @@
   [header]="dialogTitle()"
   [(visible)]="visible"
   [modal]="true"
-  [style]="{ width: '42rem' }"
+  [style]="{ width: '48rem' }"
   [closable]="true"
 >
   <div class="flex flex-col gap-5 mt-4">
     <div class="flex flex-col gap-1">
-      <label class="text-sm font-medium">Client *</label>
+      <label class="text-sm font-medium" for="invoiceClient">Client *</label>
       <p-select
         id="invoiceClient"
         [options]="clients()"
@@ -26,7 +26,7 @@
 
     <div class="grid grid-cols-2 gap-4">
       <div class="flex flex-col gap-1">
-        <label class="text-sm font-medium">Invoice Date *</label>
+        <label class="text-sm font-medium" for="invoiceDate">Invoice Date *</label>
         <p-datepicker
           id="invoiceDate"
           [ngModel]="invoiceDate()"
@@ -38,7 +38,7 @@
       </div>
 
       <div class="flex flex-col gap-1">
-        <label class="text-sm font-medium">Due Date *</label>
+        <label class="text-sm font-medium" for="invoiceDue">Due Date *</label>
         <p-datepicker
           id="invoiceDue"
           [ngModel]="invoiceDue()"
@@ -50,12 +50,12 @@
       </div>
     </div>
 
-    <!-- Product line items -->
-    <div class="line-items-section">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-lg font-semibold m-0">Line Items</h3>
+    <!-- Products section -->
+    <div class="products-section">
+      <div class="products-section-header">
+        <h3 class="text-base font-semibold m-0">Products</h3>
         <p-button
-          label="Add Item"
+          label="Add Product"
           icon="pi pi-plus"
           [text]="true"
           size="small"
@@ -65,67 +65,70 @@
 
       @if (productLines().length === 0) {
         <p class="text-muted-color text-sm text-center py-4">
-          No line items. Click "Add Item" to begin.
+          No products added. Click "Add Product" to begin.
         </p>
       }
 
-      @for (line of productLines(); track $index) {
-        <div class="line-item">
-          <div class="line-product">
-            <p-select
-              [options]="products()"
-              [ngModel]="line.productId"
-              (ngModelChange)="updateLineProduct($index, $event)"
-              optionLabel="name"
-              optionValue="id"
-              placeholder="Select product"
-              styleClass="w-full"
-              [loading]="loadingData()"
-              [filter]="true"
-              filterPlaceholder="Search products..."
-              appendTo="body"
+      <div class="product-rows">
+        @for (line of productLines(); track $index) {
+          <div class="product-row">
+            <div class="product-row-select">
+              <p-select
+                [options]="products()"
+                [ngModel]="line.productId"
+                (ngModelChange)="updateLineProduct($index, $event)"
+                optionLabel="name"
+                optionValue="id"
+                placeholder="Select product"
+                styleClass="w-full"
+                [loading]="loadingData()"
+                [filter]="true"
+                filterPlaceholder="Search products..."
+                appendTo="body"
+              />
+            </div>
+            <div class="product-row-qty">
+              <p-inputNumber
+                [ngModel]="line.quantity"
+                (ngModelChange)="updateLineQuantity($index, $event)"
+                [min]="1"
+                [showButtons]="true"
+                buttonLayout="horizontal"
+                incrementButtonIcon="pi pi-plus"
+                decrementButtonIcon="pi pi-minus"
+                styleClass="w-full"
+              />
+            </div>
+            <div class="product-row-total">
+              {{ getLineTotal(line) | currency }}
+            </div>
+            <p-button
+              icon="pi pi-times"
+              [rounded]="true"
+              [text]="true"
+              severity="danger"
+              size="small"
+              (click)="removeLine($index)"
+              pTooltip="Remove"
+              aria-label="Remove product"
             />
           </div>
-          <div class="line-quantity">
-            <p-inputNumber
-              [ngModel]="line.quantity"
-              (ngModelChange)="updateLineQuantity($index, $event)"
-              [min]="1"
-              [showButtons]="true"
-              buttonLayout="horizontal"
-              incrementButtonIcon="pi pi-plus"
-              decrementButtonIcon="pi pi-minus"
-              styleClass="w-full"
-            />
-          </div>
-          <div class="line-total">
-            {{ getLineTotal(line) | currency }}
-          </div>
-          <p-button
-            icon="pi pi-times"
-            [rounded]="true"
-            [text]="true"
-            severity="danger"
-            size="small"
-            (click)="removeLine($index)"
-            pTooltip="Remove"
-          />
-        </div>
-      }
+        }
+      </div>
 
       @if (productLines().length > 0) {
         <div class="grand-total">
-          <span class="font-semibold">Total:</span>
-          <span class="font-bold text-lg">{{ grandTotal() | currency }}</span>
+          <span class="text-sm font-semibold text-muted-color">Grand Total</span>
+          <span class="grand-total-amount">{{ grandTotal() | currency }}</span>
         </div>
       }
     </div>
   </div>
 
   <ng-template #footer>
-    <p-button label="Cancel" [text]="true" (click)="visible.set(false)" />
+    <p-button label="Cancel" [text]="true" severity="secondary" (click)="visible.set(false)" />
     <p-button
-      [label]="isEditing() ? 'Update' : 'Create'"
+      [label]="isEditing() ? 'Update Invoice' : 'Create Invoice'"
       icon="pi pi-check"
       [loading]="saving()"
       [disabled]="!isFormValid()"

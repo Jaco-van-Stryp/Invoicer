@@ -30,7 +30,7 @@ namespace Invoicer.Features.Client.GetAllClients
             if (company == null)
                 throw new CompanyNotFoundException();
 
-            var clients = company.Clients.ToList();
+            var clients = company.Clients.Where(c => !c.IsDeleted).ToList();
             var clientsResponse = clients
                 .Select(c => new GetAllClientsResponse
                 {

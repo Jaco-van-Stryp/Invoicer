@@ -1,26 +1,27 @@
-import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { InputTextModule } from 'primeng/inputtext';
-import { Table, TableModule } from 'primeng/table';
+import { TooltipModule } from 'primeng/tooltip';
 import { ClientService, GetAllClientsResponse } from '../../../api';
 import { CompanyStore } from '../../../Services/company-store';
 import { ClientFormDialog } from '../client-form-dialog/client-form-dialog';
-import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-client-list',
   imports: [
-    TableModule,
+    FormsModule,
     ButtonModule,
     IconFieldModule,
     InputIconModule,
     InputTextModule,
     ConfirmDialogModule,
+    TooltipModule,
     ClientFormDialog,
   ],
   host: { class: 'block' },
@@ -37,8 +38,18 @@ export class ClientList implements OnInit {
   loading = signal(true);
   dialogVisible = signal(false);
   selectedClient = signal<GetAllClientsResponse | null>(null);
+  searchQuery = signal('');
 
-  dt = viewChild<Table>('dt');
+  filteredClients = computed(() => {
+    const q = this.searchQuery().toLowerCase();
+    if (!q) return this.clients();
+    return this.clients().filter(
+      (c) =>
+        c.name?.toLowerCase().includes(q) ||
+        c.email?.toLowerCase().includes(q) ||
+        c.phoneNumber?.toLowerCase().includes(q),
+    );
+  });
 
   ngOnInit() {
     this.loadClients();
@@ -78,6 +89,8 @@ export class ClientList implements OnInit {
       message: `Are you sure you want to delete "${client.name}"?`,
       header: 'Confirm Delete',
       icon: 'pi pi-exclamation-triangle',
+      acceptButtonProps: { severity: 'danger', label: 'Yes, Delete' },
+      rejectButtonProps: { severity: 'secondary', outlined: true, label: 'Cancel' },
       accept: () => {
         const companyId = this.companyStore.company()?.id;
         if (!companyId || !client.id) return;
@@ -103,9 +116,12 @@ export class ClientList implements OnInit {
     });
   }
 
-  onFilter(event: Event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.dt()?.filterGlobal(value, 'contains');
+  getInitials(name: string | null | undefined): string {
+    const trimmed = name?.trim();
+    if (!trimmed) return '?';
+    const parts = trimmed.split(/\s+/);
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   }
 
   onSaved() {

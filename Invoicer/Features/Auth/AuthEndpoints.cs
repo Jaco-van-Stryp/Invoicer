@@ -1,6 +1,5 @@
 ﻿using Invoicer.Features.Auth.GetAccessToken;
 using Invoicer.Features.Auth.Login;
-using Invoicer.Features.Auth.Register;
 
 namespace Invoicer.Features.Auth
 {
@@ -12,7 +11,6 @@ namespace Invoicer.Features.Auth
 
             group.MapGetAccessTokenEndpoint();
             group.MapLoginEndpoint();
-            group.MapRegisterEndpoint();
 
             return app;
         }

@@ -1,35 +1,51 @@
-.line-items-section {
+/* Invoice form dialog — shared styles in src/styles/shared.css */
+
+.products-section {
   border: 1px solid var(--surface-border);
   border-radius: 0.75rem;
   padding: 1rem;
+  background: var(--glass-bg);
 }
 
-.line-item {
+.products-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.product-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.product-row {
   display: grid;
-  grid-template-columns: 1fr 160px 90px auto;
+  grid-template-columns: 1fr 10rem 7rem 2.5rem;
   gap: 0.75rem;
   align-items: center;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid var(--surface-border);
 }
 
-.line-quantity :deep(.p-inputnumber) {
+.product-row-select {
+  min-width: 0;
+}
+
+.product-row-qty ::ng-deep .p-inputnumber {
   width: 100%;
 }
 
-.line-quantity :deep(.p-inputnumber-input) {
+.product-row-qty ::ng-deep .p-inputnumber-input {
   text-align: center;
   width: 100%;
 }
 
-.line-item:last-of-type {
-  border-bottom: none;
-}
-
-.line-total {
+.product-row-total {
   text-align: right;
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 0.9375rem;
   white-space: nowrap;
+  color: var(--text-color);
 }
 
 .grand-total {
@@ -37,18 +53,46 @@
   justify-content: flex-end;
   align-items: center;
   gap: 1rem;
-  padding-top: 1rem;
+  padding-top: 0.875rem;
   border-top: 2px solid var(--surface-border);
-  margin-top: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.grand-total-amount {
+  font-size: 1.25rem;
+  font-weight: 800;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 @media (max-width: 640px) {
-  .line-item {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
+  .product-row {
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
   }
 
-  .line-total {
-    text-align: left;
+  .product-row-select {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .product-row-qty {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .product-row-total {
+    grid-column: 2;
+    grid-row: 2;
+    text-align: right;
+    align-self: center;
+  }
+
+  .product-row p-button {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
   }
 }

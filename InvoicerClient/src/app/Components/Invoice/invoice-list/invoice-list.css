@@ -1,6 +1,19 @@
-/* Invoice-list-specific styles — shared list/card styles in src/styles/shared.css */
+/* Invoice list — shared styles in src/styles/shared.css */
 
-.entity-card-amounts {
+.invoice-card-skeleton {
+  height: 240px;
+  border-radius: 1rem;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.invoice-amounts {
   display: flex;
   gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.amount-value.balance {
+  color: #f59e0b;
 }

@@ -95,6 +95,7 @@ export class InvoiceFormDialog {
     });
 
     effect(() => {
+      if (!this.visible()) return;
       const inv = this.invoice();
       if (inv) {
         this.invoiceNumber.set(inv.invoiceNumber ?? '');

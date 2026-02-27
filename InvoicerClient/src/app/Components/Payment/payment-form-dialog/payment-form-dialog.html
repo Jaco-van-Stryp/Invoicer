@@ -1,0 +1,93 @@
+<p-dialog
+  [(visible)]="visible"
+  header="Record Payment"
+  [modal]="true"
+  [style]="{ width: '36rem' }"
+  [draggable]="false"
+  [resizable]="false"
+>
+  <div class="flex flex-col gap-4 mt-4">
+    <div class="form-field">
+      <label for="invoice">Invoice *</label>
+      <p-select
+        inputId="invoice"
+        [ngModel]="selectedInvoiceId()"
+        (ngModelChange)="selectedInvoiceId.set($event)"
+        [options]="invoiceOptions()"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Select an invoice"
+        styleClass="w-full"
+        [filter]="true"
+        filterPlaceholder="Search invoices..."
+        appendTo="body"
+      />
+    </div>
+
+    @if (selectedInvoice()) {
+      <div class="balance-info" role="status" [attr.aria-label]="'Outstanding: ' + outstanding()">
+        <span class="balance-label">Outstanding balance</span>
+        <span class="balance-amount" [class.balance-zero]="(outstanding() ?? 0) <= 0">
+          {{ outstanding() | currency }}
+        </span>
+      </div>
+    }
+
+    <div class="form-field">
+      <label for="amount">Amount *</label>
+      <p-inputnumber
+        inputId="amount"
+        [ngModel]="amount()"
+        (ngModelChange)="amount.set($event)"
+        mode="currency"
+        currency="USD"
+        [min]="0.01"
+        placeholder="0.00"
+        styleClass="w-full"
+      />
+    </div>
+
+    <div class="form-field">
+      <label for="paidOn">Date Paid *</label>
+      <p-datepicker
+        inputId="paidOn"
+        [ngModel]="paidOn()"
+        (ngModelChange)="paidOn.set($event)"
+        dateFormat="dd/mm/yy"
+        [showIcon]="true"
+        appendTo="body"
+        styleClass="w-full"
+      />
+    </div>
+
+    <div class="form-field">
+      <label for="notes">Notes (optional)</label>
+      <input
+        pInputText
+        id="notes"
+        [ngModel]="notes()"
+        (ngModelChange)="notes.set($event)"
+        placeholder="e.g. Wire transfer, Cheque #123"
+        class="w-full"
+      />
+    </div>
+  </div>
+
+  <ng-template #footer>
+    <p-button
+      label="Cancel"
+      severity="secondary"
+      [outlined]="true"
+      [text]="true"
+      (click)="cancel()"
+      [disabled]="saving()"
+    />
+    <p-button
+      label="Record Payment"
+      icon="pi pi-check"
+      [loading]="saving()"
+      [disabled]="!isFormValid()"
+      (click)="save()"
+    />
+  </ng-template>
+</p-dialog>

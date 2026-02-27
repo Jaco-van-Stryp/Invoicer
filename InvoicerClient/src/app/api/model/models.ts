@@ -36,8 +36,6 @@ export * from './monthlyIncomeItem';
 export * from './productInfo';
 export * from './recordPaymentCommand';
 export * from './recordPaymentResponse';
-export * from './registerCommand';
-export * from './registerResponse';
 export * from './sendInvoiceEmailRequest';
 export * from './updateClientCommand';
 export * from './updateCompanyDetailsCommand';

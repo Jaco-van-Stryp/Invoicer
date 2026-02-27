@@ -1,4 +1,5 @@
-import { Component, inject, OnInit, signal, computed } from '@angular/core';
+import { CurrencyPipe } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal, computed } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { ChartModule } from 'primeng/chart';
@@ -8,22 +9,24 @@ import {
   GetAllProductsResponse,
   GetAllInvoicesResponse,
   GetDashboardStatsResponse,
-  ProductService,
   InvoiceService,
+  InvoiceStatus,
+  ProductService,
 } from '../../../api';
 import { CompanyStore } from '../../../Services/company-store';
-import { ChangeDetectionStrategy } from '@angular/core';
+import { AuthStore } from '../../../Services/auth-store';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-dashboard-home',
-  imports: [RouterLink, ButtonModule, ChartModule],
+  imports: [RouterLink, ButtonModule, ChartModule, CurrencyPipe],
   host: { class: 'block' },
   styleUrl: './dashboard-home.css',
   templateUrl: './dashboard-home.html',
 })
 export class DashboardHome implements OnInit {
   companyStore = inject(CompanyStore);
+  authStore = inject(AuthStore);
   clientService = inject(ClientService);
   productService = inject(ProductService);
   invoiceService = inject(InvoiceService);
@@ -40,11 +43,26 @@ export class DashboardHome implements OnInit {
   productCount = computed(() => this.products().length);
   invoiceCount = computed(() => this.invoices().length);
 
+  totalRevenue = computed(() => {
+    const stats = this.dashboardStats();
+    return stats?.monthlyIncome?.reduce((sum, m) => sum + (m.totalPaid ?? 0), 0) ?? 0;
+  });
+
+  pendingInvoices = computed(() =>
+    this.invoices().filter((inv) => inv.status !== InvoiceStatus.Paid).length,
+  );
+
+  userInitials = computed(() => {
+    const email = this.authStore.userEmail();
+    if (!email) return '?';
+    const local = email.split('@')[0];
+    return local.slice(0, 2).toUpperCase();
+  });
+
   monthlyChartData = computed(() => {
     const stats = this.dashboardStats();
     if (!stats?.monthlyIncome?.length) return null;
 
-    // Get last 12 months including empty months
     const now = new Date();
     const monthsData: { year: number; month: number; amount: number }[] = [];
 
@@ -64,32 +82,22 @@ export class DashboardHome implements OnInit {
     return {
       labels: monthsData.map((m) => {
         const monthNames = [
-          'Jan',
-          'Feb',
-          'Mar',
-          'Apr',
-          'May',
-          'Jun',
-          'Jul',
-          'Aug',
-          'Sep',
-          'Oct',
-          'Nov',
-          'Dec',
+          'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+          'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
         ];
         return `${monthNames[m.month - 1]} ${m.year}`;
       }),
       datasets: [
         {
-          label: 'Income',
+          label: 'Revenue',
           data: monthsData.map((m) => m.amount),
-          borderColor: '#6366f1',
-          backgroundColor: 'rgba(99, 102, 241, 0.1)',
+          borderColor: '#a855f7',
+          backgroundColor: 'rgba(168, 85, 247, 0.1)',
           fill: true,
           tension: 0.4,
-          pointRadius: 3,
-          pointHoverRadius: 6,
-          pointBackgroundColor: '#6366f1',
+          pointRadius: 4,
+          pointHoverRadius: 7,
+          pointBackgroundColor: '#a855f7',
           pointBorderColor: '#fff',
           pointBorderWidth: 2,
         },
@@ -105,25 +113,23 @@ export class DashboardHome implements OnInit {
       tooltip: {
         mode: 'index' as const,
         intersect: false,
+        backgroundColor: 'rgba(15, 15, 20, 0.9)',
+        titleColor: '#fff',
+        bodyColor: 'rgba(255,255,255,0.7)',
+        borderColor: 'rgba(168,85,247,0.3)',
+        borderWidth: 1,
+        padding: 12,
       },
     },
     scales: {
       y: {
         beginAtZero: true,
-        grid: {
-          color: 'rgba(255, 255, 255, 0.05)',
-        },
-        ticks: {
-          color: 'rgba(255, 255, 255, 0.5)',
-        },
+        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+        ticks: { color: 'rgba(255, 255, 255, 0.5)', font: { size: 11 } },
       },
       x: {
-        grid: {
-          display: false,
-        },
-        ticks: {
-          color: 'rgba(255, 255, 255, 0.5)',
-        },
+        grid: { display: false },
+        ticks: { color: 'rgba(255, 255, 255, 0.5)', font: { size: 11 } },
       },
     },
     interaction: {

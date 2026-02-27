@@ -3,6 +3,7 @@ using Invoicer.Domain.Data;
 using Invoicer.Domain.Entities;
 using Invoicer.Infrastructure.EmailService;
 using Invoicer.Infrastructure.EmailTemplateService;
+using Invoicer.Infrastructure.EmailValidationService;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,7 +12,8 @@ namespace Invoicer.Features.Auth.GetAccessToken
     public class GetAccessTokenHandler(
         IEmailService _emailService,
         IEmailTemplateService _emailTemplateService,
-        AppDbContext _dbContext
+        AppDbContext _dbContext,
+        IEmailValidationService _emailValidationService
     ) : IRequestHandler<GetAccessTokenQuery, GetAccessTokenResponse>
     {
         public async Task<GetAccessTokenResponse> Handle(
@@ -19,22 +21,55 @@ namespace Invoicer.Features.Auth.GetAccessToken
             CancellationToken cancellationToken
         )
         {
+            var fakeResponse = new GetAccessTokenResponse(Guid.NewGuid());
+            var normalizedEmail = request.Email.Trim().ToLowerInvariant();
+
             var user = await _dbContext
                 .Users.Include(a => a.AuthTokens)
-                .FirstOrDefaultAsync(x => x.Email == request.Email, cancellationToken);
-            var fakeResponse = new GetAccessTokenResponse(Guid.NewGuid());
+                .FirstOrDefaultAsync(x => x.Email == normalizedEmail, cancellationToken);
 
-            // Don't reveal if the email exists or not
+            // Create user if not exists (unified login/register flow)
             if (user == null)
-                return fakeResponse;
+            {
+                var isValidEmail = await _emailValidationService.IsValidEmail(normalizedEmail);
+                if (!isValidEmail)
+                    return fakeResponse;
 
-            // Check if user is currently locked out
+                user = new User
+                {
+                    Email = normalizedEmail,
+                    AuthTokens = new List<AuthToken>(),
+                    Companies = new List<Domain.Entities.Company>(),
+                    LoginAttempts = 0,
+                    IsLocked = false,
+                    LockoutEnd = null,
+                };
+
+                try
+                {
+                    _dbContext.Users.Add(user);
+                    await _dbContext.SaveChangesAsync(cancellationToken);
+                }
+                catch (DbUpdateException ex)
+                {
+                    // Only swallow unique-email constraint violations (PostgreSQL error code 23505)
+                    if (ex.InnerException is not Npgsql.PostgresException { SqlState: "23505" })
+                        throw;
+
+                    _dbContext.Entry(user).State = EntityState.Detached;
+                    user = await _dbContext
+                        .Users.Include(a => a.AuthTokens)
+                        .FirstOrDefaultAsync(x => x.Email == normalizedEmail, cancellationToken);
+                    if (user == null)
+                        throw;
+                }
+            }
+
+            // Check if user is locked out
             if (user.IsLocked)
             {
                 if (user.LockoutEnd.HasValue && user.LockoutEnd.Value > DateTime.UtcNow)
-                {
                     return fakeResponse;
-                }
 
                 // Lockout expired — reset
                 user.IsLocked = false;
