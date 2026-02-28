@@ -47,7 +47,13 @@ export class Landing {
       icon: 'pi pi-file-edit',
       title: 'Professional Invoices',
       description:
-        'Create polished, branded invoices in seconds. Customize templates, add your logo, and impress every client.',
+        'Create polished, branded invoices in seconds. Add your logo, customize details, and email them directly to clients.',
+    },
+    {
+      icon: 'pi pi-file-check',
+      title: 'Estimates & Quotes',
+      description:
+        'Win more clients with professional estimates. Track quote status and convert accepted estimates to invoices in one click.',
     },
     {
       icon: 'pi pi-users',
@@ -59,19 +65,13 @@ export class Landing {
       icon: 'pi pi-box',
       title: 'Product Catalog',
       description:
-        'Maintain a reusable product & service catalog. Add items to invoices with one click — no retyping.',
+        'Maintain a reusable product and service catalog. Add items to invoices with one click — no retyping ever.',
     },
     {
       icon: 'pi pi-building',
       title: 'Multi-Company',
       description:
-        'Run multiple businesses from a single account. Switch between companies effortlessly with isolated data.',
-    },
-    {
-      icon: 'pi pi-lock',
-      title: 'Passwordless Auth',
-      description:
-        'No passwords to remember or reset. Sign in securely with a one-time code sent straight to your inbox.',
+        'Run multiple businesses from a single account. Switch between companies effortlessly with fully isolated data.',
     },
     {
       icon: 'pi pi-cloud-upload',
@@ -83,8 +83,8 @@ export class Landing {
 
   stats = [
     { value: '10x', label: 'Faster Invoicing' },
-    { value: '100%', label: 'Free During Beta' },
-    { value: '0', label: 'Passwords Needed' },
+    { value: '100%', label: 'Free Forever' },
+    { value: '60s', label: 'To First Invoice' },
     { value: '∞', label: 'Invoices Per Month' },
   ];
 

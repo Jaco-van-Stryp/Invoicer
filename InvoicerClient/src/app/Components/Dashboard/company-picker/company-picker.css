@@ -10,8 +10,16 @@
   -webkit-backdrop-filter: blur(30px);
   border: 1px solid var(--glass-border);
   border-radius: 1rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   color: var(--text-color);
+  position: relative;
+  z-index: 1;
+}
+
+.picker-logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
 }
 
 .company-item {
@@ -27,12 +35,14 @@
   cursor: pointer;
   transition:
     border-color 0.2s,
-    background-color 0.2s;
+    background-color 0.2s,
+    box-shadow 0.2s;
 }
 
 .company-item:hover {
-  border-color: var(--primary-color);
-  background: var(--surface-hover);
+  border-color: var(--purple);
+  background: rgba(168, 85, 247, 0.05);
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.1);
 }
 
 .company-avatar {
@@ -42,8 +52,21 @@
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 0.5rem;
-  background: var(--primary-color);
-  color: var(--primary-contrast-color);
+  background: var(--gradient);
+  color: #fff;
   font-size: 1.125rem;
+  flex-shrink: 0;
+}
+
+.company-avatar-lg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 1rem;
+  background: var(--gradient);
+  color: #fff;
+  font-size: 1.75rem;
   flex-shrink: 0;
 }
