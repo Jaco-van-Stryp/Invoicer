@@ -40,7 +40,7 @@ namespace Invoicer.Features.Estimate.GetAllEstimates
                     e.EstimateDate,
                     e.ExpiresOn,
                     e.Status,
-                    e.TotalAmount,
+                    e.ProductEstimates.Sum(pe => pe.UnitPrice * pe.Quantity),
                     e.Notes,
                     e.ClientId,
                     e.Client.Name,

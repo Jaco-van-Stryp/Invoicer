@@ -87,7 +87,8 @@ namespace Invoicer.Features.Payment.RecordPayment
         )
         {
             var invoiceLink = $"https://invoicer.co.nz/invoice/{invoice.Id}";
-            var statusLabel = invoice.Status == InvoiceStatus.Paid ? "Paid"
+            var statusLabel =
+                invoice.Status == InvoiceStatus.Paid ? "Paid"
                 : invoice.Status == InvoiceStatus.Unpaid ? "Unpaid"
                 : "Partial";
             var statusSection = BuildStatusSection(invoice.Status, outstanding);
