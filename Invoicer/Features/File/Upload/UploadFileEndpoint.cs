@@ -11,7 +11,7 @@ public static class UploadFileEndpoint
                 "upload",
                 async (IFormFile fileStream, IStorageService storageService) =>
                 {
-                    if (!fileStream.ContentType.StartsWith("image/"))
+                    if (string.IsNullOrEmpty(fileStream.ContentType) || !fileStream.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
                         return Results.Problem(
                             "Only image files are allowed.",
                             statusCode: StatusCodes.Status400BadRequest

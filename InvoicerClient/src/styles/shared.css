@@ -6,6 +6,8 @@
 /* ---------- Design Tokens ---------- */
 :root {
   --purple: #a855f7;
+  --purple-5: rgba(168, 85, 247, 0.05);
+  --purple-10: rgba(168, 85, 247, 0.1);
   --pink: #ec4899;
   --blue: #3b82f6;
   --green: #22c55e;
@@ -278,8 +280,13 @@
 
 /* ---------- Skeleton Animation ---------- */
 @keyframes skeleton-pulse {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 /* ---------- Gradient Button ---------- */
@@ -590,7 +597,9 @@
   color: var(--text-color);
   font-size: 0.875rem;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
   box-sizing: border-box;
 }
 
@@ -617,7 +626,6 @@
   gap: 0.4rem;
   flex-wrap: wrap;
 }
-
 
 .filter-chip {
   display: inline-flex;

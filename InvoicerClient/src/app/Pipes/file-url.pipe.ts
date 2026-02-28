@@ -8,12 +8,15 @@ export class FileUrlPipe implements PipeTransform {
   private readonly apiUrl: string;
 
   constructor(@Optional() @Inject(BASE_PATH) basePath: string | string[] | null) {
-    this.apiUrl = Array.isArray(basePath) ? basePath[0] : (basePath ?? '');
+    const raw = Array.isArray(basePath) ? basePath[0] : (basePath ?? '');
+    this.apiUrl = raw.replace(/\/$/, '');
   }
 
   transform(value: string | null | undefined): string | null {
     if (!value) return null;
     if (value.startsWith('data:') || value.startsWith('http')) return value;
-    return `${this.apiUrl}/api/file/download/${value}`;
+    if (value.startsWith('/api/file/download/') || value.startsWith('api/file/download/'))
+      return value;
+    return `${this.apiUrl}/api/file/download/${encodeURIComponent(value)}`;
   }
 }

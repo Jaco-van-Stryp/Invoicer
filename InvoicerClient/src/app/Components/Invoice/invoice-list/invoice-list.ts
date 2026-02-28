@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -14,8 +21,18 @@ import { InvoiceFormDialog } from '../invoice-form-dialog/invoice-form-dialog';
 import { RecordPaymentDialog } from '../record-payment-dialog/record-payment-dialog';
 
 const MONTH_NAMES = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ];
 
 @Component({
@@ -68,7 +85,7 @@ export class InvoiceList implements OnInit {
     for (const inv of this.invoices()) {
       if (inv.invoiceDate) years.add(new Date(inv.invoiceDate).getFullYear());
     }
-    return [...years].sort((a, b) => b - a).map(y => ({ label: String(y), value: y }));
+    return [...years].sort((a, b) => b - a).map((y) => ({ label: String(y), value: y }));
   });
 
   availableMonths = computed(() => {
@@ -80,7 +97,7 @@ export class InvoiceList implements OnInit {
       if (year !== null && d.getFullYear() !== year) continue;
       months.add(d.getMonth());
     }
-    return [...months].sort((a, b) => a - b).map(m => ({ label: MONTH_NAMES[m], value: m }));
+    return [...months].sort((a, b) => a - b).map((m) => ({ label: MONTH_NAMES[m], value: m }));
   });
 
   filteredInvoices = computed(() => {
@@ -89,7 +106,7 @@ export class InvoiceList implements OnInit {
     const month = this.filterMonth();
     const year = this.filterYear();
 
-    return this.invoices().filter(inv => {
+    return this.invoices().filter((inv) => {
       if (
         search &&
         !inv.invoiceNumber?.toLowerCase().includes(search) &&
@@ -144,7 +161,7 @@ export class InvoiceList implements OnInit {
   toggleStatus(status: InvoiceStatus) {
     const current = this.selectedStatuses();
     if (current.includes(status)) {
-      this.selectedStatuses.set(current.filter(s => s !== status));
+      this.selectedStatuses.set(current.filter((s) => s !== status));
     } else {
       this.selectedStatuses.set([...current, status]);
     }
@@ -174,6 +191,7 @@ export class InvoiceList implements OnInit {
   }
 
   viewInvoice(invoice: GetAllInvoicesResponse) {
+    if (!invoice.id) return;
     this.router.navigate(['/invoice', invoice.id]);
   }
 

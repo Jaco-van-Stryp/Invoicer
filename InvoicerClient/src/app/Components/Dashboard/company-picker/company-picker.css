@@ -41,8 +41,8 @@
 
 .company-item:hover {
   border-color: var(--purple);
-  background: rgba(168, 85, 247, 0.05);
-  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.1);
+  background: var(--purple-5);
+  box-shadow: 0 4px 12px var(--purple-10);
 }
 
 .company-avatar {
