@@ -144,45 +144,35 @@ export class FileService extends BaseService {
    * @param options additional options
    */
   public uploadFile(
-    fileStream?: Blob,
+    fileStream: Blob,
     observe?: 'body',
     reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<string>;
+    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
+  ): Observable<any>;
   public uploadFile(
-    fileStream?: Blob,
+    fileStream: Blob,
     observe?: 'response',
     reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpResponse<string>>;
+    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
+  ): Observable<HttpResponse<any>>;
   public uploadFile(
-    fileStream?: Blob,
+    fileStream: Blob,
     observe?: 'events',
     reportProgress?: boolean,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
-  ): Observable<HttpEvent<string>>;
+    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
+  ): Observable<HttpEvent<any>>;
   public uploadFile(
-    fileStream?: Blob,
+    fileStream: Blob,
     observe: any = 'body',
     reportProgress: boolean = false,
-    options?: {
-      httpHeaderAccept?: 'application/json';
-      context?: HttpContext;
-      transferCache?: boolean;
-    },
+    options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
   ): Observable<any> {
+    if (fileStream === null || fileStream === undefined) {
+      throw new Error(
+        'Required parameter fileStream was null or undefined when calling uploadFile.',
+      );
+    }
+
     let localVarHeaders = this.defaultHeaders;
 
     // authentication (Bearer) required
@@ -194,7 +184,7 @@ export class FileService extends BaseService {
     );
 
     const localVarHttpHeaderAcceptSelected: string | undefined =
-      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept(['application/json']);
+      options?.httpHeaderAccept ?? this.configuration.selectHeaderAccept([]);
     if (localVarHttpHeaderAcceptSelected !== undefined) {
       localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
     }
@@ -238,7 +228,7 @@ export class FileService extends BaseService {
 
     let localVarPath = `/api/file/upload`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<string>('post', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<any>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: localVarConvertFormParamsToString ? localVarFormParams.toString() : localVarFormParams,
       responseType: <any>responseType_,

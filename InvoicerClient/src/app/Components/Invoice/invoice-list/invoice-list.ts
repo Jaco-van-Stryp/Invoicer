@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -37,6 +38,7 @@ const MONTH_NAMES = [
   templateUrl: './invoice-list.html',
 })
 export class InvoiceList implements OnInit {
+  router = inject(Router);
   invoiceService = inject(InvoiceService);
   companyStore = inject(CompanyStore);
   messageService = inject(MessageService);
@@ -169,6 +171,10 @@ export class InvoiceList implements OnInit {
   openNew() {
     this.selectedInvoice.set(null);
     this.dialogVisible.set(true);
+  }
+
+  viewInvoice(invoice: GetAllInvoicesResponse) {
+    this.router.navigate(['/invoice', invoice.id]);
   }
 
   editInvoice(invoice: GetAllInvoicesResponse) {

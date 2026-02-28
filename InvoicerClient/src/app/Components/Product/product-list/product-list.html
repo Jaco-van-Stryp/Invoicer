@@ -44,7 +44,7 @@
         <div class="product-image-area">
           @if (product.imageUrl) {
             <img
-              [src]="product.imageUrl"
+              [src]="product.imageUrl | fileUrl"
               [alt]="product.name || 'Product image'"
               class="product-image"
             />

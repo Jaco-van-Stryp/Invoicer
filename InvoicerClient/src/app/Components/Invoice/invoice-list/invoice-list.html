@@ -136,7 +136,7 @@
             icon="pi pi-envelope"
             [rounded]="true"
             [outlined]="true"
-            severity="info"
+            severity="warn"
             size="small"
             (click)="sendEmail(invoice)"
             pTooltip="Email Invoice"
@@ -151,6 +151,16 @@
             (click)="openPaymentDialog(invoice)"
             pTooltip="Record Payment"
             aria-label="Record payment"
+          />
+          <p-button
+            icon="pi pi-eye"
+            [rounded]="true"
+            [outlined]="true"
+            severity="info"
+            size="small"
+            (click)="viewInvoice(invoice)"
+            pTooltip="View"
+            aria-label="View invoice"
           />
           <p-button
             icon="pi pi-pencil"

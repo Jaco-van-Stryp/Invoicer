@@ -1,3 +1,5 @@
+using System.Net;
+using System.Text;
 using Invoicer.Domain.Data;
 using Invoicer.Domain.Entities;
 using Invoicer.Domain.Exceptions;
@@ -6,8 +8,6 @@ using Invoicer.Infrastructure.EmailService;
 using Invoicer.Infrastructure.EmailTemplateService;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.Net;
-using System.Text;
 
 namespace Invoicer.Features.Invoice.SendInvoiceEmail;
 
@@ -101,9 +101,7 @@ public class SendInvoiceEmailHandler(
         );
     }
 
-    private static string BuildLineItemsHtml(
-        IEnumerable<ProductInvoice> products
-    )
+    private static string BuildLineItemsHtml(IEnumerable<ProductInvoice> products)
     {
         var sb = new StringBuilder();
         sb.Append(

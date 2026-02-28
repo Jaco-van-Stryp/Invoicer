@@ -10,6 +10,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TooltipModule } from 'primeng/tooltip';
 import { ProductService, GetAllProductsResponse } from '../../../api';
 import { CompanyStore } from '../../../Services/company-store';
+import { FileUrlPipe } from '../../../Pipes/file-url.pipe';
 import { ProductFormDialog } from '../product-form-dialog/product-form-dialog';
 
 @Component({
@@ -25,6 +26,7 @@ import { ProductFormDialog } from '../product-form-dialog/product-form-dialog';
     ConfirmDialogModule,
     TooltipModule,
     ProductFormDialog,
+    FileUrlPipe,
   ],
   host: { class: 'block' },
   styleUrl: './product-list.css',

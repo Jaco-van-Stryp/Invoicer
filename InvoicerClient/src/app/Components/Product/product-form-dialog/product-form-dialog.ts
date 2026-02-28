@@ -9,6 +9,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { ProductService, GetAllProductsResponse, FileService } from '../../../api';
+import { FileUrlPipe } from '../../../Pipes/file-url.pipe';
 import { CompanyStore } from '../../../Services/company-store';
 import { ChangeDetectionStrategy } from '@angular/core';
 
@@ -24,6 +25,7 @@ import { ChangeDetectionStrategy } from '@angular/core';
     InputNumberModule,
     InputTextModule,
     TextareaModule,
+    FileUrlPipe,
   ],
   host: { class: 'block' },
   styleUrl: './product-form-dialog.css',

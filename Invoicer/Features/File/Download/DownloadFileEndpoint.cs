@@ -1,5 +1,4 @@
-using System;
-using MediatR;
+using Invoicer.Infrastructure.StorageService;
 
 namespace Invoicer.Features.File.Download;
 
@@ -9,16 +8,14 @@ public static class DownloadFileEndpoint
     {
         app.MapGet(
                 "download/{filename:guid}",
-                async (Guid filename, ISender sender) =>
+                async (Guid filename, IStorageService storageService) =>
                 {
-                    var query = new DownloadFileQuery(filename);
-                    var result = await sender.Send(query);
+                    var result = await storageService.DownloadFileAsync(filename);
                     return TypedResults.File(result, "application/octet-stream");
                 }
             )
             .WithName("DownloadFile")
-            .Produces<byte[]>(contentType: "application/octet-stream")
-            .RequireAuthorization();
+            .Produces<byte[]>(contentType: "application/octet-stream");
         return app;
     }
 }

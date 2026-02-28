@@ -47,7 +47,7 @@
       @if (imagePreview()) {
         <div class="flex items-center gap-3">
           <img
-            [src]="imagePreview()!"
+            [src]="imagePreview() | fileUrl"
             alt="Product image preview"
             class="image-preview"
             style="width: 5rem; height: 5rem"
