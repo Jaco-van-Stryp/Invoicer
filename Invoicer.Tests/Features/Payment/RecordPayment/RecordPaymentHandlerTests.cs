@@ -3,8 +3,11 @@ using Invoicer.Domain.Entities;
 using Invoicer.Domain.Enums;
 using Invoicer.Domain.Exceptions;
 using Invoicer.Features.Payment.RecordPayment;
+using Invoicer.Infrastructure.EmailService;
+using Invoicer.Infrastructure.EmailTemplateService;
 using Invoicer.Tests.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using NSubstitute;
 
 namespace Invoicer.Tests.Features.Payment.RecordPayment;
 
@@ -100,7 +103,7 @@ public class RecordPaymentHandlerTests(DatabaseFixture db) : IntegrationTestBase
         // Arrange — total due = 100 * 2 = 200
         var (user, company, _, invoice) = await SeedFullScenarioAsync(100m, 2);
         SetCurrentUser(user.Id, user.Email);
-        var handler = new RecordPaymentHandler(DbContext, CurrentUserService);
+        var handler = new RecordPaymentHandler(DbContext, CurrentUserService, Substitute.For<IEmailService>(), Substitute.For<IEmailTemplateService>());
 
         var command = new RecordPaymentCommand(
             CompanyId: company.Id,
@@ -133,7 +136,7 @@ public class RecordPaymentHandlerTests(DatabaseFixture db) : IntegrationTestBase
         // Arrange — total due = 100 * 2 = 200
         var (user, company, _, invoice) = await SeedFullScenarioAsync(100m, 2);
         SetCurrentUser(user.Id, user.Email);
-        var handler = new RecordPaymentHandler(DbContext, CurrentUserService);
+        var handler = new RecordPaymentHandler(DbContext, CurrentUserService, Substitute.For<IEmailService>(), Substitute.For<IEmailTemplateService>());
 
         var command = new RecordPaymentCommand(
             CompanyId: company.Id,
@@ -160,7 +163,7 @@ public class RecordPaymentHandlerTests(DatabaseFixture db) : IntegrationTestBase
         // Arrange — total due = 100 * 2 = 200
         var (user, company, _, invoice) = await SeedFullScenarioAsync(100m, 2);
         SetCurrentUser(user.Id, user.Email);
-        var handler = new RecordPaymentHandler(DbContext, CurrentUserService);
+        var handler = new RecordPaymentHandler(DbContext, CurrentUserService, Substitute.For<IEmailService>(), Substitute.For<IEmailTemplateService>());
 
         await handler.Handle(
             new RecordPaymentCommand(company.Id, invoice.Id, 100m, DateTime.UtcNow, null),
@@ -188,7 +191,7 @@ public class RecordPaymentHandlerTests(DatabaseFixture db) : IntegrationTestBase
     public async Task Handle_NonExistentUser_ThrowsUserNotFoundException()
     {
         SetCurrentUser(Guid.NewGuid());
-        var handler = new RecordPaymentHandler(DbContext, CurrentUserService);
+        var handler = new RecordPaymentHandler(DbContext, CurrentUserService, Substitute.For<IEmailService>(), Substitute.For<IEmailTemplateService>());
 
         var act = () =>
             handler.Handle(
@@ -223,7 +226,7 @@ public class RecordPaymentHandlerTests(DatabaseFixture db) : IntegrationTestBase
         await DbContext.SaveChangesAsync();
 
         SetCurrentUser(otherUser.Id, otherUser.Email);
-        var handler = new RecordPaymentHandler(DbContext, CurrentUserService);
+        var handler = new RecordPaymentHandler(DbContext, CurrentUserService, Substitute.For<IEmailService>(), Substitute.For<IEmailTemplateService>());
 
         var act = () =>
             handler.Handle(
@@ -239,7 +242,7 @@ public class RecordPaymentHandlerTests(DatabaseFixture db) : IntegrationTestBase
     {
         var (user, company, _, _) = await SeedFullScenarioAsync();
         SetCurrentUser(user.Id, user.Email);
-        var handler = new RecordPaymentHandler(DbContext, CurrentUserService);
+        var handler = new RecordPaymentHandler(DbContext, CurrentUserService, Substitute.For<IEmailService>(), Substitute.For<IEmailTemplateService>());
 
         var act = () =>
             handler.Handle(

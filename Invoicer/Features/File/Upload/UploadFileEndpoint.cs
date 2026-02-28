@@ -1,5 +1,5 @@
-using System;
-using MediatR;
+using Invoicer.Infrastructure.StorageService;
+using Microsoft.AspNetCore.Http;
 
 namespace Invoicer.Features.File.Upload;
 
@@ -9,14 +9,22 @@ public static class UploadFileEndpoint
     {
         app.MapPost(
                 "upload",
-                async (UploadFileCommand command, ISender sender) =>
+                async (IFormFile fileStream, IStorageService storageService) =>
                 {
-                    var result = await sender.Send(command);
-                    return TypedResults.Ok(result);
+                    if (string.IsNullOrEmpty(fileStream.ContentType) || !fileStream.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+                        return Results.Problem(
+                            "Only image files are allowed.",
+                            statusCode: StatusCodes.Status400BadRequest
+                        );
+
+                    using var stream = fileStream.OpenReadStream();
+                    var result = await storageService.UploadFileAsync(stream);
+                    return Results.Ok(result);
                 }
             )
             .WithName("UploadFile")
-            .Accepts<UploadFileCommand>("multipart/form-data")
+            .Accepts<IFormFile>("multipart/form-data")
+            .DisableAntiforgery()
             .RequireAuthorization();
         return app;
     }

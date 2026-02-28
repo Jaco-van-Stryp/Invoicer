@@ -8,6 +8,7 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { CompanyService, FileService } from '../../../api';
+import { FileUrlPipe } from '../../../Pipes/file-url.pipe';
 import { CompanyStore } from '../../../Services/company-store';
 import { ChangeDetectionStrategy } from '@angular/core';
 
@@ -22,6 +23,7 @@ import { ChangeDetectionStrategy } from '@angular/core';
     FloatLabelModule,
     InputTextModule,
     TextareaModule,
+    FileUrlPipe,
   ],
   host: { class: 'block' },
   styleUrl: './edit-company-dialog.css',

@@ -12,11 +12,12 @@ import { ActivatedRoute } from '@angular/router';
 import { InvoiceService, GetPublicInvoiceResponse } from '../../../api';
 import { ButtonModule } from 'primeng/button';
 import { CurrencyPipe, DatePipe } from '@angular/common';
+import { FileUrlPipe } from '../../../Pipes/file-url.pipe';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-public-invoice-view',
-  imports: [ButtonModule, DatePipe, CurrencyPipe],
+  imports: [ButtonModule, DatePipe, CurrencyPipe, FileUrlPipe],
   host: { class: 'block' },
   templateUrl: './public-invoice-view.html',
   styleUrl: './public-invoice-view.css',

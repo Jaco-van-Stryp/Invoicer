@@ -35,7 +35,7 @@
             <div class="invoice-header-left">
               @if (invoice()?.company?.logoUrl) {
                 <img
-                  [src]="invoice()?.company?.logoUrl ?? ''"
+                  [src]="invoice()?.company?.logoUrl | fileUrl"
                   alt="{{ invoice()?.company?.name }} logo"
                   class="company-logo"
                 />

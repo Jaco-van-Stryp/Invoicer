@@ -4,12 +4,13 @@ import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CompanyService, GetAllCompaniesResponse } from '../../../api';
 import { CompanyStore } from '../../../Services/company-store';
+import { Logo } from '../../General/logo/logo';
 import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-company-picker',
-  imports: [RouterLink, ButtonModule],
+  imports: [RouterLink, ButtonModule, Logo],
   host: { class: 'block' },
   styleUrl: './company-picker.css',
   templateUrl: './company-picker.html',

@@ -1,5 +1,5 @@
-using System;
-using MediatR;
+using Invoicer.Infrastructure.StorageService;
+using Minio.Exceptions;
 
 namespace Invoicer.Features.File.Download;
 
@@ -9,11 +9,17 @@ public static class DownloadFileEndpoint
     {
         app.MapGet(
                 "download/{filename:guid}",
-                async (Guid filename, ISender sender) =>
+                async (Guid filename, IStorageService storageService) =>
                 {
-                    var query = new DownloadFileQuery(filename);
-                    var result = await sender.Send(query);
-                    return TypedResults.File(result, "application/octet-stream");
+                    try
+                    {
+                        var result = await storageService.DownloadFileAsync(filename);
+                        return Results.File(result, "application/octet-stream");
+                    }
+                    catch (ObjectNotFoundException)
+                    {
+                        return Results.NotFound();
+                    }
                 }
             )
             .WithName("DownloadFile")

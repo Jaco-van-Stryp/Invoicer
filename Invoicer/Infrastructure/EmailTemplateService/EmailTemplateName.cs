@@ -8,5 +8,7 @@ namespace Invoicer.Infrastructure.EmailTemplateService
         AccountLockedOut,
         WaitingListConfirmation,
         SendInvoiceEmail,
+        PaymentReceived,
+        PaymentConfirmation,
     }
 }

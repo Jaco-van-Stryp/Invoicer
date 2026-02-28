@@ -17,6 +17,7 @@ namespace Invoicer.Infrastructure.EmailTemplateService
         )
         {
             "InvoiceLineItems",
+            "StatusSection",
         };
 
         public string RenderTemplate(

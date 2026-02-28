@@ -15,11 +15,12 @@ import {
 } from '../../../api';
 import { CompanyStore } from '../../../Services/company-store';
 import { AuthStore } from '../../../Services/auth-store';
+import { FileUrlPipe } from '../../../Pipes/file-url.pipe';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-dashboard-home',
-  imports: [RouterLink, ButtonModule, ChartModule, CurrencyPipe],
+  imports: [RouterLink, ButtonModule, ChartModule, CurrencyPipe, FileUrlPipe],
   host: { class: 'block' },
   styleUrl: './dashboard-home.css',
   templateUrl: './dashboard-home.html',
