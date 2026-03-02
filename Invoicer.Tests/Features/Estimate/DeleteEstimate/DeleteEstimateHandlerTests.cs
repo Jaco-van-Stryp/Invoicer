@@ -104,7 +104,10 @@ public class DeleteEstimateHandlerTests(DatabaseFixture db) : IntegrationTestBas
         var handler = new DeleteEstimateHandler(DbContext, CurrentUserService);
 
         // Act
-        await handler.Handle(new DeleteEstimateCommand(EstimateId: estimateId), CancellationToken.None);
+        await handler.Handle(
+            new DeleteEstimateCommand(EstimateId: estimateId),
+            CancellationToken.None
+        );
 
         // Assert — estimate is deleted
         DbContext.ChangeTracker.Clear();
@@ -170,7 +173,10 @@ public class DeleteEstimateHandlerTests(DatabaseFixture db) : IntegrationTestBas
 
         // Act & Assert
         var act = () =>
-            handler.Handle(new DeleteEstimateCommand(EstimateId: Guid.NewGuid()), CancellationToken.None);
+            handler.Handle(
+                new DeleteEstimateCommand(EstimateId: Guid.NewGuid()),
+                CancellationToken.None
+            );
         await act.Should().ThrowAsync<UserNotFoundException>();
     }
 
@@ -184,7 +190,10 @@ public class DeleteEstimateHandlerTests(DatabaseFixture db) : IntegrationTestBas
 
         // Act & Assert
         var act = () =>
-            handler.Handle(new DeleteEstimateCommand(EstimateId: Guid.NewGuid()), CancellationToken.None);
+            handler.Handle(
+                new DeleteEstimateCommand(EstimateId: Guid.NewGuid()),
+                CancellationToken.None
+            );
         await act.Should().ThrowAsync<EstimateNotFoundException>();
     }
 
@@ -212,7 +221,10 @@ public class DeleteEstimateHandlerTests(DatabaseFixture db) : IntegrationTestBas
 
         // Act & Assert — handler searches user2's companies; estimate not found → EstimateNotFoundException
         var act = () =>
-            handler.Handle(new DeleteEstimateCommand(EstimateId: estimate.Id), CancellationToken.None);
+            handler.Handle(
+                new DeleteEstimateCommand(EstimateId: estimate.Id),
+                CancellationToken.None
+            );
         await act.Should().ThrowAsync<EstimateNotFoundException>();
     }
 }

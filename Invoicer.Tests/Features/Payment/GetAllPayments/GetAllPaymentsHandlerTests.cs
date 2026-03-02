@@ -119,14 +119,27 @@ public class GetAllPaymentsHandlerTests(DatabaseFixture db) : IntegrationTestBas
     {
         // Arrange
         var (user, company, invoice) = await SeedUserWithCompanyAndInvoiceAsync();
-        await SeedPaymentAsync(company, invoice, 50m, new DateTime(2026, 1, 10, 0, 0, 0, DateTimeKind.Utc));
-        await SeedPaymentAsync(company, invoice, 75m, new DateTime(2026, 1, 20, 0, 0, 0, DateTimeKind.Utc));
+        await SeedPaymentAsync(
+            company,
+            invoice,
+            50m,
+            new DateTime(2026, 1, 10, 0, 0, 0, DateTimeKind.Utc)
+        );
+        await SeedPaymentAsync(
+            company,
+            invoice,
+            75m,
+            new DateTime(2026, 1, 20, 0, 0, 0, DateTimeKind.Utc)
+        );
 
         SetCurrentUser(user.Id, user.Email);
         var handler = new GetAllPaymentsHandler(DbContext, CurrentUserService);
 
         // Act
-        var result = await handler.Handle(new GetAllPaymentsQuery(company.Id), CancellationToken.None);
+        var result = await handler.Handle(
+            new GetAllPaymentsQuery(company.Id),
+            CancellationToken.None
+        );
 
         // Assert
         result.Should().HaveCount(2);
@@ -143,7 +156,10 @@ public class GetAllPaymentsHandlerTests(DatabaseFixture db) : IntegrationTestBas
         var handler = new GetAllPaymentsHandler(DbContext, CurrentUserService);
 
         // Act
-        var result = await handler.Handle(new GetAllPaymentsQuery(company.Id), CancellationToken.None);
+        var result = await handler.Handle(
+            new GetAllPaymentsQuery(company.Id),
+            CancellationToken.None
+        );
 
         // Assert
         result.Should().BeEmpty();
@@ -161,7 +177,10 @@ public class GetAllPaymentsHandlerTests(DatabaseFixture db) : IntegrationTestBas
         var handler = new GetAllPaymentsHandler(DbContext, CurrentUserService);
 
         // Act
-        var result = await handler.Handle(new GetAllPaymentsQuery(company.Id), CancellationToken.None);
+        var result = await handler.Handle(
+            new GetAllPaymentsQuery(company.Id),
+            CancellationToken.None
+        );
 
         // Assert
         result.Should().HaveCount(1);
@@ -189,7 +208,10 @@ public class GetAllPaymentsHandlerTests(DatabaseFixture db) : IntegrationTestBas
         var handler = new GetAllPaymentsHandler(DbContext, CurrentUserService);
 
         // Act
-        var result = await handler.Handle(new GetAllPaymentsQuery(company.Id), CancellationToken.None);
+        var result = await handler.Handle(
+            new GetAllPaymentsQuery(company.Id),
+            CancellationToken.None
+        );
 
         // Assert — most recent first
         result[0].Amount.Should().Be(20m);
@@ -257,7 +279,10 @@ public class GetAllPaymentsHandlerTests(DatabaseFixture db) : IntegrationTestBas
         var handler = new GetAllPaymentsHandler(DbContext, CurrentUserService);
 
         // Act — query only company1
-        var result = await handler.Handle(new GetAllPaymentsQuery(company1.Id), CancellationToken.None);
+        var result = await handler.Handle(
+            new GetAllPaymentsQuery(company1.Id),
+            CancellationToken.None
+        );
 
         // Assert
         result.Should().HaveCount(1);
@@ -272,7 +297,8 @@ public class GetAllPaymentsHandlerTests(DatabaseFixture db) : IntegrationTestBas
         var handler = new GetAllPaymentsHandler(DbContext, CurrentUserService);
 
         // Act & Assert
-        var act = () => handler.Handle(new GetAllPaymentsQuery(Guid.NewGuid()), CancellationToken.None);
+        var act = () =>
+            handler.Handle(new GetAllPaymentsQuery(Guid.NewGuid()), CancellationToken.None);
         await act.Should().ThrowAsync<UserNotFoundException>();
     }
 
@@ -297,7 +323,8 @@ public class GetAllPaymentsHandlerTests(DatabaseFixture db) : IntegrationTestBas
         var handler = new GetAllPaymentsHandler(DbContext, CurrentUserService);
 
         // Act & Assert
-        var act = () => handler.Handle(new GetAllPaymentsQuery(Guid.NewGuid()), CancellationToken.None);
+        var act = () =>
+            handler.Handle(new GetAllPaymentsQuery(Guid.NewGuid()), CancellationToken.None);
         await act.Should().ThrowAsync<CompanyNotFoundException>();
     }
 }

@@ -85,7 +85,11 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         // Arrange
         var (user, company, client, productA, productB) = await SeedFullScenarioAsync();
         SetCurrentUser(user.Id, user.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
+        var handler = new CreateInvoiceHandler(
+            DbContext,
+            CurrentUserService,
+            Substitute.For<ISender>()
+        );
 
         var invoiceDate = new DateTime(2026, 1, 15, 0, 0, 0, DateTimeKind.Utc);
         var invoiceDue = new DateTime(2026, 2, 15, 0, 0, 0, DateTimeKind.Utc);
@@ -136,7 +140,11 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         // Arrange
         var (user, company, client, productA, _) = await SeedFullScenarioAsync();
         SetCurrentUser(user.Id, user.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
+        var handler = new CreateInvoiceHandler(
+            DbContext,
+            CurrentUserService,
+            Substitute.For<ISender>()
+        );
 
         var command = new CreateInvoiceCommand(
             CompanyId: company.Id,
@@ -167,7 +175,11 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         // Arrange
         var (user, company, client, productA, _) = await SeedFullScenarioAsync();
         SetCurrentUser(user.Id, user.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
+        var handler = new CreateInvoiceHandler(
+            DbContext,
+            CurrentUserService,
+            Substitute.For<ISender>()
+        );
 
         var command = new CreateInvoiceCommand(
             CompanyId: company.Id,
@@ -191,7 +203,11 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
     {
         // Arrange
         SetCurrentUser(Guid.NewGuid());
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
+        var handler = new CreateInvoiceHandler(
+            DbContext,
+            CurrentUserService,
+            Substitute.For<ISender>()
+        );
 
         var command = new CreateInvoiceCommand(
             CompanyId: Guid.NewGuid(),
@@ -224,7 +240,11 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         await DbContext.SaveChangesAsync();
 
         SetCurrentUser(user.Id, user.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
+        var handler = new CreateInvoiceHandler(
+            DbContext,
+            CurrentUserService,
+            Substitute.For<ISender>()
+        );
 
         var command = new CreateInvoiceCommand(
             CompanyId: Guid.NewGuid(),
@@ -245,7 +265,11 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         // Arrange
         var (user, company, _, productA, _) = await SeedFullScenarioAsync();
         SetCurrentUser(user.Id, user.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
+        var handler = new CreateInvoiceHandler(
+            DbContext,
+            CurrentUserService,
+            Substitute.For<ISender>()
+        );
 
         var command = new CreateInvoiceCommand(
             CompanyId: company.Id,
@@ -266,7 +290,11 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         // Arrange
         var (user, company, client, _, _) = await SeedFullScenarioAsync();
         SetCurrentUser(user.Id, user.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
+        var handler = new CreateInvoiceHandler(
+            DbContext,
+            CurrentUserService,
+            Substitute.For<ISender>()
+        );
 
         var command = new CreateInvoiceCommand(
             CompanyId: company.Id,
@@ -300,7 +328,11 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         await DbContext.SaveChangesAsync();
 
         SetCurrentUser(user2.Id, user2.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
+        var handler = new CreateInvoiceHandler(
+            DbContext,
+            CurrentUserService,
+            Substitute.For<ISender>()
+        );
 
         var command = new CreateInvoiceCommand(
             CompanyId: company.Id,
@@ -325,7 +357,11 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         await DbContext.SaveChangesAsync();
 
         SetCurrentUser(user.Id, user.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
+        var handler = new CreateInvoiceHandler(
+            DbContext,
+            CurrentUserService,
+            Substitute.For<ISender>()
+        );
 
         var command = new CreateInvoiceCommand(
             CompanyId: company.Id,
@@ -356,7 +392,11 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         await DbContext.SaveChangesAsync();
 
         SetCurrentUser(user.Id, user.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
+        var handler = new CreateInvoiceHandler(
+            DbContext,
+            CurrentUserService,
+            Substitute.For<ISender>()
+        );
 
         var command = new CreateInvoiceCommand(
             CompanyId: company.Id,
@@ -365,8 +405,8 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
             InvoiceDue: DateTime.UtcNow.AddDays(30),
             Products:
             [
-                new CreateInvoiceProductItem(productA.Id, 1, IsTaxed: true),   // $10 taxable
-                new CreateInvoiceProductItem(productB.Id, 1, IsTaxed: false),  // $25 not taxable
+                new CreateInvoiceProductItem(productA.Id, 1, IsTaxed: true), // $10 taxable
+                new CreateInvoiceProductItem(productB.Id, 1, IsTaxed: false), // $25 not taxable
             ]
         );
 

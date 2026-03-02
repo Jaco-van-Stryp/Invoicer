@@ -109,10 +109,18 @@ public class SendInvoiceEmailHandlerTests(DatabaseFixture db) : IntegrationTestB
             .SendEmailAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(true);
 
-        var handler = new SendInvoiceEmailHandler(DbContext, CurrentUserService, emailService, emailTemplateService);
+        var handler = new SendInvoiceEmailHandler(
+            DbContext,
+            CurrentUserService,
+            emailService,
+            emailTemplateService
+        );
 
         // Act
-        await handler.Handle(new SendInvoiceEmailCommand(invoice.Id, company.Id), CancellationToken.None);
+        await handler.Handle(
+            new SendInvoiceEmailCommand(invoice.Id, company.Id),
+            CancellationToken.None
+        );
 
         // Assert — one email to client, one to owner
         await emailService
@@ -150,7 +158,10 @@ public class SendInvoiceEmailHandlerTests(DatabaseFixture db) : IntegrationTestB
 
         // Act & Assert
         var act = () =>
-            handler.Handle(new SendInvoiceEmailCommand(Guid.NewGuid(), Guid.NewGuid()), CancellationToken.None);
+            handler.Handle(
+                new SendInvoiceEmailCommand(Guid.NewGuid(), Guid.NewGuid()),
+                CancellationToken.None
+            );
         await act.Should().ThrowAsync<UserNotFoundException>();
     }
 
@@ -181,7 +192,10 @@ public class SendInvoiceEmailHandlerTests(DatabaseFixture db) : IntegrationTestB
 
         // Act & Assert
         var act = () =>
-            handler.Handle(new SendInvoiceEmailCommand(Guid.NewGuid(), Guid.NewGuid()), CancellationToken.None);
+            handler.Handle(
+                new SendInvoiceEmailCommand(Guid.NewGuid(), Guid.NewGuid()),
+                CancellationToken.None
+            );
         await act.Should().ThrowAsync<CompanyNotFoundException>();
     }
 
@@ -235,7 +249,10 @@ public class SendInvoiceEmailHandlerTests(DatabaseFixture db) : IntegrationTestB
 
         // Act & Assert
         var act = () =>
-            handler.Handle(new SendInvoiceEmailCommand(invoice.Id, company.Id), CancellationToken.None);
+            handler.Handle(
+                new SendInvoiceEmailCommand(invoice.Id, company.Id),
+                CancellationToken.None
+            );
         await act.Should().ThrowAsync<CompanyNotFoundException>();
     }
 
@@ -303,7 +320,10 @@ public class SendInvoiceEmailHandlerTests(DatabaseFixture db) : IntegrationTestB
 
         // Act — try to send invoice2 using company1's ID → invoice not found for company1
         var act = () =>
-            handler.Handle(new SendInvoiceEmailCommand(invoice2.Id, company1.Id), CancellationToken.None);
+            handler.Handle(
+                new SendInvoiceEmailCommand(invoice2.Id, company1.Id),
+                CancellationToken.None
+            );
         await act.Should().ThrowAsync<InvoiceNotFoundException>();
     }
 }

@@ -274,14 +274,17 @@ public class GetAllInvoicesHandlerTests(DatabaseFixture db) : IntegrationTestBas
         var handler = new GetAllInvoicesHandler(DbContext, CurrentUserService);
 
         // Act
-        var result = await handler.Handle(new GetAllInvoicesQuery(company.Id), CancellationToken.None);
+        var result = await handler.Handle(
+            new GetAllInvoicesQuery(company.Id),
+            CancellationToken.None
+        );
 
         // Assert
         result.Should().HaveCount(1);
         var returned = result[0];
-        returned.Subtotal.Should().Be(30m);    // 15 * 2
-        returned.TaxAmount.Should().Be(3m);    // 30 * 10%
-        returned.TotalDue.Should().Be(33m);    // 30 + 3
+        returned.Subtotal.Should().Be(30m); // 15 * 2
+        returned.TaxAmount.Should().Be(3m); // 30 * 10%
+        returned.TotalDue.Should().Be(33m); // 30 + 3
         returned.TaxRate.Should().Be(10m);
         returned.TaxName.Should().Be("GST");
     }
@@ -320,7 +323,10 @@ public class GetAllInvoicesHandlerTests(DatabaseFixture db) : IntegrationTestBas
         var handler = new GetAllInvoicesHandler(DbContext, CurrentUserService);
 
         // Act
-        var result = await handler.Handle(new GetAllInvoicesQuery(company.Id), CancellationToken.None);
+        var result = await handler.Handle(
+            new GetAllInvoicesQuery(company.Id),
+            CancellationToken.None
+        );
 
         // Assert
         result.Should().HaveCount(1);

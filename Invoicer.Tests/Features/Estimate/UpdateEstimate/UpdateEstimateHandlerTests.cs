@@ -159,10 +159,7 @@ public class UpdateEstimateHandlerTests(DatabaseFixture db) : IntegrationTestBas
             ExpiresOn: null,
             Status: null,
             Notes: null,
-            Products:
-            [
-                new UpdateEstimateProductItem(productB.Id, 4),
-            ]
+            Products: [new UpdateEstimateProductItem(productB.Id, 4)]
         );
 
         // Act

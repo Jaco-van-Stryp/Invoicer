@@ -6,7 +6,6 @@ using Invoicer.Features.Estimate.CreateEstimate;
 using Invoicer.Tests.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace Invoicer.Tests.Features.Estimate.CreateEstimate;
 
 [Collection("Database")]
@@ -389,8 +388,8 @@ public class CreateEstimateHandlerTests(DatabaseFixture db) : IntegrationTestBas
             Notes: null,
             Products:
             [
-                new CreateEstimateProductItem(productA.Id, 1, IsTaxed: true),   // $10 taxable → tax $1
-                new CreateEstimateProductItem(productB.Id, 1, IsTaxed: false),  // $25 not taxable
+                new CreateEstimateProductItem(productA.Id, 1, IsTaxed: true), // $10 taxable → tax $1
+                new CreateEstimateProductItem(productB.Id, 1, IsTaxed: false), // $25 not taxable
             ]
         );
 

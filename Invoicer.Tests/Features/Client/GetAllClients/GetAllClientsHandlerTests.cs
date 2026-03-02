@@ -192,7 +192,10 @@ public class GetAllClientsHandlerTests(DatabaseFixture db) : IntegrationTestBase
         var handler = new GetAllClientsHandler(DbContext, CurrentUserService);
 
         // Act
-        var result = await handler.Handle(new GetAllClientsQuery(company.Id), CancellationToken.None);
+        var result = await handler.Handle(
+            new GetAllClientsQuery(company.Id),
+            CancellationToken.None
+        );
 
         // Assert — only the active client is returned
         result.Should().HaveCount(1);

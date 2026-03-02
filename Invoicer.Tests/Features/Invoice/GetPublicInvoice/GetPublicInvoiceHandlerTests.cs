@@ -102,7 +102,10 @@ public class GetPublicInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestB
         var handler = new GetPublicInvoiceHandler(DbContext);
 
         // Act
-        var result = await handler.Handle(new GetPublicInvoiceQuery(invoice.Id), CancellationToken.None);
+        var result = await handler.Handle(
+            new GetPublicInvoiceQuery(invoice.Id),
+            CancellationToken.None
+        );
 
         // Assert
         result.Id.Should().Be(invoice.Id);
@@ -132,7 +135,10 @@ public class GetPublicInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestB
         var handler = new GetPublicInvoiceHandler(DbContext);
 
         // Act
-        var result = await handler.Handle(new GetPublicInvoiceQuery(invoice.Id), CancellationToken.None);
+        var result = await handler.Handle(
+            new GetPublicInvoiceQuery(invoice.Id),
+            CancellationToken.None
+        );
 
         // Assert
         result.TotalAmount.Should().Be(120m);
@@ -145,7 +151,8 @@ public class GetPublicInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestB
         var handler = new GetPublicInvoiceHandler(DbContext);
 
         // Act & Assert
-        var act = () => handler.Handle(new GetPublicInvoiceQuery(Guid.NewGuid()), CancellationToken.None);
+        var act = () =>
+            handler.Handle(new GetPublicInvoiceQuery(Guid.NewGuid()), CancellationToken.None);
         await act.Should().ThrowAsync<InvoiceNotFoundException>();
     }
 }
