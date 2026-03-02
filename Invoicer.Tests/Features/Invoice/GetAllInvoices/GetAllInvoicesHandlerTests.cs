@@ -235,6 +235,100 @@ public class GetAllInvoicesHandlerTests(DatabaseFixture db) : IntegrationTestBas
     }
 
     [Fact]
+    public async Task Handle_InvoiceWithTax_ReturnsTaxAmountAndTotalDue()
+    {
+        // Arrange — product $15, qty=2, taxable; TaxRate=10% → subtotal=$30, tax=$3, totalDue=$33
+        var (user, company, client, product) = await SeedUserWithCompanyClientAndProductAsync();
+        var invoice = new Domain.Entities.Invoice
+        {
+            Id = Guid.NewGuid(),
+            InvoiceNumber = "INV-TAX",
+            InvoiceDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+            InvoiceDue = new DateTime(2026, 1, 31, 0, 0, 0, DateTimeKind.Utc),
+            TaxRate = 10m,
+            TaxName = "GST",
+            ClientId = client.Id,
+            Client = client,
+            CompanyId = company.Id,
+            Company = company,
+            Products =
+            [
+                new ProductInvoice
+                {
+                    Id = Guid.NewGuid(),
+                    ProductId = product.Id,
+                    Product = product,
+                    InvoiceId = Guid.Empty,
+                    Invoice = null!,
+                    CompanyId = company.Id,
+                    Company = company,
+                    Quantity = 2,
+                    IsTaxed = true,
+                },
+            ],
+        };
+        await DbContext.Invoices.AddAsync(invoice);
+        await DbContext.SaveChangesAsync();
+
+        SetCurrentUser(user.Id, user.Email);
+        var handler = new GetAllInvoicesHandler(DbContext, CurrentUserService);
+
+        // Act
+        var result = await handler.Handle(new GetAllInvoicesQuery(company.Id), CancellationToken.None);
+
+        // Assert
+        result.Should().HaveCount(1);
+        var returned = result[0];
+        returned.Subtotal.Should().Be(30m);    // 15 * 2
+        returned.TaxAmount.Should().Be(3m);    // 30 * 10%
+        returned.TotalDue.Should().Be(33m);    // 30 + 3
+        returned.TaxRate.Should().Be(10m);
+        returned.TaxName.Should().Be("GST");
+    }
+
+    [Fact]
+    public async Task Handle_InvoiceWithPayments_ReturnsTotalPaid()
+    {
+        // Arrange
+        var (user, company, client, product) = await SeedUserWithCompanyClientAndProductAsync();
+        var invoice = await SeedInvoiceAsync(company, client, product, "INV-PAY", 1);
+
+        var payment1 = new Domain.Entities.Payment
+        {
+            Id = Guid.NewGuid(),
+            Amount = 8m,
+            PaidOn = new DateTime(2026, 1, 10, 0, 0, 0, DateTimeKind.Utc),
+            InvoiceId = invoice.Id,
+            Invoice = invoice,
+            CompanyId = company.Id,
+            Company = company,
+        };
+        var payment2 = new Domain.Entities.Payment
+        {
+            Id = Guid.NewGuid(),
+            Amount = 5m,
+            PaidOn = new DateTime(2026, 1, 20, 0, 0, 0, DateTimeKind.Utc),
+            InvoiceId = invoice.Id,
+            Invoice = invoice,
+            CompanyId = company.Id,
+            Company = company,
+        };
+        await DbContext.Payments.AddRangeAsync(payment1, payment2);
+        await DbContext.SaveChangesAsync();
+
+        SetCurrentUser(user.Id, user.Email);
+        var handler = new GetAllInvoicesHandler(DbContext, CurrentUserService);
+
+        // Act
+        var result = await handler.Handle(new GetAllInvoicesQuery(company.Id), CancellationToken.None);
+
+        // Assert
+        result.Should().HaveCount(1);
+        result[0].TotalPaid.Should().Be(13m);
+        result[0].Payments.Should().HaveCount(2);
+    }
+
+    [Fact]
     public async Task Handle_NonExistentUser_ThrowsUserNotFoundException()
     {
         // Arrange

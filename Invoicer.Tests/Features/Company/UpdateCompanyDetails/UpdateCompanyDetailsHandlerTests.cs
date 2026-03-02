@@ -57,7 +57,9 @@ public class UpdateCompanyDetailsHandlerTests(DatabaseFixture db) : IntegrationT
             PhoneNumber: "555-UPD",
             Email: "updated@test.com",
             PaymentDetails: "Bank: Updated",
-            LogoUrl: "https://updated.com/logo.png"
+            LogoUrl: "https://updated.com/logo.png",
+            TaxRate: null,
+            TaxName: null
         );
 
         // Act
@@ -92,7 +94,9 @@ public class UpdateCompanyDetailsHandlerTests(DatabaseFixture db) : IntegrationT
             PhoneNumber: null,
             Email: null,
             PaymentDetails: null,
-            LogoUrl: null
+            LogoUrl: null,
+            TaxRate: null,
+            TaxName: null
         );
 
         // Act
@@ -127,7 +131,9 @@ public class UpdateCompanyDetailsHandlerTests(DatabaseFixture db) : IntegrationT
             PhoneNumber: null,
             Email: null,
             PaymentDetails: null,
-            LogoUrl: null
+            LogoUrl: null,
+            TaxRate: null,
+            TaxName: null
         );
 
         // Act
@@ -147,6 +153,40 @@ public class UpdateCompanyDetailsHandlerTests(DatabaseFixture db) : IntegrationT
     }
 
     [Fact]
+    public async Task Handle_TaxFieldsProvided_UpdatesTaxRateAndTaxName()
+    {
+        // Arrange
+        var (user, company) = await SeedUserWithCompanyAsync();
+        SetCurrentUser(user.Id, user.Email);
+        var handler = new UpdateCompanyDetailsHandler(DbContext, CurrentUserService);
+
+        var command = new UpdateCompanyDetailsCommand(
+            CompanyId: company.Id,
+            Name: null,
+            Address: null,
+            TaxNumber: null,
+            PhoneNumber: null,
+            Email: null,
+            PaymentDetails: null,
+            LogoUrl: null,
+            TaxRate: 15m,
+            TaxName: "GST"
+        );
+
+        // Act
+        await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        DbContext.ChangeTracker.Clear();
+        var saved = await DbContext.Companies.FindAsync(company.Id);
+        saved.Should().NotBeNull();
+        saved!.TaxRate.Should().Be(15m);
+        saved.TaxName.Should().Be("GST");
+        // Other fields unchanged
+        saved.Name.Should().Be("Original Corp");
+    }
+
+    [Fact]
     public async Task Handle_NonExistentUser_ThrowsUserNotFoundException()
     {
         // Arrange
@@ -161,7 +201,9 @@ public class UpdateCompanyDetailsHandlerTests(DatabaseFixture db) : IntegrationT
             PhoneNumber: null,
             Email: null,
             PaymentDetails: null,
-            LogoUrl: null
+            LogoUrl: null,
+            TaxRate: null,
+            TaxName: null
         );
 
         // Act & Assert
@@ -199,7 +241,9 @@ public class UpdateCompanyDetailsHandlerTests(DatabaseFixture db) : IntegrationT
             PhoneNumber: null,
             Email: null,
             PaymentDetails: null,
-            LogoUrl: null
+            LogoUrl: null,
+            TaxRate: null,
+            TaxName: null
         );
 
         // Act & Assert
@@ -235,7 +279,9 @@ public class UpdateCompanyDetailsHandlerTests(DatabaseFixture db) : IntegrationT
             PhoneNumber: null,
             Email: null,
             PaymentDetails: null,
-            LogoUrl: null
+            LogoUrl: null,
+            TaxRate: null,
+            TaxName: null
         );
 
         // Act & Assert

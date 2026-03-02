@@ -258,6 +258,46 @@ public class UpdateEstimateHandlerTests(DatabaseFixture db) : IntegrationTestBas
     }
 
     [Fact]
+    public async Task Handle_UpdateProductsWithTax_RecalculatesTotalAmountWithTax()
+    {
+        // Arrange — estimate has TaxRate=10%; update to productB (price=$20) qty=3, IsTaxed=true
+        // subtotal=$60, taxable=$60, tax=$6, total=$66
+        var (user, company, _, _, productB, estimate) = await SeedFullScenarioAsync();
+        estimate.TaxRate = 10m;
+        estimate.TaxName = "GST";
+        await DbContext.SaveChangesAsync();
+
+        SetCurrentUser(user.Id, user.Email);
+        var handler = new UpdateEstimateHandler(DbContext, CurrentUserService);
+
+        var command = new UpdateEstimateCommand(
+            CompanyId: company.Id,
+            EstimateId: estimate.Id,
+            ClientId: null,
+            EstimateDate: null,
+            ExpiresOn: null,
+            Status: null,
+            Notes: null,
+            Products: [new UpdateEstimateProductItem(productB.Id, 3, IsTaxed: true)]
+        );
+
+        // Act
+        await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        DbContext.ChangeTracker.Clear();
+        var saved = await DbContext
+            .Estimates.Include(e => e.ProductEstimates)
+            .FirstOrDefaultAsync(e => e.Id == estimate.Id);
+        saved.Should().NotBeNull();
+        saved!.TotalAmount.Should().Be(66m); // 60 + 10% of 60
+        var savedPe = saved.ProductEstimates.Single();
+        savedPe.IsTaxed.Should().BeTrue();
+        savedPe.UnitPrice.Should().Be(20m);
+        savedPe.Quantity.Should().Be(3);
+    }
+
+    [Fact]
     public async Task Handle_NonExistentUser_ThrowsUserNotFoundException()
     {
         // Arrange
