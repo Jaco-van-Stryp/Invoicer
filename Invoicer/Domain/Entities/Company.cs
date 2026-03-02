@@ -12,6 +12,8 @@
         public required string LogoUrl { get; set; }
         public int NextInvoiceNumber { get; set; } = 1;
         public int NextEstimateNumber { get; set; } = 1;
+        public decimal TaxRate { get; set; } = 0;
+        public string? TaxName { get; set; }
         public required Guid UserId { get; init; }
         public required User User { get; init; } // In the future we could set up many to many here
         public ICollection<Product> Products { get; init; } = new List<Product>();

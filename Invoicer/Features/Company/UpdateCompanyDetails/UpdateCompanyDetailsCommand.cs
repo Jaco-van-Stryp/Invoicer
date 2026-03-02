@@ -11,6 +11,8 @@ namespace Invoicer.Features.Company.UpdateCompanyDetails
         string? PhoneNumber,
         string? Email,
         string? PaymentDetails,
-        string? LogoUrl
+        string? LogoUrl,
+        decimal? TaxRate,
+        string? TaxName
     ) : IRequest;
 }

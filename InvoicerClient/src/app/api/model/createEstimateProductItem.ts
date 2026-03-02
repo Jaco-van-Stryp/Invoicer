@@ -11,4 +11,5 @@
 export interface CreateEstimateProductItem {
   productId?: string;
   quantity?: number;
+  isTaxed?: boolean;
 }

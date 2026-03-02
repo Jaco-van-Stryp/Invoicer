@@ -8,6 +8,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { DatePickerModule } from 'primeng/datepicker';
 import { SelectModule } from 'primeng/select';
 import { InputNumberModule } from 'primeng/inputnumber';
+import { CheckboxModule } from 'primeng/checkbox';
 import { MessageService } from 'primeng/api';
 import {
   EstimateService,
@@ -25,6 +26,7 @@ import { CompanyStore } from '../../../Services/company-store';
 interface ProductLine {
   productId: string;
   quantity: number;
+  isTaxed: boolean;
 }
 
 @Component({
@@ -33,6 +35,7 @@ interface ProductLine {
   imports: [
     ReactiveFormsModule,
     FormsModule,
+    CheckboxModule,
     CurrencyPipe,
     DialogModule,
     ButtonModule,
@@ -62,8 +65,9 @@ export class EstimateFormDialog {
   loading = signal(false);
 
   isEditing = computed(() => !!this.estimate()?.id);
+  hasTax = computed(() => (this.companyStore.company()?.taxRate ?? 0) > 0);
 
-  grandTotal = computed(() => {
+  subtotal = computed(() => {
     const lines = this.productLines();
     const prods = this.products();
     return lines.reduce((sum, line) => {
@@ -71,6 +75,21 @@ export class EstimateFormDialog {
       return sum + (product?.price ?? 0) * line.quantity;
     }, 0);
   });
+
+  taxAmount = computed(() => {
+    const lines = this.productLines();
+    const prods = this.products();
+    const taxRate = this.companyStore.company()?.taxRate ?? 0;
+    const taxableSubtotal = lines
+      .filter((l) => l.isTaxed)
+      .reduce((sum, line) => {
+        const product = prods.find((p) => p.id === line.productId);
+        return sum + (product?.price ?? 0) * line.quantity;
+      }, 0);
+    return Math.round(taxableSubtotal * (taxRate / 100) * 100) / 100;
+  });
+
+  grandTotal = computed(() => this.subtotal() + this.taxAmount());
 
   statusOptions = Object.values(EstimateStatus).map((status) => ({
     label: status,
@@ -143,6 +162,7 @@ export class EstimateFormDialog {
         (est.products ?? []).map((p) => ({
           productId: p.productId ?? '',
           quantity: p.quantity ?? 1,
+          isTaxed: p.isTaxed ?? true,
         })),
       );
     } else {
@@ -155,7 +175,7 @@ export class EstimateFormDialog {
   }
 
   addProduct() {
-    this.productLines.update((lines) => [...lines, { productId: '', quantity: 1 }]);
+    this.productLines.update((lines) => [...lines, { productId: '', quantity: 1, isTaxed: true }]);
   }
 
   removeProduct(index: number) {
@@ -171,6 +191,12 @@ export class EstimateFormDialog {
   updateLineQuantity(index: number, quantity: number) {
     this.productLines.update((lines) =>
       lines.map((l, i) => (i === index ? { ...l, quantity } : l)),
+    );
+  }
+
+  updateLineTaxed(index: number, isTaxed: boolean) {
+    this.productLines.update((lines) =>
+      lines.map((l, i) => (i === index ? { ...l, isTaxed } : l)),
     );
   }
 
@@ -211,6 +237,7 @@ export class EstimateFormDialog {
     const products = validLines.map((p) => ({
       productId: p.productId,
       quantity: p.quantity,
+      isTaxed: p.isTaxed,
     }));
 
     if (this.isEditing()) {

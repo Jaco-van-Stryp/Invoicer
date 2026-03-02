@@ -33,10 +33,10 @@ export class PublicInvoiceView implements OnInit {
   error = signal<string | null>(null);
   printUrl = signal('');
 
-  subtotal = computed(
-    () => this.invoice()?.products?.reduce((sum, p) => sum + (p.totalPrice ?? 0), 0) ?? 0,
-  );
-
+  subtotal = computed(() => this.invoice()?.subtotal ?? this.invoice()?.totalAmount ?? 0);
+  taxAmount = computed(() => this.invoice()?.taxAmount ?? 0);
+  taxRate = computed(() => this.invoice()?.taxRate ?? 0);
+  taxName = computed(() => this.invoice()?.taxName ?? null);
   total = computed(() => this.invoice()?.totalAmount ?? 0);
 
   ngOnInit() {

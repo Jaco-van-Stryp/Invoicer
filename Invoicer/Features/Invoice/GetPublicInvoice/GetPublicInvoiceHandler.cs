@@ -26,8 +26,12 @@ public class GetPublicInvoiceHandler(AppDbContext _dbContext)
             throw new InvoiceNotFoundException();
         }
 
-        var totalPaid = invoice.Payments.Sum(p => p.Amount);
-        var totalDue = invoice.Products.Sum(p => p.Quantity * p.Product.Price);
+        var subtotal = invoice.Products.Sum(p => p.Quantity * p.Product.Price);
+        var taxableSubtotal = invoice
+            .Products.Where(p => p.IsTaxed)
+            .Sum(p => p.Quantity * p.Product.Price);
+        var taxAmount = Math.Round(taxableSubtotal * (invoice.TaxRate / 100), 2);
+        var totalDue = subtotal + taxAmount;
 
         return new GetPublicInvoiceResponse(
             invoice.Id,
@@ -36,6 +40,10 @@ public class GetPublicInvoiceHandler(AppDbContext _dbContext)
             invoice.InvoiceDue,
             invoice.Status.ToString(),
             totalDue,
+            subtotal,
+            taxAmount,
+            invoice.TaxRate,
+            invoice.TaxName,
             null,
             new CompanyInfo(
                 invoice.Company.Name,
@@ -56,7 +64,8 @@ public class GetPublicInvoiceHandler(AppDbContext _dbContext)
                     pi.Product.Name,
                     pi.Quantity,
                     pi.Product.Price,
-                    pi.Quantity * pi.Product.Price
+                    pi.Quantity * pi.Product.Price,
+                    pi.IsTaxed
                 ))
                 .ToList()
         );

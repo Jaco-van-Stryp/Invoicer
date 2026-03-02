@@ -16,6 +16,8 @@ namespace Invoicer.Domain.Entities
         public required Guid ClientId { get; set; }
         public required Company Company { get; init; }
         public required Guid CompanyId { get; init; }
+        public decimal TaxRate { get; set; } = 0;
+        public string? TaxName { get; set; }
 
         public static InvoiceStatus ComputeStatus(decimal totalDue, decimal totalPaid)
         {

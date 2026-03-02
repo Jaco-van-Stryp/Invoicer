@@ -10,6 +10,8 @@ namespace Invoicer.Domain.Entities
         public required DateTime ExpiresOn { get; set; }
         public required EstimateStatus Status { get; set; }
         public decimal TotalAmount { get; set; }
+        public decimal TaxRate { get; set; } = 0;
+        public string? TaxName { get; set; }
         public string? Notes { get; set; }
         public required Guid ClientId { get; set; }
         public required Client Client { get; set; }

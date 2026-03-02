@@ -21,6 +21,10 @@ export interface GetAllInvoicesResponse {
   status?: InvoiceStatus;
   totalDue?: number;
   totalPaid?: number;
+  subtotal?: number;
+  taxAmount?: number;
+  taxRate?: number;
+  taxName?: string | null;
   products?: Array<InvoiceProductItem> | null;
   payments?: Array<InvoicePaymentItem> | null;
 }

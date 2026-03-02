@@ -13,4 +13,5 @@ export interface InvoiceProductItem {
   productName?: string | null;
   price?: number;
   quantity?: number;
+  isTaxed?: boolean;
 }

@@ -37,35 +37,48 @@ namespace Invoicer.Features.Invoice.GetAllInvoices
                 throw new CompanyNotFoundException();
 
             var invoicesResponse = company
-                .Invoices.Select(i => new GetAllInvoicesResponse
+                .Invoices.Select(i =>
                 {
-                    Id = i.Id,
-                    InvoiceNumber = i.InvoiceNumber,
-                    InvoiceDate = i.InvoiceDate,
-                    InvoiceDue = i.InvoiceDue,
-                    ClientId = i.ClientId,
-                    ClientName = i.Client.Name,
-                    Status = i.Status,
-                    TotalDue = i.Products.Sum(pi => pi.Product.Price * pi.Quantity),
-                    TotalPaid = i.Payments.Sum(p => p.Amount),
-                    Products = i
-                        .Products.Select(pi => new InvoiceProductItem
-                        {
-                            ProductId = pi.ProductId,
-                            ProductName = pi.Product.Name,
-                            Price = pi.Product.Price,
-                            Quantity = pi.Quantity,
-                        })
-                        .ToList(),
-                    Payments = i
-                        .Payments.Select(p => new InvoicePaymentItem
-                        {
-                            PaymentId = p.Id,
-                            Amount = p.Amount,
-                            PaidOn = p.PaidOn,
-                            Notes = p.Notes,
-                        })
-                        .ToList(),
+                    var subtotal = i.Products.Sum(pi => pi.Product.Price * pi.Quantity);
+                    var taxableSubtotal = i
+                        .Products.Where(pi => pi.IsTaxed)
+                        .Sum(pi => pi.Product.Price * pi.Quantity);
+                    var taxAmount = Math.Round(taxableSubtotal * (i.TaxRate / 100), 2);
+                    return new GetAllInvoicesResponse
+                    {
+                        Id = i.Id,
+                        InvoiceNumber = i.InvoiceNumber,
+                        InvoiceDate = i.InvoiceDate,
+                        InvoiceDue = i.InvoiceDue,
+                        ClientId = i.ClientId,
+                        ClientName = i.Client.Name,
+                        Status = i.Status,
+                        Subtotal = subtotal,
+                        TaxAmount = taxAmount,
+                        TaxRate = i.TaxRate,
+                        TaxName = i.TaxName,
+                        TotalDue = subtotal + taxAmount,
+                        TotalPaid = i.Payments.Sum(p => p.Amount),
+                        Products = i
+                            .Products.Select(pi => new InvoiceProductItem
+                            {
+                                ProductId = pi.ProductId,
+                                ProductName = pi.Product.Name,
+                                Price = pi.Product.Price,
+                                Quantity = pi.Quantity,
+                                IsTaxed = pi.IsTaxed,
+                            })
+                            .ToList(),
+                        Payments = i
+                            .Payments.Select(p => new InvoicePaymentItem
+                            {
+                                PaymentId = p.Id,
+                                Amount = p.Amount,
+                                PaidOn = p.PaidOn,
+                                Notes = p.Notes,
+                            })
+                            .ToList(),
+                    };
                 })
                 .ToList();
 

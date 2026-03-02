@@ -49,6 +49,8 @@ namespace Invoicer.Features.Invoice.CreateInvoice
                 Client = client,
                 CompanyId = request.CompanyId,
                 Company = company,
+                TaxRate = company.TaxRate,
+                TaxName = company.TaxName,
                 Products = new List<ProductInvoice>(),
             };
 
@@ -68,6 +70,7 @@ namespace Invoicer.Features.Invoice.CreateInvoice
                         CompanyId = request.CompanyId,
                         Company = company,
                         Quantity = item.Quantity,
+                        IsTaxed = item.IsTaxed,
                     }
                 );
             }

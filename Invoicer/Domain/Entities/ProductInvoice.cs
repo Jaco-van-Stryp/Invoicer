@@ -10,5 +10,6 @@
         public required Guid CompanyId { get; init; }
         public required Company Company { get; init; }
         public required int Quantity { get; set; } = 0;
+        public bool IsTaxed { get; set; } = true;
     }
 }

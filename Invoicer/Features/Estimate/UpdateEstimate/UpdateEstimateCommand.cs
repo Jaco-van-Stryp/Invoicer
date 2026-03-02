@@ -2,7 +2,11 @@ using Invoicer.Domain.Enums;
 
 namespace Invoicer.Features.Estimate.UpdateEstimate
 {
-    public readonly record struct UpdateEstimateProductItem(Guid ProductId, int Quantity);
+    public readonly record struct UpdateEstimateProductItem(
+        Guid ProductId,
+        int Quantity,
+        bool IsTaxed = true
+    );
 
     public readonly record struct UpdateEstimateCommand(
         Guid CompanyId,

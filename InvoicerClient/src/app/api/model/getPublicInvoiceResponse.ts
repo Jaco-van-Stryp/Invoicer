@@ -18,6 +18,10 @@ export interface GetPublicInvoiceResponse {
   dueDate?: string;
   status?: string | null;
   totalAmount?: number;
+  subtotal?: number;
+  taxAmount?: number;
+  taxRate?: number;
+  taxName?: string | null;
   notes?: string | null;
   company?: CompanyInfo;
   client?: ClientInfo;

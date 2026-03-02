@@ -7,6 +7,10 @@ public record struct GetPublicInvoiceResponse(
     DateTime DueDate,
     string Status,
     decimal TotalAmount,
+    decimal Subtotal,
+    decimal TaxAmount,
+    decimal TaxRate,
+    string? TaxName,
     string? Notes,
     CompanyInfo Company,
     ClientInfo Client,
@@ -24,4 +28,10 @@ public record struct CompanyInfo(
 
 public record struct ClientInfo(string Name, string? Email, string? Phone, string? Address);
 
-public record struct ProductInfo(string Name, int Quantity, decimal UnitPrice, decimal TotalPrice);
+public record struct ProductInfo(
+    string Name,
+    int Quantity,
+    decimal UnitPrice,
+    decimal TotalPrice,
+    bool IsTaxed
+);

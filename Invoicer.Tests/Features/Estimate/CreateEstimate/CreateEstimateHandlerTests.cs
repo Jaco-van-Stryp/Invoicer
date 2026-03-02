@@ -6,6 +6,7 @@ using Invoicer.Features.Estimate.CreateEstimate;
 using Invoicer.Tests.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace Invoicer.Tests.Features.Estimate.CreateEstimate;
 
 [Collection("Database")]
@@ -332,5 +333,80 @@ public class CreateEstimateHandlerTests(DatabaseFixture db) : IntegrationTestBas
         // Act & Assert
         var act = () => handler.Handle(command, CancellationToken.None);
         await act.Should().ThrowAsync<CompanyNotFoundException>();
+    }
+
+    [Fact]
+    public async Task Handle_CompanyHasTaxRate_SnapshotsTaxRateOntoEstimate()
+    {
+        // Arrange
+        var (user, company, client, productA, _) = await SeedFullScenarioAsync();
+        company.TaxRate = 15m;
+        company.TaxName = "GST";
+        await DbContext.SaveChangesAsync();
+
+        SetCurrentUser(user.Id, user.Email);
+        var handler = new CreateEstimateHandler(DbContext, CurrentUserService);
+
+        var command = new CreateEstimateCommand(
+            CompanyId: company.Id,
+            ClientId: client.Id,
+            EstimateDate: DateTime.UtcNow,
+            ExpiresOn: DateTime.UtcNow.AddDays(30),
+            Status: EstimateStatus.Draft,
+            Notes: null,
+            Products: [new CreateEstimateProductItem(productA.Id, 1, IsTaxed: true)]
+        );
+
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        // Assert — TaxRate and TaxName are snapshotted from company
+        DbContext.ChangeTracker.Clear();
+        var saved = await DbContext.Estimates.FirstOrDefaultAsync(e => e.Id == result.EstimateId);
+        saved.Should().NotBeNull();
+        saved!.TaxRate.Should().Be(15m);
+        saved.TaxName.Should().Be("GST");
+    }
+
+    [Fact]
+    public async Task Handle_MixedTaxableProducts_TotalAmountIncludesTaxOnlyForTaxableItems()
+    {
+        // Arrange: productA=$10 (taxable), productB=$25 (not taxable), tax=10%
+        var (user, company, client, productA, productB) = await SeedFullScenarioAsync();
+        company.TaxRate = 10m;
+        company.TaxName = "VAT";
+        await DbContext.SaveChangesAsync();
+
+        SetCurrentUser(user.Id, user.Email);
+        var handler = new CreateEstimateHandler(DbContext, CurrentUserService);
+
+        var command = new CreateEstimateCommand(
+            CompanyId: company.Id,
+            ClientId: client.Id,
+            EstimateDate: DateTime.UtcNow,
+            ExpiresOn: DateTime.UtcNow.AddDays(30),
+            Status: EstimateStatus.Draft,
+            Notes: null,
+            Products:
+            [
+                new CreateEstimateProductItem(productA.Id, 1, IsTaxed: true),   // $10 taxable → tax $1
+                new CreateEstimateProductItem(productB.Id, 1, IsTaxed: false),  // $25 not taxable
+            ]
+        );
+
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        // Assert: subtotal=$35, taxable=$10, tax=$1, total=$36
+        DbContext.ChangeTracker.Clear();
+        var saved = await DbContext
+            .Estimates.Include(e => e.ProductEstimates)
+            .FirstOrDefaultAsync(e => e.Id == result.EstimateId);
+        saved.Should().NotBeNull();
+        saved!.TotalAmount.Should().Be(36m);
+        var peA = saved.ProductEstimates.First(pe => pe.ProductId == productA.Id);
+        peA.IsTaxed.Should().BeTrue();
+        var peB = saved.ProductEstimates.First(pe => pe.ProductId == productB.Id);
+        peB.IsTaxed.Should().BeFalse();
     }
 }

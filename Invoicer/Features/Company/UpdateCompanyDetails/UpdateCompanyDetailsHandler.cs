@@ -52,6 +52,10 @@ namespace Invoicer.Features.Company.UpdateCompanyDetails
                 company.PaymentDetails = request.PaymentDetails;
             if (request.LogoUrl is not null)
                 company.LogoUrl = request.LogoUrl;
+            if (request.TaxRate.HasValue)
+                company.TaxRate = request.TaxRate.Value;
+            if (request.TaxName is not null)
+                company.TaxName = request.TaxName;
 
             await _dbContext.SaveChangesAsync(cancellationToken);
         }

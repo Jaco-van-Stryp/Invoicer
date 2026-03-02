@@ -34,27 +34,43 @@ namespace Invoicer.Features.Estimate.GetAllEstimates
                 .Include(e => e.ProductEstimates)
                     .ThenInclude(pe => pe.Product)
                 .OrderByDescending(e => e.EstimateDate)
-                .Select(e => new GetAllEstimatesResponse(
-                    e.Id,
-                    e.EstimateNumber,
-                    e.EstimateDate,
-                    e.ExpiresOn,
-                    e.Status,
-                    e.ProductEstimates.Sum(pe => pe.UnitPrice * pe.Quantity),
-                    e.Notes,
-                    e.ClientId,
-                    e.Client.Name,
-                    e.ProductEstimates.Select(pe => new EstimateProductItem(
-                            pe.ProductId,
-                            pe.Product.Name,
-                            pe.Quantity,
-                            pe.UnitPrice
-                        ))
-                        .ToList()
-                ))
                 .ToListAsync(cancellationToken);
 
-            return estimates;
+            var estimateResponses = estimates
+                .Select(e =>
+                {
+                    var subtotal = e.ProductEstimates.Sum(pe => pe.UnitPrice * pe.Quantity);
+                    var taxableSubtotal = e
+                        .ProductEstimates.Where(pe => pe.IsTaxed)
+                        .Sum(pe => pe.UnitPrice * pe.Quantity);
+                    var taxAmount = Math.Round(taxableSubtotal * (e.TaxRate / 100), 2);
+                    return new GetAllEstimatesResponse(
+                        e.Id,
+                        e.EstimateNumber,
+                        e.EstimateDate,
+                        e.ExpiresOn,
+                        e.Status,
+                        subtotal + taxAmount,
+                        subtotal,
+                        taxAmount,
+                        e.TaxRate,
+                        e.TaxName,
+                        e.Notes,
+                        e.ClientId,
+                        e.Client.Name,
+                        e.ProductEstimates.Select(pe => new EstimateProductItem(
+                                pe.ProductId,
+                                pe.Product.Name,
+                                pe.Quantity,
+                                pe.UnitPrice,
+                                pe.IsTaxed
+                            ))
+                            .ToList()
+                    );
+                })
+                .ToList();
+
+            return estimateResponses;
         }
     }
 }

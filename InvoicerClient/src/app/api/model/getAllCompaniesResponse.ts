@@ -17,4 +17,6 @@ export interface GetAllCompaniesResponse {
   email?: string | null;
   paymentDetails?: string | null;
   logoUrl?: string | null;
+  taxRate?: number;
+  taxName?: string | null;
 }

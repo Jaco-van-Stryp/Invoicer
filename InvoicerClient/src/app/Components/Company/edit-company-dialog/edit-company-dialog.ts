@@ -5,6 +5,7 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { FileUploadModule } from 'primeng/fileupload';
 import { FloatLabelModule } from 'primeng/floatlabel';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { CompanyService, FileService } from '../../../api';
@@ -21,6 +22,7 @@ import { ChangeDetectionStrategy } from '@angular/core';
     ButtonModule,
     FileUploadModule,
     FloatLabelModule,
+    InputNumberModule,
     InputTextModule,
     TextareaModule,
     FileUrlPipe,
@@ -45,6 +47,8 @@ export class EditCompanyDialog {
   address = signal('');
   paymentDetails = signal('');
   logoUrl = signal('');
+  taxName = signal('');
+  taxRate = signal<number>(0);
   logoPreview = signal<string | null>(null);
   uploadingLogo = signal(false);
   saving = signal(false);
@@ -64,6 +68,8 @@ export class EditCompanyDialog {
           this.paymentDetails.set(company.paymentDetails ?? '');
           this.logoUrl.set(company.logoUrl ?? '');
           this.logoPreview.set(company.logoUrl ?? null);
+          this.taxName.set(company.taxName ?? '');
+          this.taxRate.set(company.taxRate ?? 0);
         }
       }
     });
@@ -119,6 +125,8 @@ export class EditCompanyDialog {
         address: this.address() || null,
         paymentDetails: this.paymentDetails() || null,
         logoUrl: this.logoUrl() || null,
+        taxName: this.taxName() || null,
+        taxRate: this.taxRate(),
       })
       .subscribe({
         next: () => {
@@ -131,6 +139,8 @@ export class EditCompanyDialog {
             address: this.address() || undefined,
             paymentDetails: this.paymentDetails() || undefined,
             logoUrl: this.logoUrl() || undefined,
+            taxName: this.taxName() || undefined,
+            taxRate: this.taxRate(),
           });
           this.messageService.add({
             severity: 'success',

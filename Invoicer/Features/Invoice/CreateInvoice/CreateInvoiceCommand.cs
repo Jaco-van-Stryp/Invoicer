@@ -11,5 +11,9 @@ namespace Invoicer.Features.Invoice.CreateInvoice
         List<CreateInvoiceProductItem> Products
     ) : IRequest<CreateInvoiceResponse>;
 
-    public readonly record struct CreateInvoiceProductItem(Guid ProductId, int Quantity);
+    public readonly record struct CreateInvoiceProductItem(
+        Guid ProductId,
+        int Quantity,
+        bool IsTaxed = true
+    );
 }
