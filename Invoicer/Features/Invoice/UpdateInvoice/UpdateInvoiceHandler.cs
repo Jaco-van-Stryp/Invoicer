@@ -76,6 +76,7 @@ namespace Invoicer.Features.Invoice.UpdateInvoice
                             CompanyId = request.CompanyId,
                             Company = company,
                             Quantity = item.Quantity,
+                            UnitPrice = product.Price,
                             IsTaxed = item.IsTaxed,
                         }
                     );

@@ -12,7 +12,7 @@ namespace Invoicer.Features.Company.UpdateCompanyDetails
         string? Email,
         string? PaymentDetails,
         string? LogoUrl,
-        decimal? TaxRate,
-        string? TaxName
+        [Range(typeof(decimal), "0", "100")] decimal? TaxRate,
+        [MaxLength(100)] string? TaxName
     ) : IRequest;
 }

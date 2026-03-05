@@ -1,4 +1,14 @@
-import { Component, input, model, output, inject, signal, effect, computed, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  input,
+  model,
+  output,
+  inject,
+  signal,
+  effect,
+  computed,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -66,6 +76,8 @@ export class EstimateFormDialog {
 
   isEditing = computed(() => !!this.estimate()?.id);
   hasTax = computed(() => (this.companyStore.company()?.taxRate ?? 0) > 0);
+  taxName = computed(() => this.companyStore.company()?.taxName || 'Tax');
+  taxRate = computed(() => this.companyStore.company()?.taxRate ?? 0);
 
   subtotal = computed(() => {
     const lines = this.productLines();
@@ -195,9 +207,7 @@ export class EstimateFormDialog {
   }
 
   updateLineTaxed(index: number, isTaxed: boolean) {
-    this.productLines.update((lines) =>
-      lines.map((l, i) => (i === index ? { ...l, isTaxed } : l)),
-    );
+    this.productLines.update((lines) => lines.map((l, i) => (i === index ? { ...l, isTaxed } : l)));
   }
 
   getLineTotal(line: ProductLine): number {

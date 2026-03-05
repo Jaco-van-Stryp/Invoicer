@@ -383,7 +383,7 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
     }
 
     [Fact]
-    public async Task Handle_TaxableProducts_TaxReflectedInGetAllInvoicesTotal()
+    public async Task Handle_TaxableProducts_PersistsIsTaxed()
     {
         // Arrange — 2 products: productA (price=10, taxable), productB (price=25, not taxable), qty=1 each
         var (user, company, client, productA, productB) = await SeedFullScenarioAsync();

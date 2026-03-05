@@ -5,8 +5,24 @@
       <logo />
     </div>
     <div class="nav-links">
-      <a class="nav-link" (click)="scrollTo('features')">Features</a>
-      <a class="nav-link" (click)="scrollTo('how')">How It Works</a>
+      <a
+        class="nav-link"
+        role="button"
+        tabindex="0"
+        (click)="scrollTo('features')"
+        (keydown.enter)="scrollTo('features')"
+        (keydown.space)="scrollTo('features')"
+        >Features</a
+      >
+      <a
+        class="nav-link"
+        role="button"
+        tabindex="0"
+        (click)="scrollTo('how')"
+        (keydown.enter)="scrollTo('how')"
+        (keydown.space)="scrollTo('how')"
+        >How It Works</a
+      >
       <a class="nav-link nav-cta" routerLink="/login">Get Started</a>
     </div>
   </div>
@@ -174,8 +190,22 @@
     <div class="footer-links">
       <div class="footer-col">
         <h4>Product</h4>
-        <a (click)="scrollTo('features')">Features</a>
-        <a (click)="scrollTo('how')">How It Works</a>
+        <a
+          role="button"
+          tabindex="0"
+          (click)="scrollTo('features')"
+          (keydown.enter)="scrollTo('features')"
+          (keydown.space)="scrollTo('features')"
+          >Features</a
+        >
+        <a
+          role="button"
+          tabindex="0"
+          (click)="scrollTo('how')"
+          (keydown.enter)="scrollTo('how')"
+          (keydown.space)="scrollTo('how')"
+          >How It Works</a
+        >
         <a routerLink="/login">Get Started</a>
         <a routerLink="/login">Sign In</a>
       </div>

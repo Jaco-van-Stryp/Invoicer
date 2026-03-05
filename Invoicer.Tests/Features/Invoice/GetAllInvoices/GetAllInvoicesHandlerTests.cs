@@ -96,6 +96,7 @@ public class GetAllInvoicesHandlerTests(DatabaseFixture db) : IntegrationTestBas
             CompanyId = company.Id,
             Company = company,
             Quantity = quantity,
+            UnitPrice = product.Price,
         };
         invoice.Products.Add(productInvoice);
         await DbContext.Invoices.AddAsync(invoice);
@@ -263,12 +264,14 @@ public class GetAllInvoicesHandlerTests(DatabaseFixture db) : IntegrationTestBas
                     CompanyId = company.Id,
                     Company = company,
                     Quantity = 2,
+                    UnitPrice = product.Price,
                     IsTaxed = true,
                 },
             ],
         };
         await DbContext.Invoices.AddAsync(invoice);
         await DbContext.SaveChangesAsync();
+        DbContext.ChangeTracker.Clear();
 
         SetCurrentUser(user.Id, user.Email);
         var handler = new GetAllInvoicesHandler(DbContext, CurrentUserService);
@@ -318,6 +321,7 @@ public class GetAllInvoicesHandlerTests(DatabaseFixture db) : IntegrationTestBas
         };
         await DbContext.Payments.AddRangeAsync(payment1, payment2);
         await DbContext.SaveChangesAsync();
+        DbContext.ChangeTracker.Clear();
 
         SetCurrentUser(user.Id, user.Email);
         var handler = new GetAllInvoicesHandler(DbContext, CurrentUserService);

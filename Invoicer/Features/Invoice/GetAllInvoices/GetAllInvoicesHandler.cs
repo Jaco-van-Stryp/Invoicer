@@ -39,10 +39,10 @@ namespace Invoicer.Features.Invoice.GetAllInvoices
             var invoicesResponse = company
                 .Invoices.Select(i =>
                 {
-                    var subtotal = i.Products.Sum(pi => pi.Product.Price * pi.Quantity);
+                    var subtotal = i.Products.Sum(pi => pi.UnitPrice * pi.Quantity);
                     var taxableSubtotal = i
                         .Products.Where(pi => pi.IsTaxed)
-                        .Sum(pi => pi.Product.Price * pi.Quantity);
+                        .Sum(pi => pi.UnitPrice * pi.Quantity);
                     var taxAmount = Math.Round(taxableSubtotal * (i.TaxRate / 100), 2);
                     return new GetAllInvoicesResponse
                     {
@@ -64,7 +64,7 @@ namespace Invoicer.Features.Invoice.GetAllInvoices
                             {
                                 ProductId = pi.ProductId,
                                 ProductName = pi.Product.Name,
-                                Price = pi.Product.Price,
+                                Price = pi.UnitPrice,
                                 Quantity = pi.Quantity,
                                 IsTaxed = pi.IsTaxed,
                             })

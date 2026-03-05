@@ -101,6 +101,7 @@ public class GetAllEstimatesHandlerTests(DatabaseFixture db) : IntegrationTestBa
             Company = company,
             Quantity = quantity,
             UnitPrice = product.Price,
+            IsTaxed = true,
         };
         estimate.ProductEstimates.Add(productEstimate);
         await DbContext.Estimates.AddAsync(estimate);
@@ -191,6 +192,7 @@ public class GetAllEstimatesHandlerTests(DatabaseFixture db) : IntegrationTestBa
         returnedProduct.ProductName.Should().Be("Widget");
         returnedProduct.UnitPrice.Should().Be(15m);
         returnedProduct.Quantity.Should().Be(3);
+        returnedProduct.IsTaxed.Should().BeTrue();
     }
 
     [Fact]

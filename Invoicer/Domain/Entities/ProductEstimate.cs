@@ -9,7 +9,7 @@ namespace Invoicer.Domain.Entities
         public required Product Product { get; init; }
         public required int Quantity { get; set; }
         public required decimal UnitPrice { get; set; }
-        public bool IsTaxed { get; set; } = true;
+        public bool IsTaxed { get; set; } = false;
         public required Guid CompanyId { get; init; }
         public required Company Company { get; init; }
     }

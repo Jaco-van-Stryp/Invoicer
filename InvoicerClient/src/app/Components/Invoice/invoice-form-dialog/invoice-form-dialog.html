@@ -107,7 +107,12 @@
                   [binary]="true"
                   [inputId]="'taxable-' + $index"
                 />
-                <label [for]="'taxable-' + $index" class="text-xs text-muted-color">Tax</label>
+                <label
+                  [for]="'taxable-' + $index"
+                  [attr.aria-label]="'Tax for item ' + ($index + 1)"
+                  class="text-xs text-muted-color"
+                  >Tax</label
+                >
               </div>
             }
             <div class="product-row-total">
@@ -136,7 +141,9 @@
             </div>
             <div class="total-row">
               <span class="text-sm text-muted-color">
-                {{ companyStore.company()?.taxName || 'Tax' }} ({{ companyStore.company()?.taxRate }}%)
+                {{ companyStore.company()?.taxName || 'Tax' }} ({{
+                  companyStore.company()?.taxRate
+                }}%)
               </span>
               <span class="text-sm font-medium">{{ taxAmount() | currency }}</span>
             </div>
