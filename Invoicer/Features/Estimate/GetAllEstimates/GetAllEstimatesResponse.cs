@@ -6,7 +6,8 @@ namespace Invoicer.Features.Estimate.GetAllEstimates
         Guid ProductId,
         string ProductName,
         int Quantity,
-        decimal UnitPrice
+        decimal UnitPrice,
+        bool IsTaxed
     );
 
     public record struct GetAllEstimatesResponse(
@@ -16,6 +17,10 @@ namespace Invoicer.Features.Estimate.GetAllEstimates
         DateTime ExpiresOn,
         EstimateStatus Status,
         decimal TotalAmount,
+        decimal Subtotal,
+        decimal TaxAmount,
+        decimal TaxRate,
+        string? TaxName,
         string? Notes,
         Guid ClientId,
         string ClientName,

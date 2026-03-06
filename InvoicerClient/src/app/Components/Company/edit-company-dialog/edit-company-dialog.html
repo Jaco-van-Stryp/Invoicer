@@ -78,6 +78,38 @@
       <label for="editCompanyPayment">Payment Details</label>
     </p-floatLabel>
 
+    <!-- Tax Settings -->
+    <div class="flex flex-col gap-2">
+      <p class="text-sm font-medium">Tax Settings</p>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="flex flex-col gap-1">
+          <label class="text-xs text-muted-color" for="editTaxName">Tax Name</label>
+          <input
+            pInputText
+            id="editTaxName"
+            type="text"
+            class="w-full"
+            placeholder="e.g. GST, VAT"
+            [ngModel]="taxName()"
+            (ngModelChange)="taxName.set($event)"
+          />
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-xs text-muted-color" for="editTaxRate">Tax Rate (%)</label>
+          <p-inputNumber
+            inputId="editTaxRate"
+            [ngModel]="taxRate()"
+            (ngModelChange)="taxRate.set($event ?? 0)"
+            [min]="0"
+            [max]="100"
+            [maxFractionDigits]="2"
+            suffix="%"
+            styleClass="w-full"
+          />
+        </div>
+      </div>
+    </div>
+
     <!-- Logo Upload -->
     <div class="flex flex-col gap-2">
       <label class="text-sm font-medium">Company Logo</label>

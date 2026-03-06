@@ -132,6 +132,12 @@
             <span class="totals-label">Subtotal</span>
             <span class="totals-value">{{ subtotal() | currency }}</span>
           </div>
+          @if (taxRate() > 0 && taxAmount() > 0) {
+            <div class="totals-row">
+              <span class="totals-label">{{ taxName() || 'Tax' }} ({{ taxRate() }}%)</span>
+              <span class="totals-value">{{ taxAmount() | currency }}</span>
+            </div>
+          }
           <div class="totals-divider" aria-hidden="true"></div>
           <div class="totals-row">
             <span class="totals-label grand-total-label">Total</span>

@@ -79,6 +79,7 @@ public class DeleteInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
             CompanyId = company.Id,
             Company = company,
             Quantity = 3,
+            UnitPrice = product.Price,
         };
         invoice.Products.Add(productInvoice);
 
@@ -149,6 +150,7 @@ public class DeleteInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
             CompanyId = company.Id,
             Company = company,
             Quantity = 1,
+            UnitPrice = product.Price,
         };
         invoice2.Products.Add(pi2);
         await DbContext.Invoices.AddAsync(invoice2);

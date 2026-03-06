@@ -41,6 +41,8 @@ namespace Invoicer.Features.Company.GetAllCompanies
                         Email = company.Email,
                         PaymentDetails = company.PaymentDetails,
                         LogoUrl = company.LogoUrl,
+                        TaxRate = company.TaxRate,
+                        TaxName = company.TaxName,
                     }
                 );
             }

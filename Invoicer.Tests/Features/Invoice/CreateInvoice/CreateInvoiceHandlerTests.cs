@@ -85,7 +85,11 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         // Arrange
         var (user, company, client, productA, productB) = await SeedFullScenarioAsync();
         SetCurrentUser(user.Id, user.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
+        var handler = new CreateInvoiceHandler(
+            DbContext,
+            CurrentUserService,
+            Substitute.For<ISender>()
+        );
 
         var invoiceDate = new DateTime(2026, 1, 15, 0, 0, 0, DateTimeKind.Utc);
         var invoiceDue = new DateTime(2026, 2, 15, 0, 0, 0, DateTimeKind.Utc);
@@ -136,7 +140,11 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         // Arrange
         var (user, company, client, productA, _) = await SeedFullScenarioAsync();
         SetCurrentUser(user.Id, user.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
+        var handler = new CreateInvoiceHandler(
+            DbContext,
+            CurrentUserService,
+            Substitute.For<ISender>()
+        );
 
         var command = new CreateInvoiceCommand(
             CompanyId: company.Id,
@@ -167,7 +175,11 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         // Arrange
         var (user, company, client, productA, _) = await SeedFullScenarioAsync();
         SetCurrentUser(user.Id, user.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
+        var handler = new CreateInvoiceHandler(
+            DbContext,
+            CurrentUserService,
+            Substitute.For<ISender>()
+        );
 
         var command = new CreateInvoiceCommand(
             CompanyId: company.Id,
@@ -191,7 +203,11 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
     {
         // Arrange
         SetCurrentUser(Guid.NewGuid());
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
+        var handler = new CreateInvoiceHandler(
+            DbContext,
+            CurrentUserService,
+            Substitute.For<ISender>()
+        );
 
         var command = new CreateInvoiceCommand(
             CompanyId: Guid.NewGuid(),
@@ -224,7 +240,11 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         await DbContext.SaveChangesAsync();
 
         SetCurrentUser(user.Id, user.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
+        var handler = new CreateInvoiceHandler(
+            DbContext,
+            CurrentUserService,
+            Substitute.For<ISender>()
+        );
 
         var command = new CreateInvoiceCommand(
             CompanyId: Guid.NewGuid(),
@@ -245,7 +265,11 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         // Arrange
         var (user, company, _, productA, _) = await SeedFullScenarioAsync();
         SetCurrentUser(user.Id, user.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
+        var handler = new CreateInvoiceHandler(
+            DbContext,
+            CurrentUserService,
+            Substitute.For<ISender>()
+        );
 
         var command = new CreateInvoiceCommand(
             CompanyId: company.Id,
@@ -266,7 +290,11 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         // Arrange
         var (user, company, client, _, _) = await SeedFullScenarioAsync();
         SetCurrentUser(user.Id, user.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
+        var handler = new CreateInvoiceHandler(
+            DbContext,
+            CurrentUserService,
+            Substitute.For<ISender>()
+        );
 
         var command = new CreateInvoiceCommand(
             CompanyId: company.Id,
@@ -300,7 +328,11 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         await DbContext.SaveChangesAsync();
 
         SetCurrentUser(user2.Id, user2.Email);
-        var handler = new CreateInvoiceHandler(DbContext, CurrentUserService, Substitute.For<ISender>());
+        var handler = new CreateInvoiceHandler(
+            DbContext,
+            CurrentUserService,
+            Substitute.For<ISender>()
+        );
 
         var command = new CreateInvoiceCommand(
             CompanyId: company.Id,
@@ -313,5 +345,83 @@ public class CreateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         // Act & Assert
         var act = () => handler.Handle(command, CancellationToken.None);
         await act.Should().ThrowAsync<CompanyNotFoundException>();
+    }
+
+    [Fact]
+    public async Task Handle_CompanyHasTaxRate_SnapshotsTaxRateOntoInvoice()
+    {
+        // Arrange
+        var (user, company, client, productA, _) = await SeedFullScenarioAsync();
+        company.TaxRate = 15m;
+        company.TaxName = "GST";
+        await DbContext.SaveChangesAsync();
+
+        SetCurrentUser(user.Id, user.Email);
+        var handler = new CreateInvoiceHandler(
+            DbContext,
+            CurrentUserService,
+            Substitute.For<ISender>()
+        );
+
+        var command = new CreateInvoiceCommand(
+            CompanyId: company.Id,
+            ClientId: client.Id,
+            InvoiceDate: DateTime.UtcNow,
+            InvoiceDue: DateTime.UtcNow.AddDays(30),
+            Products: [new CreateInvoiceProductItem(productA.Id, 1, IsTaxed: true)]
+        );
+
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        // Assert — TaxRate and TaxName are snapshotted from company
+        DbContext.ChangeTracker.Clear();
+        var saved = await DbContext.Invoices.FirstOrDefaultAsync(i => i.Id == result.Id);
+        saved.Should().NotBeNull();
+        saved!.TaxRate.Should().Be(15m);
+        saved.TaxName.Should().Be("GST");
+    }
+
+    [Fact]
+    public async Task Handle_TaxableProducts_PersistsIsTaxed()
+    {
+        // Arrange — 2 products: productA (price=10, taxable), productB (price=25, not taxable), qty=1 each
+        var (user, company, client, productA, productB) = await SeedFullScenarioAsync();
+        company.TaxRate = 10m;
+        company.TaxName = "VAT";
+        await DbContext.SaveChangesAsync();
+
+        SetCurrentUser(user.Id, user.Email);
+        var handler = new CreateInvoiceHandler(
+            DbContext,
+            CurrentUserService,
+            Substitute.For<ISender>()
+        );
+
+        var command = new CreateInvoiceCommand(
+            CompanyId: company.Id,
+            ClientId: client.Id,
+            InvoiceDate: DateTime.UtcNow,
+            InvoiceDue: DateTime.UtcNow.AddDays(30),
+            Products:
+            [
+                new CreateInvoiceProductItem(productA.Id, 1, IsTaxed: true), // $10 taxable
+                new CreateInvoiceProductItem(productB.Id, 1, IsTaxed: false), // $25 not taxable
+            ]
+        );
+
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        // Assert product-level IsTaxed is persisted
+        DbContext.ChangeTracker.Clear();
+        var saved = await DbContext
+            .Invoices.Include(i => i.Products)
+            .FirstOrDefaultAsync(i => i.Id == result.Id);
+        saved.Should().NotBeNull();
+        var piA = saved!.Products.First(p => p.ProductId == productA.Id);
+        piA.IsTaxed.Should().BeTrue();
+        var piB = saved.Products.First(p => p.ProductId == productB.Id);
+        piB.IsTaxed.Should().BeFalse();
     }
 }

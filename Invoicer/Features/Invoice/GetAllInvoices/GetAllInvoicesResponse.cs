@@ -12,6 +12,10 @@ namespace Invoicer.Features.Invoice.GetAllInvoices
         InvoiceStatus Status,
         decimal TotalDue,
         decimal TotalPaid,
+        decimal Subtotal,
+        decimal TaxAmount,
+        decimal TaxRate,
+        string? TaxName,
         List<InvoiceProductItem> Products,
         List<InvoicePaymentItem> Payments
     );
@@ -20,7 +24,8 @@ namespace Invoicer.Features.Invoice.GetAllInvoices
         Guid ProductId,
         string ProductName,
         decimal Price,
-        int Quantity
+        int Quantity,
+        bool IsTaxed
     );
 
     public record struct InvoicePaymentItem(

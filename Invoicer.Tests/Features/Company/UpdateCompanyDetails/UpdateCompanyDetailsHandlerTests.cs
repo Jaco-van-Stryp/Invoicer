@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using FluentAssertions;
 using Invoicer.Domain.Entities;
 using Invoicer.Domain.Exceptions;
@@ -57,7 +58,9 @@ public class UpdateCompanyDetailsHandlerTests(DatabaseFixture db) : IntegrationT
             PhoneNumber: "555-UPD",
             Email: "updated@test.com",
             PaymentDetails: "Bank: Updated",
-            LogoUrl: "https://updated.com/logo.png"
+            LogoUrl: "https://updated.com/logo.png",
+            TaxRate: null,
+            TaxName: null
         );
 
         // Act
@@ -92,7 +95,9 @@ public class UpdateCompanyDetailsHandlerTests(DatabaseFixture db) : IntegrationT
             PhoneNumber: null,
             Email: null,
             PaymentDetails: null,
-            LogoUrl: null
+            LogoUrl: null,
+            TaxRate: null,
+            TaxName: null
         );
 
         // Act
@@ -127,7 +132,9 @@ public class UpdateCompanyDetailsHandlerTests(DatabaseFixture db) : IntegrationT
             PhoneNumber: null,
             Email: null,
             PaymentDetails: null,
-            LogoUrl: null
+            LogoUrl: null,
+            TaxRate: null,
+            TaxName: null
         );
 
         // Act
@@ -147,6 +154,123 @@ public class UpdateCompanyDetailsHandlerTests(DatabaseFixture db) : IntegrationT
     }
 
     [Fact]
+    public async Task Handle_TaxFieldsProvided_UpdatesTaxRateAndTaxName()
+    {
+        // Arrange
+        var (user, company) = await SeedUserWithCompanyAsync();
+        SetCurrentUser(user.Id, user.Email);
+        var handler = new UpdateCompanyDetailsHandler(DbContext, CurrentUserService);
+
+        var command = new UpdateCompanyDetailsCommand(
+            CompanyId: company.Id,
+            Name: null,
+            Address: null,
+            TaxNumber: null,
+            PhoneNumber: null,
+            Email: null,
+            PaymentDetails: null,
+            LogoUrl: null,
+            TaxRate: 15m,
+            TaxName: "GST"
+        );
+
+        // Act
+        await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        DbContext.ChangeTracker.Clear();
+        var saved = await DbContext.Companies.FindAsync(company.Id);
+        saved.Should().NotBeNull();
+        saved!.TaxRate.Should().Be(15m);
+        saved.TaxName.Should().Be("GST");
+        // Other fields unchanged
+        saved.Name.Should().Be("Original Corp");
+    }
+
+    [Theory]
+    [InlineData(-0.01)]
+    [InlineData(-10)]
+    [InlineData(100.01)]
+    [InlineData(200)]
+    public void Validate_InvalidTaxRate_FailsValidation(double taxRateDouble)
+    {
+        var taxRate = (decimal)taxRateDouble;
+        var command = new UpdateCompanyDetailsCommand(
+            CompanyId: Guid.NewGuid(),
+            Name: null,
+            Address: null,
+            TaxNumber: null,
+            PhoneNumber: null,
+            Email: null,
+            PaymentDetails: null,
+            LogoUrl: null,
+            TaxRate: taxRate,
+            TaxName: null
+        );
+
+        object instance = command;
+        var context = new ValidationContext(instance);
+        var results = new List<ValidationResult>();
+        var isValid = Validator.TryValidateObject(instance, context, results, true);
+
+        isValid.Should().BeFalse();
+        results.Should().ContainSingle(r => r.MemberNames.Contains(nameof(UpdateCompanyDetailsCommand.TaxRate)));
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(10)]
+    [InlineData(100)]
+    public void Validate_ValidTaxRate_PassesValidation(double taxRateDouble)
+    {
+        var taxRate = (decimal)taxRateDouble;
+        var command = new UpdateCompanyDetailsCommand(
+            CompanyId: Guid.NewGuid(),
+            Name: "Test",
+            Address: null,
+            TaxNumber: null,
+            PhoneNumber: null,
+            Email: null,
+            PaymentDetails: null,
+            LogoUrl: null,
+            TaxRate: taxRate,
+            TaxName: null
+        );
+
+        object instance = command;
+        var context = new ValidationContext(instance);
+        var results = new List<ValidationResult>();
+        var isValid = Validator.TryValidateObject(instance, context, results, true);
+
+        isValid.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Validate_TaxNameExceedsMaxLength_FailsValidation()
+    {
+        var command = new UpdateCompanyDetailsCommand(
+            CompanyId: Guid.NewGuid(),
+            Name: null,
+            Address: null,
+            TaxNumber: null,
+            PhoneNumber: null,
+            Email: null,
+            PaymentDetails: null,
+            LogoUrl: null,
+            TaxRate: null,
+            TaxName: new string('A', 101)
+        );
+
+        object instance = command;
+        var context = new ValidationContext(instance);
+        var results = new List<ValidationResult>();
+        var isValid = Validator.TryValidateObject(instance, context, results, true);
+
+        isValid.Should().BeFalse();
+        results.Should().ContainSingle(r => r.MemberNames.Contains(nameof(UpdateCompanyDetailsCommand.TaxName)));
+    }
+
+    [Fact]
     public async Task Handle_NonExistentUser_ThrowsUserNotFoundException()
     {
         // Arrange
@@ -161,7 +285,9 @@ public class UpdateCompanyDetailsHandlerTests(DatabaseFixture db) : IntegrationT
             PhoneNumber: null,
             Email: null,
             PaymentDetails: null,
-            LogoUrl: null
+            LogoUrl: null,
+            TaxRate: null,
+            TaxName: null
         );
 
         // Act & Assert
@@ -199,7 +325,9 @@ public class UpdateCompanyDetailsHandlerTests(DatabaseFixture db) : IntegrationT
             PhoneNumber: null,
             Email: null,
             PaymentDetails: null,
-            LogoUrl: null
+            LogoUrl: null,
+            TaxRate: null,
+            TaxName: null
         );
 
         // Act & Assert
@@ -235,7 +363,9 @@ public class UpdateCompanyDetailsHandlerTests(DatabaseFixture db) : IntegrationT
             PhoneNumber: null,
             Email: null,
             PaymentDetails: null,
-            LogoUrl: null
+            LogoUrl: null,
+            TaxRate: null,
+            TaxName: null
         );
 
         // Act & Assert

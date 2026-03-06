@@ -169,6 +169,41 @@ public class GetAllClientsHandlerTests(DatabaseFixture db) : IntegrationTestBase
     }
 
     [Fact]
+    public async Task Handle_SoftDeletedClient_NotReturned()
+    {
+        // Arrange
+        var (user, company) = await SeedUserWithCompanyAsync();
+        var activeClient = await SeedClientAsync(company, "Active Client", "active@test.com");
+
+        var deletedClient = new Domain.Entities.Client
+        {
+            Id = Guid.NewGuid(),
+            Name = "Deleted Client",
+            Email = "deleted@test.com",
+            Address = "Deleted Address",
+            CompanyId = company.Id,
+            Company = company,
+            IsDeleted = true,
+        };
+        await DbContext.Clients.AddAsync(deletedClient);
+        await DbContext.SaveChangesAsync();
+
+        SetCurrentUser(user.Id, user.Email);
+        var handler = new GetAllClientsHandler(DbContext, CurrentUserService);
+
+        // Act
+        var result = await handler.Handle(
+            new GetAllClientsQuery(company.Id),
+            CancellationToken.None
+        );
+
+        // Assert — only the active client is returned
+        result.Should().HaveCount(1);
+        result[0].Id.Should().Be(activeClient.Id);
+        result.Should().NotContain(c => c.Name == "Deleted Client");
+    }
+
+    [Fact]
     public async Task Handle_NonExistentUser_ThrowsUserNotFoundException()
     {
         // Arrange

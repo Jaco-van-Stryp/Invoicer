@@ -80,6 +80,7 @@ namespace Invoicer.Features.Estimate.UpdateEstimate
                             Company = company,
                             Quantity = item.Quantity,
                             UnitPrice = product.Price,
+                            IsTaxed = item.IsTaxed,
                         }
                     );
                 }
@@ -87,7 +88,12 @@ namespace Invoicer.Features.Estimate.UpdateEstimate
                 foreach (var pe in newProductEstimates)
                     estimate.ProductEstimates.Add(pe);
 
-                estimate.TotalAmount = newProductEstimates.Sum(pe => pe.Quantity * pe.UnitPrice);
+                var subtotal = newProductEstimates.Sum(pe => pe.Quantity * pe.UnitPrice);
+                var taxableSubtotal = newProductEstimates
+                    .Where(pe => pe.IsTaxed)
+                    .Sum(pe => pe.Quantity * pe.UnitPrice);
+                estimate.TotalAmount =
+                    subtotal + Math.Round(taxableSubtotal * (estimate.TaxRate / 100), 2);
             }
 
             await _dbContext.SaveChangesAsync(cancellationToken);

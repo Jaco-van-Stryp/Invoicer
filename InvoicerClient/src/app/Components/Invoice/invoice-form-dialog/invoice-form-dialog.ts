@@ -8,6 +8,7 @@ import { DialogModule } from 'primeng/dialog';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
+import { CheckboxModule } from 'primeng/checkbox';
 import { SelectModule } from 'primeng/select';
 import {
   ClientService,
@@ -23,6 +24,7 @@ import { ChangeDetectionStrategy } from '@angular/core';
 interface ProductLine {
   productId: string;
   quantity: number;
+  isTaxed: boolean;
 }
 
 @Component({
@@ -31,6 +33,7 @@ interface ProductLine {
   imports: [
     CurrencyPipe,
     FormsModule,
+    CheckboxModule,
     DialogModule,
     ButtonModule,
     FloatLabelModule,
@@ -67,8 +70,9 @@ export class InvoiceFormDialog {
 
   isEditing = computed(() => !!this.invoice()?.id);
   dialogTitle = computed(() => (this.isEditing() ? 'Edit Invoice' : 'New Invoice'));
+  hasTax = computed(() => (this.companyStore.company()?.taxRate ?? 0) > 0);
 
-  grandTotal = computed(() => {
+  subtotal = computed(() => {
     const lines = this.productLines();
     const prods = this.products();
     return lines.reduce((sum, line) => {
@@ -76,6 +80,21 @@ export class InvoiceFormDialog {
       return sum + (product?.price ?? 0) * line.quantity;
     }, 0);
   });
+
+  taxAmount = computed(() => {
+    const lines = this.productLines();
+    const prods = this.products();
+    const taxRate = this.companyStore.company()?.taxRate ?? 0;
+    const taxableSubtotal = lines
+      .filter((l) => l.isTaxed)
+      .reduce((sum, line) => {
+        const product = prods.find((p) => p.id === line.productId);
+        return sum + (product?.price ?? 0) * line.quantity;
+      }, 0);
+    return Math.round(taxableSubtotal * (taxRate / 100) * 100) / 100;
+  });
+
+  grandTotal = computed(() => this.subtotal() + this.taxAmount());
 
   isFormValid = computed(() => {
     return (
@@ -106,6 +125,7 @@ export class InvoiceFormDialog {
           (inv.products ?? []).map((p) => ({
             productId: p.productId ?? '',
             quantity: p.quantity ?? 1,
+            isTaxed: p.isTaxed ?? true,
           })),
         );
       } else {
@@ -146,7 +166,7 @@ export class InvoiceFormDialog {
   }
 
   addLine() {
-    this.productLines.update((lines) => [...lines, { productId: '', quantity: 1 }]);
+    this.productLines.update((lines) => [...lines, { productId: '', quantity: 1, isTaxed: true }]);
   }
 
   removeLine(index: number) {
@@ -162,6 +182,12 @@ export class InvoiceFormDialog {
   updateLineQuantity(index: number, quantity: number) {
     this.productLines.update((lines) =>
       lines.map((l, i) => (i === index ? { ...l, quantity } : l)),
+    );
+  }
+
+  updateLineTaxed(index: number, isTaxed: boolean) {
+    this.productLines.update((lines) =>
+      lines.map((l, i) => (i === index ? { ...l, isTaxed } : l)),
     );
   }
 
@@ -194,6 +220,7 @@ export class InvoiceFormDialog {
           products: this.productLines().map((l) => ({
             productId: l.productId,
             quantity: l.quantity,
+            isTaxed: l.isTaxed,
           })),
         })
         .subscribe({
@@ -225,6 +252,7 @@ export class InvoiceFormDialog {
           products: this.productLines().map((l) => ({
             productId: l.productId,
             quantity: l.quantity,
+            isTaxed: l.isTaxed,
           })),
         })
         .subscribe({

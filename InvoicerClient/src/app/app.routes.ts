@@ -6,7 +6,7 @@ export const routes: Routes = [
   {
     path: '',
     component: Landing,
-    title: 'Invoicer — Effortless Invoicing for Modern Businesses',
+    title: 'Invoicer — Free Invoicing Software for Freelancers & Small Businesses',
   },
   {
     path: 'login',

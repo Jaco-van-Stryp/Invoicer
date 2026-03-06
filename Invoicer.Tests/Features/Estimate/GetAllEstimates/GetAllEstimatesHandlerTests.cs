@@ -101,6 +101,7 @@ public class GetAllEstimatesHandlerTests(DatabaseFixture db) : IntegrationTestBa
             Company = company,
             Quantity = quantity,
             UnitPrice = product.Price,
+            IsTaxed = true,
         };
         estimate.ProductEstimates.Add(productEstimate);
         await DbContext.Estimates.AddAsync(estimate);
@@ -120,7 +121,10 @@ public class GetAllEstimatesHandlerTests(DatabaseFixture db) : IntegrationTestBa
         var handler = new GetAllEstimatesHandler(DbContext, CurrentUserService);
 
         // Act
-        var result = await handler.Handle(new GetAllEstimatesQuery(company.Id), CancellationToken.None);
+        var result = await handler.Handle(
+            new GetAllEstimatesQuery(company.Id),
+            CancellationToken.None
+        );
 
         // Assert
         result.Should().HaveCount(2);
@@ -137,7 +141,10 @@ public class GetAllEstimatesHandlerTests(DatabaseFixture db) : IntegrationTestBa
         var handler = new GetAllEstimatesHandler(DbContext, CurrentUserService);
 
         // Act
-        var result = await handler.Handle(new GetAllEstimatesQuery(company.Id), CancellationToken.None);
+        var result = await handler.Handle(
+            new GetAllEstimatesQuery(company.Id),
+            CancellationToken.None
+        );
 
         // Assert
         result.Should().BeEmpty();
@@ -149,13 +156,23 @@ public class GetAllEstimatesHandlerTests(DatabaseFixture db) : IntegrationTestBa
         // Arrange
         var (user, company, client, product) = await SeedUserWithCompanyClientAndProductAsync();
         var estimateDate = new DateTime(2026, 1, 15, 0, 0, 0, DateTimeKind.Utc);
-        var estimate = await SeedEstimateAsync(company, client, product, "EST-FULL", 3, estimateDate);
+        var estimate = await SeedEstimateAsync(
+            company,
+            client,
+            product,
+            "EST-FULL",
+            3,
+            estimateDate
+        );
 
         SetCurrentUser(user.Id, user.Email);
         var handler = new GetAllEstimatesHandler(DbContext, CurrentUserService);
 
         // Act
-        var result = await handler.Handle(new GetAllEstimatesQuery(company.Id), CancellationToken.None);
+        var result = await handler.Handle(
+            new GetAllEstimatesQuery(company.Id),
+            CancellationToken.None
+        );
 
         // Assert
         result.Should().HaveCount(1);
@@ -175,6 +192,7 @@ public class GetAllEstimatesHandlerTests(DatabaseFixture db) : IntegrationTestBa
         returnedProduct.ProductName.Should().Be("Widget");
         returnedProduct.UnitPrice.Should().Be(15m);
         returnedProduct.Quantity.Should().Be(3);
+        returnedProduct.IsTaxed.Should().BeTrue();
     }
 
     [Fact]
@@ -225,11 +243,70 @@ public class GetAllEstimatesHandlerTests(DatabaseFixture db) : IntegrationTestBa
         var handler = new GetAllEstimatesHandler(DbContext, CurrentUserService);
 
         // Act — query only company1
-        var result = await handler.Handle(new GetAllEstimatesQuery(company1.Id), CancellationToken.None);
+        var result = await handler.Handle(
+            new GetAllEstimatesQuery(company1.Id),
+            CancellationToken.None
+        );
 
         // Assert
         result.Should().HaveCount(1);
         result[0].EstimateNumber.Should().Be("EST-C1");
+    }
+
+    [Fact]
+    public async Task Handle_EstimateWithTax_ReturnsTaxAmountAndCalculatedTotal()
+    {
+        // Arrange — product $15, qty=2, taxable; TaxRate=10% → subtotal=$30, tax=$3, total=$33
+        var (user, company, client, product) = await SeedUserWithCompanyClientAndProductAsync();
+        var estimate = new Domain.Entities.Estimate
+        {
+            Id = Guid.NewGuid(),
+            EstimateNumber = "EST-TAX",
+            EstimateDate = new DateTime(2026, 1, 15, 0, 0, 0, DateTimeKind.Utc),
+            ExpiresOn = new DateTime(2026, 2, 15, 0, 0, 0, DateTimeKind.Utc),
+            Status = EstimateStatus.Draft,
+            TaxRate = 10m,
+            TaxName = "GST",
+            ClientId = client.Id,
+            Client = client,
+            CompanyId = company.Id,
+            Company = company,
+            ProductEstimates = [],
+        };
+        var pe = new ProductEstimate
+        {
+            Id = Guid.NewGuid(),
+            ProductId = product.Id,
+            Product = product,
+            EstimateId = estimate.Id,
+            Estimate = estimate,
+            CompanyId = company.Id,
+            Company = company,
+            Quantity = 2,
+            UnitPrice = product.Price,
+            IsTaxed = true,
+        };
+        estimate.ProductEstimates.Add(pe);
+        await DbContext.Estimates.AddAsync(estimate);
+        await DbContext.SaveChangesAsync();
+
+        SetCurrentUser(user.Id, user.Email);
+        var handler = new GetAllEstimatesHandler(DbContext, CurrentUserService);
+
+        // Act
+        var result = await handler.Handle(
+            new GetAllEstimatesQuery(company.Id),
+            CancellationToken.None
+        );
+
+        // Assert
+        result.Should().HaveCount(1);
+        var returned = result[0];
+        returned.Subtotal.Should().Be(30m); // 15 * 2
+        returned.TaxAmount.Should().Be(3m); // 30 * 10%
+        returned.TotalAmount.Should().Be(33m); // 30 + 3
+        returned.TaxRate.Should().Be(10m);
+        returned.TaxName.Should().Be("GST");
     }
 
     [Fact]
@@ -240,7 +317,8 @@ public class GetAllEstimatesHandlerTests(DatabaseFixture db) : IntegrationTestBa
         var handler = new GetAllEstimatesHandler(DbContext, CurrentUserService);
 
         // Act & Assert
-        var act = () => handler.Handle(new GetAllEstimatesQuery(Guid.NewGuid()), CancellationToken.None);
+        var act = () =>
+            handler.Handle(new GetAllEstimatesQuery(Guid.NewGuid()), CancellationToken.None);
         await act.Should().ThrowAsync<UserNotFoundException>();
     }
 
@@ -265,7 +343,8 @@ public class GetAllEstimatesHandlerTests(DatabaseFixture db) : IntegrationTestBa
         var handler = new GetAllEstimatesHandler(DbContext, CurrentUserService);
 
         // Act & Assert
-        var act = () => handler.Handle(new GetAllEstimatesQuery(Guid.NewGuid()), CancellationToken.None);
+        var act = () =>
+            handler.Handle(new GetAllEstimatesQuery(Guid.NewGuid()), CancellationToken.None);
         await act.Should().ThrowAsync<CompanyNotFoundException>();
     }
 }

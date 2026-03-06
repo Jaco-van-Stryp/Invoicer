@@ -10,5 +10,9 @@ namespace Invoicer.Features.Invoice.UpdateInvoice
         List<UpdateInvoiceProductItem>? Products
     ) : MediatR.IRequest;
 
-    public readonly record struct UpdateInvoiceProductItem(Guid ProductId, int Quantity);
+    public readonly record struct UpdateInvoiceProductItem(
+        Guid ProductId,
+        int Quantity,
+        bool IsTaxed = true
+    );
 }

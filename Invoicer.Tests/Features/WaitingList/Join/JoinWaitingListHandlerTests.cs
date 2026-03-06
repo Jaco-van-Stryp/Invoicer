@@ -31,7 +31,9 @@ public class JoinWaitingListHandlerTests(DatabaseFixture db) : IntegrationTestBa
         emailValidation.IsValidEmail("user@example.com").Returns(true);
 
         var emailService = Substitute.For<IEmailService>();
-        emailService.SendEmailAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns(true);
+        emailService
+            .SendEmailAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(true);
 
         var emailTemplate = Substitute.For<IEmailTemplateService>();
         emailTemplate
@@ -41,7 +43,10 @@ public class JoinWaitingListHandlerTests(DatabaseFixture db) : IntegrationTestBa
         var handler = CreateHandler(emailValidation, emailService, emailTemplate);
 
         // Act
-        await handler.Handle(new JoinWaitingListCommand("user@example.com"), CancellationToken.None);
+        await handler.Handle(
+            new JoinWaitingListCommand("user@example.com"),
+            CancellationToken.None
+        );
 
         // Assert — added to DB
         DbContext.ChangeTracker.Clear();
@@ -69,7 +74,9 @@ public class JoinWaitingListHandlerTests(DatabaseFixture db) : IntegrationTestBa
         emailValidation.IsValidEmail("user@example.com").Returns(true);
 
         var emailService = Substitute.For<IEmailService>();
-        emailService.SendEmailAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns(true);
+        emailService
+            .SendEmailAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(true);
 
         var emailTemplate = Substitute.For<IEmailTemplateService>();
         emailTemplate
@@ -79,8 +86,14 @@ public class JoinWaitingListHandlerTests(DatabaseFixture db) : IntegrationTestBa
         var handler = CreateHandler(emailValidation, emailService, emailTemplate);
 
         // Act — join twice
-        await handler.Handle(new JoinWaitingListCommand("user@example.com"), CancellationToken.None);
-        await handler.Handle(new JoinWaitingListCommand("user@example.com"), CancellationToken.None);
+        await handler.Handle(
+            new JoinWaitingListCommand("user@example.com"),
+            CancellationToken.None
+        );
+        await handler.Handle(
+            new JoinWaitingListCommand("user@example.com"),
+            CancellationToken.None
+        );
 
         // Assert — only one entry in DB
         DbContext.ChangeTracker.Clear();
@@ -104,7 +117,10 @@ public class JoinWaitingListHandlerTests(DatabaseFixture db) : IntegrationTestBa
         var handler = CreateHandler(emailValidation, emailService);
 
         // Act
-        await handler.Handle(new JoinWaitingListCommand("not-a-real-email"), CancellationToken.None);
+        await handler.Handle(
+            new JoinWaitingListCommand("not-a-real-email"),
+            CancellationToken.None
+        );
 
         // Assert — nothing added to DB
         DbContext.ChangeTracker.Clear();
@@ -125,7 +141,9 @@ public class JoinWaitingListHandlerTests(DatabaseFixture db) : IntegrationTestBa
         emailValidation.IsValidEmail(Arg.Any<string>()).Returns(true);
 
         var emailService = Substitute.For<IEmailService>();
-        emailService.SendEmailAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns(true);
+        emailService
+            .SendEmailAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(true);
 
         var emailTemplate = Substitute.For<IEmailTemplateService>();
         emailTemplate
@@ -135,7 +153,10 @@ public class JoinWaitingListHandlerTests(DatabaseFixture db) : IntegrationTestBa
         var handler = CreateHandler(emailValidation, emailService, emailTemplate);
 
         // Act
-        await handler.Handle(new JoinWaitingListCommand("alice@example.com"), CancellationToken.None);
+        await handler.Handle(
+            new JoinWaitingListCommand("alice@example.com"),
+            CancellationToken.None
+        );
         await handler.Handle(new JoinWaitingListCommand("bob@example.com"), CancellationToken.None);
 
         // Assert — both entries in DB

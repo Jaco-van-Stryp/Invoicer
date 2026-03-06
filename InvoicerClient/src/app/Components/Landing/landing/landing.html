@@ -5,9 +5,25 @@
       <logo />
     </div>
     <div class="nav-links">
-      <a class="nav-link" (click)="scrollTo('features')">Features</a>
-      <a class="nav-link" (click)="scrollTo('stats')">Why Invoicer</a>
-      <a class="nav-link nav-cta" (click)="scrollTo('waitlist')">Join Waitlist</a>
+      <a
+        class="nav-link"
+        role="button"
+        tabindex="0"
+        (click)="scrollTo('features')"
+        (keydown.enter)="scrollTo('features')"
+        (keydown.space)="scrollTo('features')"
+        >Features</a
+      >
+      <a
+        class="nav-link"
+        role="button"
+        tabindex="0"
+        (click)="scrollTo('how')"
+        (keydown.enter)="scrollTo('how')"
+        (keydown.space)="scrollTo('how')"
+        >How It Works</a
+      >
+      <a class="nav-link nav-cta" routerLink="/login">Get Started</a>
     </div>
   </div>
 </nav>
@@ -20,11 +36,6 @@
 
   <div class="hero-content" [class.visible]="isVisible()">
     <div class="hero-text">
-      <div class="hero-badge">
-        <i class="pi pi-sparkles"></i>
-        <span>Coming Soon — Join the Waitlist</span>
-      </div>
-
       <h1 class="hero-title">
         Invoicing made
         <span class="gradient-text">effortless</span>
@@ -36,44 +47,20 @@
         platform built for freelancers, agencies, and small businesses.
       </p>
 
-      <!-- Hero CTA -->
       <div class="hero-cta">
-        @if (!submitted()) {
-          <div class="hero-input-group">
-            <input
-              pInputText
-              type="email"
-              placeholder="Enter your email address"
-              class="hero-email-input"
-              [ngModel]="email()"
-              (ngModelChange)="email.set($event)"
-              (keyup.enter)="joinWaitingList()"
-              autocomplete="email"
-              aria-label="Email address for waiting list"
-            />
-            <p-button
-              label="Get Early Access"
-              icon="pi pi-arrow-right"
-              iconPos="right"
-              [loading]="loading()"
-              [disabled]="!isEmailValid()"
-              (click)="joinWaitingList()"
-              styleClass="hero-cta-btn"
-            />
-          </div>
-          <p class="hero-privacy">
-            <i class="pi pi-check-circle"></i>
-            No spam. We'll only reach out when Invoicer is ready for you.
-          </p>
-        } @else {
-          <div class="success-state">
-            <div class="success-icon-wrapper">
-              <i class="pi pi-check-circle"></i>
-            </div>
-            <h3>You're on the list!</h3>
-            <p>We'll send you an invite as soon as Invoicer is ready.</p>
-          </div>
-        }
+        <div class="hero-cta-buttons">
+          <p-button
+            label="Get Started Free"
+            icon="pi pi-arrow-right"
+            iconPos="right"
+            routerLink="/login"
+            styleClass="hero-cta-btn"
+          />
+        </div>
+        <p class="hero-privacy">
+          <i class="pi pi-check-circle"></i>
+          Free forever. No credit card required.
+        </p>
       </div>
     </div>
 
@@ -105,8 +92,8 @@
       <span class="gradient-text">get paid faster</span>
     </h2>
     <p class="section-subtitle">
-      Invoicer brings together invoicing, estimates, client management, and payment tracking into
-      one streamlined experience — built for freelancers, agencies, and small businesses.
+      Invoicer combines invoicing, estimates, client management, and payment tracking into one
+      streamlined platform — so you spend less time on admin and more time doing what you love.
     </p>
   </div>
 
@@ -124,20 +111,22 @@
 </section>
 
 <!-- ═══════════════════════════  HOW IT WORKS  ═══════════════════════════ -->
-<section class="how-section">
+<section id="how" class="how-section">
   <div class="features-header">
     <h2 class="section-title">
-      Simple as
-      <span class="gradient-text">1-2-3</span>
+      Up and running in
+      <span class="gradient-text">minutes</span>
     </h2>
-    <p class="section-subtitle">Get from zero to invoiced in under a minute.</p>
+    <p class="section-subtitle">From sign-up to your first invoice in under 60 seconds.</p>
   </div>
 
   <div class="steps-grid">
     <div class="step-card">
       <div class="step-number">1</div>
-      <h3>Sign Up Instantly</h3>
-      <p>Enter your email. Receive a code. You're in — no downloads or setup needed.</p>
+      <h3>Sign Up for Free</h3>
+      <p>
+        Enter your email, receive a 6-digit code, and you're in — no downloads or passwords needed.
+      </p>
     </div>
     <div class="step-connector">
       <i class="pi pi-arrow-right"></i>
@@ -145,7 +134,10 @@
     <div class="step-card">
       <div class="step-number">2</div>
       <h3>Set Up Your Business</h3>
-      <p>Add your company details to start creating professional invoices in minutes.</p>
+      <p>
+        Add your company name and details to start creating professional, branded invoices
+        immediately.
+      </p>
     </div>
     <div class="step-connector">
       <i class="pi pi-arrow-right"></i>
@@ -153,64 +145,38 @@
     <div class="step-card">
       <div class="step-number">3</div>
       <h3>Send Your First Invoice</h3>
-      <p>Pick a client, add your products, and send. Your client gets a polished invoice straight away.</p>
+      <p>
+        Add a client, select your products or services, and send. Your client gets a polished
+        invoice right away.
+      </p>
     </div>
   </div>
 </section>
 
-<!-- ═══════════════════════════  CTA / WAITLIST  ═══════════════════════════ -->
-<section id="waitlist" class="waitlist-section">
+<!-- ═══════════════════════════  CTA  ═══════════════════════════ -->
+<section id="cta" class="waitlist-section">
   <div class="waitlist-blob waitlist-blob-1"></div>
   <div class="waitlist-blob waitlist-blob-2"></div>
 
   <div class="waitlist-content">
     <h2 class="section-title text-white">
-      Ready to simplify your
-      <span class="gradient-text">invoicing</span>?
+      Ready to get paid
+      <span class="gradient-text">faster</span>?
     </h2>
     <p class="section-subtitle" style="color: rgba(255, 255, 255, 0.8)">
-      Join hundreds of business owners already on the waiting list. Be the first to experience the
-      future of invoicing.
+      Join freelancers and small businesses who use Invoicer to streamline their billing. Create
+      your first invoice in under 60 seconds — completely free, forever.
     </p>
 
-    @if (!submitted()) {
-      <div class="waitlist-form">
-        <div class="hero-input-group">
-          <input
-            pInputText
-            type="email"
-            placeholder="Enter your email address"
-            class="hero-email-input"
-            [ngModel]="email()"
-            (ngModelChange)="email.set($event)"
-            (keyup.enter)="joinWaitingList()"
-            autocomplete="email"
-            aria-label="Email address for waiting list"
-          />
-          <p-button
-            label="Join the Waitlist"
-            icon="pi pi-arrow-right"
-            iconPos="right"
-            [loading]="loading()"
-            [disabled]="!isEmailValid()"
-            (click)="joinWaitingList()"
-            styleClass="hero-cta-btn"
-          />
-        </div>
-        <p class="hero-privacy" style="color: rgba(255, 255, 255, 0.6)">
-          <i class="pi pi-check-circle"></i>
-          Free forever. No credit card required.
-        </p>
-      </div>
-    } @else {
-      <div class="success-state" style="color: #fff">
-        <div class="success-icon-wrapper">
-          <i class="pi pi-check-circle"></i>
-        </div>
-        <h3>You're on the list!</h3>
-        <p>We'll send you an invite as soon as Invoicer is ready.</p>
-      </div>
-    }
+    <div class="cta-buttons">
+      <p-button
+        label="Start Invoicing Today"
+        icon="pi pi-arrow-right"
+        iconPos="right"
+        routerLink="/login"
+        styleClass="hero-cta-btn"
+      />
+    </div>
   </div>
 </section>
 
@@ -219,14 +185,29 @@
   <div class="footer-inner">
     <div class="footer-brand">
       <logo />
-      <p class="footer-tagline">Invoicing made effortless for modern businesses.</p>
+      <p class="footer-tagline">Professional invoicing for freelancers and small businesses.</p>
     </div>
     <div class="footer-links">
       <div class="footer-col">
         <h4>Product</h4>
-        <a (click)="scrollTo('features')">Features</a>
-        <a (click)="scrollTo('stats')">Why Invoicer</a>
-        <a (click)="scrollTo('waitlist')">Join Waitlist</a>
+        <a
+          role="button"
+          tabindex="0"
+          (click)="scrollTo('features')"
+          (keydown.enter)="scrollTo('features')"
+          (keydown.space)="scrollTo('features')"
+          >Features</a
+        >
+        <a
+          role="button"
+          tabindex="0"
+          (click)="scrollTo('how')"
+          (keydown.enter)="scrollTo('how')"
+          (keydown.space)="scrollTo('how')"
+          >How It Works</a
+        >
+        <a routerLink="/login">Get Started</a>
+        <a routerLink="/login">Sign In</a>
       </div>
     </div>
   </div>

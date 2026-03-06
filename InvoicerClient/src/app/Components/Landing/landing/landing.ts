@@ -1,24 +1,18 @@
-import { Component, inject, signal, computed, afterNextRender, PLATFORM_ID } from '@angular/core';
+import { ChangeDetectionStrategy, Component, PLATFORM_ID, afterNextRender, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { MessageService } from 'primeng/api';
+import { Router, RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
-import { RippleModule } from 'primeng/ripple';
-import { APIService, JoinWaitingListCommand } from '../../../api';
+import { AuthStore } from '../../../Services/auth-store';
 import { Copyright } from '../../General/copyright/copyright';
 import { Logo } from '../../General/logo/logo';
 import { LottieAnimation } from '../../General/lottie-animation/lottie-animation';
-import { ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-landing',
   imports: [
-    FormsModule,
     ButtonModule,
-    InputTextModule,
-    RippleModule,
+    RouterLink,
     Copyright,
     Logo,
     LottieAnimation,
@@ -28,26 +22,18 @@ import { ChangeDetectionStrategy } from '@angular/core';
   styleUrl: './landing.css',
 })
 export class Landing {
-  private apiService = inject(APIService);
-  private messageService = inject(MessageService);
+  private router = inject(Router);
+  private authStore = inject(AuthStore);
   private platformId = inject(PLATFORM_ID);
 
-  email = signal('');
-  loading = signal(false);
-  submitted = signal(false);
   isVisible = signal(false);
-
-  isEmailValid = computed(() => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(this.email());
-  });
 
   features = [
     {
       icon: 'pi pi-file-edit',
       title: 'Professional Invoices',
       description:
-        'Create polished, branded invoices in seconds. Add your logo, customize details, and email them directly to clients.',
+        'Create polished, branded invoices in seconds. Add your logo, customize details, and send them directly to clients — no design skills needed.',
     },
     {
       icon: 'pi pi-file-check',
@@ -59,25 +45,25 @@ export class Landing {
       icon: 'pi pi-users',
       title: 'Client Management',
       description:
-        'Keep all your clients organized in one place. Track contact details, invoice history, and outstanding balances.',
+        'Keep all your clients organized in one place. Track contact details, invoice history, and outstanding balances at a glance.',
     },
     {
       icon: 'pi pi-box',
       title: 'Product Catalog',
       description:
-        'Maintain a reusable product and service catalog. Add items to invoices with one click — no retyping ever.',
+        'Build a reusable product and service catalog. Add items to invoices instantly — no retyping, no mistakes, every time.',
     },
     {
       icon: 'pi pi-building',
-      title: 'Multi-Company',
+      title: 'Multi-Company Support',
       description:
         'Run multiple businesses from a single account. Switch between companies effortlessly with fully isolated data.',
     },
     {
-      icon: 'pi pi-cloud-upload',
-      title: 'Cloud Storage',
+      icon: 'pi pi-credit-card',
+      title: 'Payment Tracking',
       description:
-        'Upload receipts, contracts, and attachments. Everything synced and accessible from anywhere, anytime.',
+        'Record and track payments against every invoice. Always know what\'s paid, what\'s pending, and what\'s overdue.',
     },
   ];
 
@@ -91,35 +77,9 @@ export class Landing {
   constructor() {
     afterNextRender(() => {
       this.isVisible.set(true);
-    });
-  }
-
-  joinWaitingList() {
-    if (!this.isEmailValid() || this.loading()) return;
-
-    this.loading.set(true);
-    const command: JoinWaitingListCommand = { email: this.email() };
-
-    this.apiService.apiJoinPost(command).subscribe({
-      next: () => {
-        this.submitted.set(true);
-        this.loading.set(false);
-        this.messageService.add({
-          severity: 'success',
-          summary: "You're on the list!",
-          detail: "We'll notify you as soon as Invoicer is ready.",
-          life: 5000,
-        });
-      },
-      error: () => {
-        this.loading.set(false);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Something went wrong',
-          detail: 'Please try again in a moment.',
-          life: 5000,
-        });
-      },
+      if (this.authStore.isLoggedIn()) {
+        this.router.navigate(['/dashboard']);
+      }
     });
   }
 

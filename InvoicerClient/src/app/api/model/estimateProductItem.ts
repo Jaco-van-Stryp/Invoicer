@@ -13,4 +13,5 @@ export interface EstimateProductItem {
   productName?: string | null;
   quantity?: number;
   unitPrice?: number;
+  isTaxed?: boolean;
 }

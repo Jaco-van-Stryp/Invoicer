@@ -17,4 +17,6 @@ export interface UpdateCompanyDetailsCommand {
   email?: string | null;
   paymentDetails?: string | null;
   logoUrl?: string | null;
+  taxRate?: number | null;
+  taxName?: string | null;
 }

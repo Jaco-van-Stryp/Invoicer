@@ -557,6 +557,32 @@
   white-space: nowrap;
 }
 
+/* ---------- Totals Breakdown (invoice/estimate dialogs) ---------- */
+.totals-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding-top: 0.875rem;
+  border-top: 2px solid var(--surface-border);
+  margin-top: 0.75rem;
+  align-items: flex-end;
+  min-width: 12rem;
+  margin-left: auto;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.grand-total-row {
+  border-top: 1px solid var(--surface-border);
+  padding-top: 0.375rem;
+  margin-top: 0.125rem;
+}
+
 /* ---------- Filter Bar ---------- */
 .filter-bar {
   display: flex;

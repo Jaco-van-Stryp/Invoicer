@@ -57,6 +57,8 @@ namespace Invoicer.Features.Estimate.CreateEstimate
                 Client = client,
                 CompanyId = request.CompanyId,
                 Company = company,
+                TaxRate = company.TaxRate,
+                TaxName = company.TaxName,
                 ProductEstimates = [],
             };
 
@@ -72,13 +74,19 @@ namespace Invoicer.Features.Estimate.CreateEstimate
                         Product = product,
                         Quantity = p.Quantity,
                         UnitPrice = product.Price,
+                        IsTaxed = p.IsTaxed,
                         CompanyId = request.CompanyId,
                         Company = company,
                     };
                 })
                 .ToList();
 
-            estimate.TotalAmount = productEstimates.Sum(pe => pe.Quantity * pe.UnitPrice);
+            var subtotal = productEstimates.Sum(pe => pe.Quantity * pe.UnitPrice);
+            var taxableSubtotal = productEstimates
+                .Where(pe => pe.IsTaxed)
+                .Sum(pe => pe.Quantity * pe.UnitPrice);
+            estimate.TotalAmount =
+                subtotal + Math.Round(taxableSubtotal * (estimate.TaxRate / 100), 2);
 
             _dbContext.Estimates.Add(estimate);
             _dbContext.ProductEstimates.AddRange(productEstimates);

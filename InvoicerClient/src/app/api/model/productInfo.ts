@@ -13,4 +13,5 @@ export interface ProductInfo {
   quantity?: number;
   unitPrice?: number;
   totalPrice?: number;
+  isTaxed?: boolean;
 }

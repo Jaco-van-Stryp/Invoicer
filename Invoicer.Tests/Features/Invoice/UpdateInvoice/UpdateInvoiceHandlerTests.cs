@@ -92,6 +92,7 @@ public class UpdateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
             CompanyId = company.Id,
             Company = company,
             Quantity = 2,
+            UnitPrice = productA.Price,
         };
         invoice.Products.Add(productInvoice);
 
@@ -347,6 +348,42 @@ public class UpdateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
         // Act & Assert
         var act = () => handler.Handle(command, CancellationToken.None);
         await act.Should().ThrowAsync<ProductNotFoundException>();
+    }
+
+    [Fact]
+    public async Task Handle_UpdateProductsWithIsTaxed_PersistsIsTaxedFlag()
+    {
+        // Arrange
+        var (user, company, _, productA, productB, invoice) = await SeedFullScenarioAsync();
+        SetCurrentUser(user.Id, user.Email);
+        var handler = new UpdateInvoiceHandler(DbContext, CurrentUserService);
+
+        var command = new UpdateInvoiceCommand(
+            CompanyId: company.Id,
+            InvoiceId: invoice.Id,
+            InvoiceNumber: null,
+            InvoiceDate: null,
+            InvoiceDue: null,
+            ClientId: null,
+            Products:
+            [
+                new UpdateInvoiceProductItem(productA.Id, 2, IsTaxed: true),
+                new UpdateInvoiceProductItem(productB.Id, 1, IsTaxed: false),
+            ]
+        );
+
+        // Act
+        await handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        DbContext.ChangeTracker.Clear();
+        var saved = await DbContext
+            .Invoices.Include(i => i.Products)
+            .FirstOrDefaultAsync(i => i.Id == invoice.Id);
+        saved.Should().NotBeNull();
+        saved!.Products.Should().HaveCount(2);
+        saved.Products.First(p => p.ProductId == productA.Id).IsTaxed.Should().BeTrue();
+        saved.Products.First(p => p.ProductId == productB.Id).IsTaxed.Should().BeFalse();
     }
 
     [Fact]

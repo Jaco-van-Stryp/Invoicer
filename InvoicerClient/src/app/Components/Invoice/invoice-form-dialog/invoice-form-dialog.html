@@ -71,7 +71,7 @@
 
       <div class="product-rows">
         @for (line of productLines(); track $index) {
-          <div class="product-row">
+          <div class="product-row" [class.product-row-with-tax]="hasTax()">
             <div class="product-row-select">
               <p-select
                 [options]="products()"
@@ -99,6 +99,22 @@
                 styleClass="w-full"
               />
             </div>
+            @if (hasTax()) {
+              <div class="product-row-tax">
+                <p-checkbox
+                  [ngModel]="line.isTaxed"
+                  (ngModelChange)="updateLineTaxed($index, $event)"
+                  [binary]="true"
+                  [inputId]="'taxable-' + $index"
+                />
+                <label
+                  [for]="'taxable-' + $index"
+                  [attr.aria-label]="'Tax for item ' + ($index + 1)"
+                  class="text-xs text-muted-color"
+                  >Tax</label
+                >
+              </div>
+            }
             <div class="product-row-total">
               {{ getLineTotal(line) | currency }}
             </div>
@@ -117,9 +133,25 @@
       </div>
 
       @if (productLines().length > 0) {
-        <div class="grand-total">
-          <span class="text-sm font-semibold text-muted-color">Grand Total</span>
-          <span class="grand-total-amount">{{ grandTotal() | currency }}</span>
+        <div class="totals-breakdown">
+          @if (hasTax()) {
+            <div class="total-row">
+              <span class="text-sm text-muted-color">Subtotal</span>
+              <span class="text-sm font-medium">{{ subtotal() | currency }}</span>
+            </div>
+            <div class="total-row">
+              <span class="text-sm text-muted-color">
+                {{ companyStore.company()?.taxName || 'Tax' }} ({{
+                  companyStore.company()?.taxRate
+                }}%)
+              </span>
+              <span class="text-sm font-medium">{{ taxAmount() | currency }}</span>
+            </div>
+          }
+          <div class="total-row grand-total-row">
+            <span class="text-sm font-semibold text-muted-color">Grand Total</span>
+            <span class="grand-total-amount">{{ grandTotal() | currency }}</span>
+          </div>
         </div>
       }
     </div>

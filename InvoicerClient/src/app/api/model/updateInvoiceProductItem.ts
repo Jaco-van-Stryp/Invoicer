@@ -11,4 +11,5 @@
 export interface UpdateInvoiceProductItem {
   productId?: string;
   quantity?: number;
+  isTaxed?: boolean;
 }

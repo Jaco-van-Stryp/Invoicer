@@ -17,6 +17,10 @@ export interface GetAllEstimatesResponse {
   expiresOn?: string;
   status?: EstimateStatus;
   totalAmount?: number;
+  subtotal?: number;
+  taxAmount?: number;
+  taxRate?: number;
+  taxName?: string | null;
   notes?: string | null;
   clientId?: string;
   clientName?: string | null;
