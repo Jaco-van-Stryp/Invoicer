@@ -92,6 +92,7 @@ public class UpdateInvoiceHandlerTests(DatabaseFixture db) : IntegrationTestBase
             CompanyId = company.Id,
             Company = company,
             Quantity = 2,
+            UnitPrice = productA.Price,
         };
         invoice.Products.Add(productInvoice);
 

@@ -107,6 +107,7 @@ public class GetDashboardStatsHandlerTests(DatabaseFixture db) : IntegrationTest
                     CompanyId = company.Id,
                     Company = company,
                     Quantity = 1,
+                    UnitPrice = product.Price,
                 },
             ],
         };

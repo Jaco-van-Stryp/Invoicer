@@ -77,6 +77,7 @@ public class GetAllPaymentsHandlerTests(DatabaseFixture db) : IntegrationTestBas
                     CompanyId = company.Id,
                     Company = company,
                     Quantity = 2,
+                    UnitPrice = product.Price,
                 },
             ],
         };

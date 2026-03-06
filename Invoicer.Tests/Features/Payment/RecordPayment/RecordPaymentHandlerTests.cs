@@ -83,6 +83,7 @@ public class RecordPaymentHandlerTests(DatabaseFixture db) : IntegrationTestBase
                     CompanyId = company.Id,
                     Company = company,
                     Quantity = quantity,
+                    UnitPrice = product.Price,
                 },
             ],
         };

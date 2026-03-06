@@ -85,6 +85,7 @@ public class DeletePaymentHandlerTests(DatabaseFixture db) : IntegrationTestBase
                     CompanyId = company.Id,
                     Company = company,
                     Quantity = quantity,
+                    UnitPrice = product.Price,
                 },
             ],
         };
