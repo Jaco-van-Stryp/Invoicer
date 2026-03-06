@@ -34,11 +34,12 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -f ./Dockerfile -t ${{ github.event.repository.name }}:latest .
+          REPO_NAME=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
+          docker build -f ./Dockerfile -t ${REPO_NAME}:latest .
 
       - name: Deploy
         run: |
-          CONTAINER_NAME=${{ github.event.repository.name }}
+          CONTAINER_NAME=$(echo "${{ github.event.repository.name }}" | tr '[:upper:]' '[:lower:]')
           IMAGE="${CONTAINER_NAME}:latest"
 
           docker stop $CONTAINER_NAME 2>/dev/null || true
